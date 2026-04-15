@@ -10,6 +10,8 @@ class TenantModel(models.Model):
         db_index=True
     )
 
+    objects = TenantManager()
+
     class Meta:
         abstract = True
 

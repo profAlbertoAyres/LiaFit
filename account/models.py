@@ -8,6 +8,7 @@ from django.utils.text import slugify
 
 from core.enums.account import Gender
 from core.models.base import BaseModel, TenantMixin
+from core.models.role import Role
 from core.models.tenant import TenantModel
 from core.utils.uploads import smart_upload_to
 
@@ -62,20 +63,13 @@ class Organization(BaseModel):
 
 class UserOrganization(BaseModel):
 
-    class RoleChoices(models.TextChoices):
-        ADMIN = 'admin', 'Administrador'
-        PROFESSIONAL = 'professional', 'Profissional'
-        ASSISTANT = 'assistant', 'Assistente'
-        CLIENT = 'client', 'Cliente'
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='memberships')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='members')
-
-    role = models.CharField(max_length=20, choices=RoleChoices.choices)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('user', 'organization', 'role')
+        unique_together = ('user', 'organization')
 
     def __str__(self):
         return f"{self.user} - {self.organization} ({self.role})"

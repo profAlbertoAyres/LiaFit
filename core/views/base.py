@@ -42,6 +42,8 @@ class BaseAuthMixin(LoginRequiredMixin):
     def handle_no_permission(self):
         return self._deny("Acesso negado.")
 
+from django.core.exceptions import PermissionDenied
+
 class ContextMixin:
 
     def get_ctx(self):
@@ -51,17 +53,18 @@ class ContextMixin:
         queryset = super().get_queryset()
         ctx = self.get_ctx()
 
-        if not ctx:
-            return queryset
+        if not ctx or not ctx.organization:
+            return queryset.none()
 
-        if hasattr(self.model, "organization") and ctx.organization:
+        model = queryset.model
+
+        if hasattr(model, "organization"):
             queryset = queryset.filter(organization=ctx.organization)
 
-        if hasattr(self.model, "professional") and ctx.professional:
+        if hasattr(model, "professional") and ctx.professional:
             queryset = queryset.filter(professional=ctx.professional)
 
         return queryset
-
 
 class BaseListView(ContextMixin, BaseAuthMixin, ListView):
 
@@ -83,10 +86,13 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
         queryset = super().get_queryset()
 
         filterset = self.get_filterset(queryset)
+
         if filterset:
+            self.filterset = filterset  # 🔥 FIX
             queryset = filterset.qs
 
         order = self.request.GET.get("order_by")
+
         if order:
             queryset = queryset.order_by(order)
         elif self.ordering:
@@ -99,6 +105,7 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
         context["filter"] = getattr(self, "filterset", None)
         return context
 
+from django.core.exceptions import PermissionDenied
 
 class BaseCreateView(BaseAuthMixin, CreateView):
 
@@ -108,20 +115,13 @@ class BaseCreateView(BaseAuthMixin, CreateView):
     def form_valid(self, form):
         ctx = self.get_ctx()
 
+        if not ctx or not ctx.organization:
+            raise PermissionDenied("Organização não encontrada")
+
         if hasattr(form.instance, "organization"):
             form.instance.organization = ctx.organization
 
         return super().form_valid(form)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        ctx = self.get_ctx()
-
-        kwargs["professional"] = getattr(ctx, "professional", None)
-        kwargs["tenant"] = getattr(ctx, "organization", None)
-
-        return kwargs
-
 
 class BaseUpdateView(ContextMixin, BaseAuthMixin, UpdateView):
 

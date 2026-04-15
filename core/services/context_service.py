@@ -12,7 +12,7 @@ class ContextService:
                 user=user,
                 organization=organization,
                 is_active=True
-            ).values_list("role", flat=True)
+            ).select_related("role").values_list("role", flat=True)
         )
 
     @staticmethod
@@ -29,15 +29,13 @@ class ContextService:
         permissions = set()
 
         role_permissions = RolePermission.objects.filter(
-            role__name__in=roles
+            role__in=roles
         ).select_related("permission")
 
         for rp in role_permissions:
             perm = rp.permission.code
-
             module = rp.permission.module
 
-            # filtra por módulos ativos da organização
             if module in modules:
                 permissions.add(perm)
 
