@@ -1,0 +1,98 @@
+
+# =========================
+# 🐍 PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+*.pyd
+
+*.egg-info/
+dist/
+build/
+
+# =========================
+# 🌱 VIRTUAL ENV
+# =========================
+venv/
+.venv/
+env/
+ENV/
+
+# =========================
+# 🧠 DJANGO
+# =========================
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+media/
+staticfiles/
+
+local_settings.py
+
+# =========================
+# 🔐 ENV FILES
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# 🧪 TEST / COVERAGE
+# =========================
+htmlcov/
+.coverage
+coverage.xml
+.pytest_cache/
+.tox/
+
+# =========================
+# 🧰 PYCHARM (IMPORTANTÍSSIMO)
+# =========================
+.idea/
+
+# PyCharm local configs
+*.iws
+*.iml
+*.ipr
+
+# =========================
+# 💻 OS FILES
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# 🧬 NODE (se usar frontend depois)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# 🧯 BACKUPS / DUMPS
+# =========================
+*.dump
+*.sql
+backups/
+
+# =========================
+# 🔐 SECURITY FILES
+# =========================
+*.pem
+*.key
+*.crt
+
+# =========================
+# 🧼 TEMP FILES
+# =========================
+*.tmp
+*.temp
+
+# =========================
+# ⚙️ DOCKER (opcional)
+# =========================
+docker-compose.override.yml
