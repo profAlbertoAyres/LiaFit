@@ -20,11 +20,15 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-# ── Páginas públicas ──────────────────
-    path("", include("website.urls")),
+    path('admin/', admin.site.urls),
 
-    # ── Autenticação ──────────────────────
-    # TODO: quando criarmos as views de login/registro
-    # path("conta/", include("account.urls")),
+    # Páginas públicas (sem login, sem tenant)
+    path('', include('website.urls')),
+
+    # Auth (login, registro, recuperação de senha)
+    # path('auth/', include('account.urls.auth')),
+
+    # Rotas com tenant — tudo dentro de /org/<slug>/
+    path('org/<slug:org_slug>/', include('core.urls.tenant')),
 
 ]

@@ -1,4 +1,3 @@
-from account.models import OrganizationMember
 from core.models.role_permission import RolePermission
 from core.models.organization_module import OrganizationModule
 
@@ -6,14 +5,10 @@ from core.models.organization_module import OrganizationModule
 class ContextService:
 
     @staticmethod
-    def load_roles(user, organization):
-        """Retorna set de IDs dos roles do usuário naquela organização."""
+    def load_roles(membership):
+        """Retorna set de codenames dos roles do membership."""
         return set(
-            OrganizationMember.objects.filter(
-                user=user,
-                organization=organization,
-                is_active=True
-            ).values_list('role__codename', flat=True)
+            membership.roles.values_list('codename', flat=True)
         )
 
     @staticmethod
@@ -22,24 +17,16 @@ class ContextService:
         return set(
             OrganizationModule.objects.filter(
                 organization=organization,
-                is_active=True
+                is_active=True,
             ).values_list('module__codename', flat=True)
         )
 
     @staticmethod
     def load_permissions(roles, modules):
-        """Retorna set de códigos de permissão filtrados pelos módulos ativos."""
-        permissions = set()
-
-        role_permissions = RolePermission.objects.filter(
-            role__codename__in=roles
-        ).select_related('permission')
-
-        for rp in role_permissions:
-            perm = rp.permission.codename
-            module = rp.permission.module.codename if rp.permission.module else None
-
-            if module in modules:
-                permissions.add(perm)
-
-        return permissions
+        """Retorna set de permissões filtradas pelos módulos ativos."""
+        return set(
+            RolePermission.objects.filter(
+                role__codename__in=roles,
+                permission__module__codename__in=modules,
+            ).values_list('permission__codename', flat=True)
+        )
