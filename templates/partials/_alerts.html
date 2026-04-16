@@ -1,0 +1,29 @@
+{% comment %}
+    LIAFIT — Partial de Alertas
+    Renderiza mensagens do Django Messages Framework como alertas flutuantes.
+    Incluir dentro do base.html.
+{% endcomment %}
+
+{% if messages %}
+<div class="lia-alerts" id="lia-alerts">
+    {% for message in messages %}
+    <div class="lia-alert lia-alert--{{ message.tags }}" role="alert">
+
+        <span class="lia-alert__icon">
+            {% if message.tags == 'success' %}✅
+            {% elif message.tags == 'error' %}❌
+            {% elif message.tags == 'warning' %}⚠️
+            {% elif message.tags == 'info' %}ℹ️
+            {% else %}ℹ️
+            {% endif %}
+        </span>
+
+        <span class="lia-alert__content">
+            <span class="lia-alert__message">{{ message }}</span>
+        </span>
+
+        <button type="button" class="lia-alert__close" aria-label="Fechar">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

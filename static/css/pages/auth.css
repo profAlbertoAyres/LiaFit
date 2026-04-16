@@ -1,0 +1,313 @@
+/* =============================================================================
+   LIAFIT — AUTENTICAÇÃO
+   Estilos específicos para Login, Registro e Recuperação de Senha.
+   ============================================================================= */
+
+/* -------------------------------------------------------------------------
+   LAYOUT — Duas colunas (form + hero)
+   ------------------------------------------------------------------------- */
+
+.lia-auth {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Coluna do formulário */
+.lia-auth__form-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+    background-color: var(--color-surface);
+}
+
+/* Coluna visual (hero) */
+.lia-auth__hero-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-10);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #6366F1 50%, #818CF8 100%);
+    color: var(--color-text-inverse);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decoração de fundo no hero */
+.lia-auth__hero-side::before {
+    content: '';
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    top: -100px;
+    right: -100px;
+}
+
+.lia-auth__hero-side::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    bottom: -50px;
+    left: -50px;
+}
+
+.lia-auth__hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 420px;
+}
+
+.lia-auth__hero-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-6);
+    display: block;
+}
+
+.lia-auth__hero-title {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+    color: var(--color-text-inverse);
+}
+
+.lia-auth__hero-text {
+    font-size: var(--font-size-lg);
+    opacity: 0.85;
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-inverse);
+}
+
+/* -------------------------------------------------------------------------
+   CONTAINER DO FORMULÁRIO
+   ------------------------------------------------------------------------- */
+
+.lia-auth__container {
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Logo / Brand */
+.lia-auth__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+}
+
+.lia-auth__brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-inverse);
+}
+
+.lia-auth__brand-text {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+/* Cabeçalho do form */
+.lia-auth__header {
+    margin-bottom: var(--space-8);
+}
+
+.lia-auth__title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.lia-auth__subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   FORMULÁRIO
+   ------------------------------------------------------------------------- */
+
+.lia-auth__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* Grupo de campo com ícone */
+.lia-auth__field {
+    position: relative;
+}
+
+.lia-auth__field-icon {
+    position: absolute;
+    left: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+
+.lia-auth__field-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.lia-auth__field .lia-form-control {
+    padding-left: var(--space-10);
+}
+
+/* Toggle de visibilidade da senha */
+.lia-auth__password-toggle {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: var(--space-1);
+    display: flex;
+    align-items: center;
+    transition: color var(--transition-fast);
+}
+
+.lia-auth__password-toggle:hover {
+    color: var(--color-text-primary);
+}
+
+.lia-auth__password-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Opções extras (lembrar-me / esqueci senha) */
+.lia-auth__options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+}
+
+.lia-auth__forgot {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+}
+
+.lia-auth__forgot:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+}
+
+/* Divider (ou) */
+.lia-auth__divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.lia-auth__divider::before,
+.lia-auth__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-border);
+}
+
+/* Link de alternância (Já tem conta? / Não tem conta?) */
+.lia-auth__switch {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-6);
+}
+
+.lia-auth__switch a {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.lia-auth__switch a:hover {
+    text-decoration: underline;
+}
+
+/* Erros do form Django (lista de erros) */
+.lia-auth__errors {
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-danger-light);
+    border: 1px solid var(--color-danger-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: #991B1B;
+}
+
+.lia-auth__errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lia-auth__errors li {
+    padding: var(--space-1) 0;
+}
+
+.lia-auth__errors li::before {
+    content: '• ';
+    color: var(--color-danger);
+}
+
+/* -------------------------------------------------------------------------
+   RESPONSIVO
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .lia-auth {
+        flex-direction: column;
+    }
+
+    .lia-auth__hero-side {
+        display: none;
+    }
+
+    .lia-auth__form-side {
+        padding: var(--space-6) var(--space-4);
+        min-height: 100vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .lia-auth__container {
+        max-width: 100%;
+    }
+
+    .lia-auth__brand {
+        margin-bottom: var(--space-6);
+    }
+
+    .lia-auth__header {
+        margin-bottom: var(--space-6);
+    }
+}

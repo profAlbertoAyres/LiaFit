@@ -1,0 +1,352 @@
+/* =============================================================================
+   LIAFIT — SIDEBAR
+   Menu lateral responsivo com estados: expandido, colapsado e mobile.
+   ============================================================================= */
+
+/* -------------------------------------------------------------------------
+   SIDEBAR BASE
+   ------------------------------------------------------------------------- */
+
+.lia-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    width: var(--sidebar-width);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-secondary);
+    color: var(--color-text-inverse);
+    transition: width var(--transition-base), transform var(--transition-base);
+    overflow: hidden;
+}
+
+/* -------------------------------------------------------------------------
+   LOGO / BRAND
+   ------------------------------------------------------------------------- */
+
+.lia-sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-5);
+    height: var(--header-height);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.lia-sidebar__logo {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-inverse);
+    flex-shrink: 0;
+}
+
+.lia-sidebar__brand-name {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity var(--transition-fast);
+}
+
+/* -------------------------------------------------------------------------
+   NAVEGAÇÃO
+   ------------------------------------------------------------------------- */
+
+.lia-sidebar__nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4) var(--space-3);
+}
+
+/* Scrollbar estilizada */
+.lia-sidebar__nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.lia-sidebar__nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lia-sidebar__nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-full);
+}
+
+/* Seção do menu (grupo) */
+.lia-sidebar__section {
+    margin-bottom: var(--space-6);
+}
+
+.lia-sidebar__section-title {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.35);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Item do menu */
+.lia-sidebar__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: 2px;
+    border-radius: var(--radius-md);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.lia-sidebar__link:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--color-text-inverse);
+}
+
+.lia-sidebar__link--active {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.lia-sidebar__link--active:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* Ícone do link */
+.lia-sidebar__icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lia-sidebar__icon svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.75;
+}
+
+/* Texto do link */
+.lia-sidebar__text {
+    opacity: 1;
+    transition: opacity var(--transition-fast);
+    overflow: hidden;
+}
+
+/* Badge (notificações, contadores) */
+.lia-sidebar__badge {
+    margin-left: auto;
+    padding: 2px var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-danger);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-full);
+    min-width: 20px;
+    text-align: center;
+    line-height: 1.4;
+    opacity: 1;
+    transition: opacity var(--transition-fast);
+}
+
+/* -------------------------------------------------------------------------
+   FOOTER DA SIDEBAR (usuário / logout)
+   ------------------------------------------------------------------------- */
+
+.lia-sidebar__footer {
+    flex-shrink: 0;
+    padding: var(--space-4) var(--space-3);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lia-sidebar__user {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.lia-sidebar__user:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.lia-sidebar__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-inverse);
+    flex-shrink: 0;
+}
+
+.lia-sidebar__user-info {
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity var(--transition-fast);
+}
+
+.lia-sidebar__user-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-inverse);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lia-sidebar__user-role {
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------
+   ESTADO: COLAPSADA (só ícones)
+   ------------------------------------------------------------------------- */
+
+.lia-sidebar--collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+.lia-sidebar--collapsed .lia-sidebar__brand-name,
+.lia-sidebar--collapsed .lia-sidebar__text,
+.lia-sidebar--collapsed .lia-sidebar__badge,
+.lia-sidebar--collapsed .lia-sidebar__section-title,
+.lia-sidebar--collapsed .lia-sidebar__user-info {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+}
+
+.lia-sidebar--collapsed .lia-sidebar__link {
+    justify-content: center;
+    padding: var(--space-2);
+}
+
+.lia-sidebar--collapsed .lia-sidebar__user {
+    justify-content: center;
+}
+
+.lia-sidebar--collapsed .lia-sidebar__brand {
+    justify-content: center;
+    padding: var(--space-5) var(--space-2);
+}
+
+/* Tooltip ao passar o mouse no modo colapsado */
+.lia-sidebar--collapsed .lia-sidebar__link {
+    position: relative;
+}
+
+.lia-sidebar--collapsed .lia-sidebar__link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--color-secondary);
+    color: var(--color-text-inverse);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+    z-index: 300;
+}
+
+.lia-sidebar--collapsed .lia-sidebar__link:hover::after {
+    opacity: 1;
+}
+
+/* -------------------------------------------------------------------------
+   OVERLAY MOBILE
+   ------------------------------------------------------------------------- */
+
+.lia-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.lia-sidebar-overlay--active {
+    display: block;
+}
+
+/* -------------------------------------------------------------------------
+   RESPONSIVO — MOBILE
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .lia-sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+    }
+
+    .lia-sidebar--mobile-open {
+        transform: translateX(0);
+    }
+
+    /* No mobile, colapsado não existe — é aberto ou fechado */
+    .lia-sidebar--collapsed {
+        width: var(--sidebar-width);
+    }
+
+    .lia-sidebar--collapsed .lia-sidebar__brand-name,
+    .lia-sidebar--collapsed .lia-sidebar__text,
+    .lia-sidebar--collapsed .lia-sidebar__badge,
+    .lia-sidebar--collapsed .lia-sidebar__section-title,
+    .lia-sidebar--collapsed .lia-sidebar__user-info {
+        opacity: 1;
+        width: auto;
+    }
+
+    .lia-sidebar--collapsed .lia-sidebar__link {
+        justify-content: flex-start;
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .lia-sidebar--collapsed .lia-sidebar__user {
+        justify-content: flex-start;
+    }
+
+    .lia-sidebar--collapsed .lia-sidebar__brand {
+        justify-content: flex-start;
+        padding: var(--space-5);
+    }
+
+    .lia-app__main {
+        margin-left: 0 !important;
+    }
+}

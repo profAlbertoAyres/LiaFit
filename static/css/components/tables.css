@@ -1,0 +1,72 @@
+/* =============================================================================
+   LIAFIT — TABELAS
+   Estilo para listagem de dados (clientes, agendamentos, etc).
+   ============================================================================= */
+
+.lia-table-container {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.lia-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.lia-table thead {
+    background-color: var(--color-bg);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.lia-table th {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.lia-table td {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+
+.lia-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.lia-table tbody tr:hover {
+    background-color: var(--color-primary-light);
+}
+
+/* Ações na tabela */
+.lia-table__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Tabela sem dados */
+.lia-table-empty {
+    text-align: center;
+    padding: var(--space-12) var(--space-6);
+    color: var(--color-text-muted);
+}
+
+.lia-table-empty__icon {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-4);
+    opacity: 0.4;
+}
+
+.lia-table-empty__text {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}

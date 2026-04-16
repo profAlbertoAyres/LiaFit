@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LiaFit{% endblock %}</title>
+
+    <!-- ============================================================
+         FONTES
+         ============================================================ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ============================================================
+         VENDOR CSS
+         ============================================================ -->
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
+
+    <!-- ============================================================
+         LIAFIT CSS BASE
+         ============================================================ -->
+    <link rel="stylesheet" href="{% static 'css/base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/typography.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/layout.css' %}">
+
+    <!-- ============================================================
+         LIAFIT CSS COMPONENTES
+         ============================================================ -->
+    <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/alerts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/sidebar.css' %}">
+
+
+    <!-- ============================================================
+         CSS EXTRA (páginas específicas)
+         ============================================================ -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- ============================================================
+         ALERTAS (Django Messages)
+         ============================================================ -->
+    {% include 'partials/_alerts.html' %}
+
+    <!-- ============================================================
+         CONTEÚDO DA PÁGINA
+         ============================================================ -->
+    {% block content %}{% endblock %}
+
+    <!-- ============================================================
+         VENDOR JS
+         ============================================================ -->
+    <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- ============================================================
+         LIAFIT JS
+         ============================================================ -->
+    <script src="{% static 'js/modules/utils.js' %}"></script>
+    <script src="{% static 'js/modules/alerts.js' %}"></script>
+
+    <!-- ============================================================
+         JS EXTRA (páginas específicas)
+         ============================================================ -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

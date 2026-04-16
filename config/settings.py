@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # my apps
     'core',
     'account',
+    'website',
     'financial',
     'shared',
     'scheduling',
@@ -74,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
+                'core.menu.context_processors.menu_context'
             ],
         },
     },

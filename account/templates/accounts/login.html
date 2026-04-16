@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Entrar — LiaFit{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lia-auth">
+
+    <!-- ============================================================
+         LADO ESQUERDO — FORMULÁRIO
+         ============================================================ -->
+    <div class="lia-auth__form-side">
+        <div class="lia-auth__container">
+
+            <!-- Brand -->
+            <div class="lia-auth__brand">
+                <div class="lia-auth__brand-logo">L</div>
+                <span class="lia-auth__brand-text">LiaFit</span>
+            </div>
+
+            <!-- Header -->
+            <div class="lia-auth__header">
+                <h1 class="lia-auth__title">Bem-vindo de volta</h1>
+                <p class="lia-auth__subtitle">Entre com suas credenciais para acessar o sistema</p>
+            </div>
+
+            <!-- Erros gerais -->
+            {% if form.non_field_errors %}
+            <div class="lia-auth__errors">
+                <ul>
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Formulário -->
+            <form method="post" class="lia-auth__form" novalidate>
+                {% csrf_token %}
+
+                <!-- Email -->
+                <div>
+                    <label for="id_username" class="lia-form-label">E-mail</label>
+                    <div class="lia-auth__field">
+                        <span class="lia-auth__field-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        </span>
+                        <input
+                            type="email"
+                            name="username"
+                            id="id_username"
+                            class="lia-form-control {% if form.username.errors %}lia-form-control--error{% endif %}"
+                            placeholder="seu@email.com"
+                            value="{{ form.username.value|default:'' }}"
+                            autocomplete="email"
+                            autofocus
+                            required
+                        >
+                    </div>
+                    {% for error in form.username.errors %}
+                        <span class="lia-form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <!-- Senha -->
+                <div>
+                    <label for="id_password" class="lia-form-label">Senha</label>
+                    <div class="lia-auth__field">
+                        <span class="lia-auth__field-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </span>
+                        <input
+                            type="password"
+                            name="password"
+                            id="id_password"
+                            class="lia-form-control {% if form.password.errors %}lia-form-control--error{% endif %}"
+                            placeholder="Sua senha"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="lia-auth__password-toggle" onclick="togglePassword('id_password', this)" aria-label="Mostrar senha">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                    {% for error in form.password.errors %}
+                        <span class="lia-form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <!-- Opções -->
+                <div class="lia-auth__options">
+                    <label class="lia-form-check" style="margin-bottom: 0;">
+                        <input type="checkbox" name="remember">
+                        <span>Lembrar-me</span>
+                    </label>
+                    <a href="{% url 'password_reset' %}" class="lia-auth__forgot">Esqueceu a senha?</a>
+                </div>
+
+                <!-- Botão -->
+                <button type="submit" class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg">
+                    Entrar
+                </button>
+            </form>
+
+            <!-- Link para registro -->
+            <div class="lia-auth__switch">
+                Não tem uma conta?
+                <a href="{% url 'register' %}">Criar conta</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================
+         LADO DIREITO — HERO
+         ============================================================ -->
+    <div class="lia-auth__hero-side">
+        <div class="lia-auth__hero-content">
+            <span class="lia-auth__hero-icon">🏋️</span>
+            <h2 class="lia-auth__hero-title">Gerencie sua academia com facilidade</h2>
+            <p class="lia-auth__hero-text">
+                Controle clientes, matrículas, treinos e pagamentos em um só lugar.
+                Simples, rápido e organizado.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>';
+        } else {
+            input.type = 'password';
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+        }
+    }
+</script>
+{% endblock %}

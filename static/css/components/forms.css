@@ -1,0 +1,149 @@
+/* =============================================================================
+   LIAFIT — FORMULÁRIOS
+   Campos de input, select, textarea, labels e validação.
+   ============================================================================= */
+
+/* -------------------------------------------------------------------------
+   GRUPO DE CAMPO
+   ------------------------------------------------------------------------- */
+
+.lia-form-group {
+    margin-bottom: var(--space-5);
+}
+
+.lia-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-5);
+}
+
+/* -------------------------------------------------------------------------
+   LABEL
+   ------------------------------------------------------------------------- */
+
+.lia-form-label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.lia-form-label--required::after {
+    content: ' *';
+    color: var(--color-danger);
+}
+
+/* -------------------------------------------------------------------------
+   CAMPOS (Input, Select, Textarea)
+   ------------------------------------------------------------------------- */
+
+.lia-form-control {
+    display: block;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.lia-form-control:hover {
+    border-color: var(--color-border-hover);
+}
+
+.lia-form-control:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.lia-form-control:disabled,
+.lia-form-control[readonly] {
+    background-color: var(--color-bg);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+}
+
+/* Textarea */
+textarea.lia-form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Select */
+select.lia-form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394A3B8' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-3) center;
+    padding-right: var(--space-8);
+}
+
+/* -------------------------------------------------------------------------
+   VALIDAÇÃO
+   ------------------------------------------------------------------------- */
+
+.lia-form-control--error {
+    border-color: var(--color-danger);
+}
+
+.lia-form-control--error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.lia-form-error {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+    color: var(--color-danger);
+}
+
+.lia-form-help {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   CHECKBOX / RADIO
+   ------------------------------------------------------------------------- */
+
+.lia-form-check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.lia-form-check input[type="checkbox"],
+.lia-form-check input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+.lia-form-check label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+/* -------------------------------------------------------------------------
+   AÇÕES DO FORMULÁRIO
+   ------------------------------------------------------------------------- */
+
+.lia-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-6);
+}

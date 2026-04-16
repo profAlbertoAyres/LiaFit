@@ -1,0 +1,167 @@
+/* =============================================================================
+   LIAFIT — ALERTAS / MENSAGENS
+   Sistema de feedback visual (success, error, warning, info).
+   Compatível com o Django Messages Framework.
+   ============================================================================= */
+
+/* -------------------------------------------------------------------------
+   CONTAINER DE ALERTAS (posicionamento)
+   ------------------------------------------------------------------------- */
+
+.lia-alerts {
+    position: fixed;
+    top: var(--space-6);
+    right: var(--space-6);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 420px;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* -------------------------------------------------------------------------
+   ALERTA BASE
+   ------------------------------------------------------------------------- */
+
+.lia-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    box-shadow: var(--shadow-lg);
+    pointer-events: all;
+    animation: liaAlertSlideIn 0.3s ease-out;
+}
+
+.lia-alert__icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+}
+
+.lia-alert__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.lia-alert__title {
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-1);
+}
+
+.lia-alert__message {
+    color: inherit;
+    opacity: 0.9;
+}
+
+.lia-alert__close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    color: inherit;
+    opacity: 0.5;
+    transition: opacity var(--transition-fast);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: var(--font-size-lg);
+    line-height: 1;
+}
+
+.lia-alert__close:hover {
+    opacity: 1;
+}
+
+/* -------------------------------------------------------------------------
+   VARIANTES
+   ------------------------------------------------------------------------- */
+
+.lia-alert--success {
+    background-color: var(--color-success-light);
+    border-color: var(--color-success-border);
+    color: #166534;
+}
+
+.lia-alert--error,
+.lia-alert--danger {
+    background-color: var(--color-danger-light);
+    border-color: var(--color-danger-border);
+    color: #991B1B;
+}
+
+.lia-alert--warning {
+    background-color: var(--color-warning-light);
+    border-color: var(--color-warning-border);
+    color: #92400E;
+}
+
+.lia-alert--info {
+    background-color: var(--color-info-light);
+    border-color: var(--color-info-border);
+    color: #1E40AF;
+}
+
+/* -------------------------------------------------------------------------
+   ANIMAÇÕES
+   ------------------------------------------------------------------------- */
+
+@keyframes liaAlertSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes liaAlertSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.lia-alert--dismissing {
+    animation: liaAlertSlideOut 0.3s ease-in forwards;
+}
+
+/* -------------------------------------------------------------------------
+   ALERTA INLINE (dentro do conteúdo, não flutuante)
+   ------------------------------------------------------------------------- */
+
+.lia-alert--inline {
+    position: relative;
+    box-shadow: none;
+    animation: none;
+    pointer-events: all;
+}
+
+/* -------------------------------------------------------------------------
+   RESPONSIVO
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .lia-alerts {
+        top: var(--space-4);
+        right: var(--space-4);
+        left: var(--space-4);
+        max-width: 100%;
+    }
+}

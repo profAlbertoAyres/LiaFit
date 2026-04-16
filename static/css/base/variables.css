@@ -1,0 +1,115 @@
+/* =============================================================================
+   LIAFIT — VARIÁVEIS GLOBAIS (Design Tokens)
+   Todas as cores, espaçamentos, fontes e tamanhos do sistema.
+   ============================================================================= */
+
+:root {
+    /* -----------------------------------------------------------------
+       CORES — MARCA
+       ----------------------------------------------------------------- */
+    --color-primary:        #4F46E5;
+    --color-primary-hover:  #4338CA;
+    --color-primary-light:  #EEF2FF;
+    --color-primary-border: #C7D2FE;
+
+    --color-secondary:       #0F172A;
+    --color-secondary-hover: #1E293B;
+
+    /* -----------------------------------------------------------------
+       CORES — FEEDBACK
+       ----------------------------------------------------------------- */
+    --color-success:        #16A34A;
+    --color-success-light:  #F0FDF4;
+    --color-success-border: #BBF7D0;
+
+    --color-danger:         #DC2626;
+    --color-danger-hover:   #B91C1C;
+    --color-danger-light:   #FEF2F2;
+    --color-danger-border:  #FECACA;
+
+    --color-warning:        #F59E0B;
+    --color-warning-light:  #FFFBEB;
+    --color-warning-border: #FDE68A;
+
+    --color-info:           #3B82F6;
+    --color-info-light:     #EFF6FF;
+    --color-info-border:    #BFDBFE;
+
+    /* -----------------------------------------------------------------
+       CORES — NEUTRAS (superfícies, textos, bordas)
+       ----------------------------------------------------------------- */
+    --color-bg:             #F8FAFC;
+    --color-surface:        #FFFFFF;
+    --color-border:         #E2E8F0;
+    --color-border-hover:   #CBD5E1;
+
+    --color-text-primary:   #0F172A;
+    --color-text-secondary: #475569;
+    --color-text-muted:     #94A3B8;
+    --color-text-inverse:   #FFFFFF;
+
+    /* -----------------------------------------------------------------
+       TIPOGRAFIA
+       ----------------------------------------------------------------- */
+    --font-family:        'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    --font-size-xs:   0.75rem;    /* 12px */
+    --font-size-sm:   0.875rem;   /* 14px */
+    --font-size-base: 1rem;       /* 16px */
+    --font-size-lg:   1.125rem;   /* 18px */
+    --font-size-xl:   1.25rem;    /* 20px */
+    --font-size-2xl:  1.5rem;     /* 24px */
+    --font-size-3xl:  1.875rem;   /* 30px */
+
+    --font-weight-normal:   400;
+    --font-weight-medium:   500;
+    --font-weight-semibold: 600;
+    --font-weight-bold:     700;
+
+    --line-height-tight:    1.25;
+    --line-height-normal:   1.5;
+    --line-height-relaxed:  1.75;
+
+    /* -----------------------------------------------------------------
+       ESPAÇAMENTO (escala de 4px)
+       ----------------------------------------------------------------- */
+    --space-1:  0.25rem;   /* 4px */
+    --space-2:  0.5rem;    /* 8px */
+    --space-3:  0.75rem;   /* 12px */
+    --space-4:  1rem;      /* 16px */
+    --space-5:  1.25rem;   /* 20px */
+    --space-6:  1.5rem;    /* 24px */
+    --space-8:  2rem;      /* 32px */
+    --space-10: 2.5rem;    /* 40px */
+    --space-12: 3rem;      /* 48px */
+
+    /* -----------------------------------------------------------------
+       BORDAS E SOMBRAS
+       ----------------------------------------------------------------- */
+    --radius-sm:   0.25rem;   /* 4px */
+    --radius-md:   0.375rem;  /* 6px */
+    --radius-lg:   0.5rem;    /* 8px */
+    --radius-xl:   0.75rem;   /* 12px */
+    --radius-full: 9999px;
+
+    --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                  0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg:  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                  0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+    /* -----------------------------------------------------------------
+       TRANSIÇÕES
+       ----------------------------------------------------------------- */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 350ms ease;
+
+    /* -----------------------------------------------------------------
+       LAYOUT
+       ----------------------------------------------------------------- */
+    --sidebar-width:           260px;
+    --sidebar-collapsed-width: 72px;
+    --header-height:           64px;
+    --content-max-width:       1200px;
+}

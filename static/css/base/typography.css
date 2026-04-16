@@ -1,0 +1,76 @@
+/* =============================================================================
+   LIAFIT — TIPOGRAFIA
+   Estilos globais para títulos, parágrafos e textos auxiliares.
+   ============================================================================= */
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+}
+
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+h5 { font-size: var(--font-size-base); }
+h6 { font-size: var(--font-size-sm); }
+
+/* Parágrafos */
+p {
+    margin-bottom: var(--space-4);
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+}
+
+p:last-child {
+    margin-bottom: 0;
+}
+
+/* Textos auxiliares */
+small,
+.lia-text-sm {
+    font-size: var(--font-size-sm);
+}
+
+.lia-text-xs {
+    font-size: var(--font-size-xs);
+}
+
+.lia-text-lg {
+    font-size: var(--font-size-lg);
+}
+
+.lia-text-muted {
+    color: var(--color-text-muted);
+}
+
+.lia-text-secondary {
+    color: var(--color-text-secondary);
+}
+
+/* Peso da fonte */
+.lia-font-medium {
+    font-weight: var(--font-weight-medium);
+}
+
+.lia-font-semibold {
+    font-weight: var(--font-weight-semibold);
+}
+
+.lia-font-bold {
+    font-weight: var(--font-weight-bold);
+}
+
+/* Alinhamento */
+.lia-text-center  { text-align: center; }
+.lia-text-right   { text-align: right; }
+.lia-text-left    { text-align: left; }
+
+/* Truncar texto com reticências */
+.lia-text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

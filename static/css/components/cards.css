@@ -1,0 +1,85 @@
+/* =============================================================================
+   LIAFIT — CARDS
+   Containers visuais com variantes para diferentes contextos.
+   ============================================================================= */
+
+.lia-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.lia-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.lia-card__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+}
+
+.lia-card__subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+.lia-card__body {
+    padding: var(--space-6);
+}
+
+.lia-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+/* -------------------------------------------------------------------------
+   VARIANTE — Stat Card (Dashboard)
+   ------------------------------------------------------------------------- */
+
+.lia-stat-card {
+    padding: var(--space-6);
+}
+
+.lia-stat-card__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+}
+
+.lia-stat-card__value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+}
+
+.lia-stat-card__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.lia-stat-card__trend--up {
+    color: var(--color-success);
+}
+
+.lia-stat-card__trend--down {
+    color: var(--color-danger);
+}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/vendor/flatpickr/flatpickr.min.css' %}">
+    {% block page_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="lia-app">
+
+    <!-- ============================================================
+         SIDEBAR (vai ser criada no Bloco 3)
+         ============================================================ -->
+    {% block sidebar %}
+        {% include 'partials/_sidebar.html' %}
+    {% endblock %}
+
+    <!-- ============================================================
+         ÁREA PRINCIPAL
+         ============================================================ -->
+    <div class="lia-app__main">
+
+        <!-- HEADER -->
+        <header class="lia-header">
+            <div class="lia-flex lia-items-center lia-gap-4">
+                <button class="lia-btn--ghost lia-btn--icon" id="sidebar-toggle" aria-label="Menu">
+                    ☰
+                </button>
+                <span class="lia-font-semibold">{% block header_title %}LiaFit{% endblock %}</span>
+            </div>
+
+            <div class="lia-flex lia-items-center lia-gap-4">
+                {% block header_actions %}
+                    <span class="lia-text-sm lia-text-muted">
+                        {{ request.user.get_short_name|default:request.user.email }}
+                    </span>
+                {% endblock %}
+            </div>
+        </header>
+
+        <!-- CONTEÚDO DA PÁGINA -->
+        <main class="lia-content">
+            {% block page_content %}{% endblock %}
+        </main>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/vendor/flatpickr/flatpickr.min.js' %}"></script>
+    <script src="{% static 'js/vendor/flatpickr/flatpickr-pt.js' %}"></script>
+    <script src="{% static 'js/modules/forms.js' %}"></script>
+    <script src="{% static 'js/modules/sidebar.js' %}"></script>  <!-- NOVO -->
+    {% block page_js %}{% endblock %}
+{% endblock %}
+
