@@ -11,8 +11,8 @@ class UserService:
             email=email,
             defaults={
                 "username": email,
-                "first_name": user_data.get("first_name"),
-                "last_name": user_data.get("last_name"),
+                "first_name": user_data.get("first_name", ""),
+                "last_name": user_data.get("last_name", ""),
                 "is_active": False,
             }
         )
@@ -35,3 +35,16 @@ class UserService:
         profile.save()
 
         return profile
+
+    @staticmethod
+    def activate_user(user, password):
+        user.set_password(password)
+        user.is_active = True
+        user.save(update_fields=["password", "is_active"])
+
+        profile = getattr(user, "profile", None)
+        if profile:
+            profile.must_change_password = False
+            profile.save(update_fields=["must_change_password"])
+
+        return user

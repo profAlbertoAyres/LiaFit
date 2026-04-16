@@ -6,8 +6,11 @@ from account.models import PasswordSetupToken
 
 class TokenService:
 
+    TOKEN_EXPIRY_HOURS = 24
+
     @staticmethod
     def create_token(user):
+        # Invalida tokens anteriores do mesmo usuário
         PasswordSetupToken.objects.filter(
             user=user,
             used=False
@@ -15,7 +18,7 @@ class TokenService:
 
         return PasswordSetupToken.objects.create(
             user=user,
-            expires_at=timezone.now() + timedelta(hours=24)
+            expires_at=timezone.now() + timedelta(hours=TokenService.TOKEN_EXPIRY_HOURS)
         )
 
     @staticmethod
@@ -33,8 +36,6 @@ class TokenService:
         return None
 
     @staticmethod
-    def invalidate_user_tokens(user):
-        return PasswordSetupToken.objects.filter(
-            user=user,
-            used=False
-        ).update(used=True)
+    def invalidate_token(token_obj):
+        token_obj.used = True
+        token_obj.save(update_fields=["used"])

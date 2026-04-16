@@ -1,37 +1,32 @@
 from django.db import transaction
 
-from account.models import Assistant, AssistantProfessional, UserOrganization
-from account.services.user_service import UserService
+from core.models.role import Role
+from account.models import Assistant, OrganizationMember
 
 
 class AssistantService:
 
     @staticmethod
     @transaction.atomic
-    def create_assistant(organization, professional_owner, user_data):
+    def create_assistant(organization, professional_member, user, data):
+        """
+        Cria um assistente vinculado a uma organização.
+        """
+        # 1. Busca o role de assistente
+        role = Role.objects.get(codename='assistant')
 
-        user = UserService.get_or_create_user(
-            email=user_data['email'],
-            user_data=user_data
-        )
-
-        UserOrganization.objects.get_or_create(
+        # 2. Cria o vínculo com a organização
+        membership, _ = OrganizationMember.objects.get_or_create(
             user=user,
             organization=organization,
-            role='assistant'
+            role=role,
+            defaults={'is_active': True}
         )
 
-        UserService.setup_profile(user, user_data)
-
+        # 3. Cria o perfil de assistente
         assistant = Assistant.objects.create(
-            user=user,
-            organization=organization
-        )
-
-        AssistantProfessional.objects.create(
-            assistant=assistant,
-            professional=professional_owner,
-            is_active=True
+            member=membership,
+            department=data.get('department', '')
         )
 
         return assistant

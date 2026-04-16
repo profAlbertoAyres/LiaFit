@@ -1,8 +1,9 @@
 from django.db import transaction
 from datetime import date
 
-from account.models import Client, ClientProfessional, UserOrganization
+from account.models import Client, ClientProfessional
 from account.services.user_service import UserService
+from account.services.organization_service import OrganizationService
 
 
 class ClientService:
@@ -12,15 +13,11 @@ class ClientService:
     def create_client(organization, professional, user_data, client_data):
 
         user = UserService.get_or_create_user(
-            email=user_data['email'],
+            email=user_data["email"],
             user_data=user_data
         )
 
-        UserOrganization.objects.get_or_create(
-            user=user,
-            organization=organization,
-            role='client'
-        )
+        OrganizationService.add_member(user, organization, role_codename="CLIENT")
 
         UserService.setup_profile(user, user_data)
 
@@ -34,7 +31,8 @@ class ClientService:
             client=client,
             professional=professional,
             start_date=date.today(),
-            is_active=True
+            is_active=True,
         )
 
         return client
+

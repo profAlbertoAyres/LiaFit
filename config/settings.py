@@ -41,10 +41,13 @@ INSTALLED_APPS = [
     'core',
     'account',
     'financial',
-    'management',
     'shared',
     'scheduling',
+    'workout'
 ]
+
+AUTH_USER_MODEL = 'account.User'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -109,11 +112,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Porto_Velho'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 
@@ -121,8 +126,38 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# =============================================================================
+# FORMATAÇÃO DE NÚMEROS (padrão brasileiro)
+# =============================================================================
+
+DECIMAL_SEPARATOR = ','
+USE_THOUSAND_SEPARATOR = True
+THOUSAND_SEPARATOR = '.'
+NUMBER_GROUPING = 3
+
+DATE_INPUT_FORMATS = ['%d/%m/%Y', '%Y-%m-%d']
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# =============================================================================
+# AUTENTICAÇÃO E REDIRECIONAMENTOS
+# =============================================================================
+
+LOGIN_URL = 'account:login'
+LOGIN_REDIRECT_URL = 'account:dashboard'
+LOGOUT_REDIRECT_URL = 'page:home'
+

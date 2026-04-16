@@ -1,6 +1,6 @@
 from core.context import RequestContext
 from core.services.context_service import ContextService
-from account.models import Professional, UserOrganization
+from account.models import OrganizationMember, Professional
 
 
 class SaaSContextMiddleware:
@@ -16,34 +16,30 @@ class SaaSContextMiddleware:
         if not request.user.is_authenticated:
             return self.get_response(request)
 
-        request.context.profile = getattr(request.user, "profile", None)
-
-        # TENANT
-        user_org = (
-            UserOrganization.objects
+        # TENANT — busca o primeiro vínculo ativo do usuário
+        membership = (
+            OrganizationMember.objects
             .filter(user=request.user, is_active=True)
-            .select_related("organization", "role")
+            .select_related('organization', 'role')
             .first()
         )
 
-        if not user_org:
+        if not membership:
             request.context.organization = None
-            request.context.roles = []
-            request.context.modules = []
-            request.context.permissions = []
+            request.context.roles = set()
+            request.context.modules = set()
+            request.context.permissions = set()
             return self.get_response(request)
 
-        org = user_org.organization
-
+        org = membership.organization
         request.context.organization = org
 
-        # PROFISSIONAL
-        request.context.professional = Professional.objects.filter(
-            user=request.user,
-            organization=org
-        ).first()
+        # PROFISSIONAL (se tiver perfil de profissional)
+        request.context.professional = getattr(
+            membership, 'professional_profile', None
+        )
 
-        # RBAC (ROLE OBJECTS)
+        # RBAC
         roles = ContextService.load_roles(request.user, org)
         modules = ContextService.load_modules(org)
         permissions = ContextService.load_permissions(roles, modules)
