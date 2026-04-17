@@ -10,90 +10,92 @@ from django.views.generic import (
     UpdateView,
 )
 
-
-# ─────────────────────────────────────────────
-# 🔐 AUTENTICAÇÃO + PERMISSÃO (SaaS)
-# ─────────────────────────────────────────────
-
+# 🔐 AUTENTICAÇÃO + PERMISSÃO (SaaS v2.2)
 class BaseAuthMixin(LoginRequiredMixin):
     """
     Mixin que verifica:
     1. Usuário autenticado
-    2. Módulo habilitado na organização
-    3. Permissão do papel (role) do usuário
+    2. Membro ativo na Organização atual
+    3. Permissão do papel (Role) do membro
     """
 
     login_url = "account:login"
     permission_required = None
-    module_required = None
+
+    # module_required = None # Pode ser usado caso você implemente Planos de Assinatura no futuro
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        ctx = getattr(request, "context", None)
+        # Na v2.2, assumimos que você tem um Middleware (ou no próprio request)
+        # que injeta request.tenant (Organization) e request.member (OrganizationMember)
+        tenant = getattr(request, "tenant", None)
+        member = getattr(request, "member", None)
 
-        if not ctx:
-            return self._deny("Contexto não encontrado. Faça login novamente.")
+        if not tenant or not member:
+            return self._deny("Contexto de organização não encontrado. Faça login novamente.")
 
-        if self.module_required:
-            if self.module_required not in ctx.modules and "*" not in ctx.modules:
-                return self._deny("Módulo não habilitado para sua organização.")
-
+        # Verifica permissões baseadas no Role do membro
         if self.permission_required:
-            if self.permission_required not in ctx.permissions and "*" not in ctx.permissions:
+            member_permissions = member.role.permissions if member.role else []
+
+            # Se não for admin e não tiver a permissão específica
+            if not member.is_admin and self.permission_required not in member_permissions:
                 return self._deny("Você não tem permissão para acessar esta funcionalidade.")
 
         return super().dispatch(request, *args, **kwargs)
 
     def _deny(self, message):
         messages.error(self.request, message)
-        return redirect("account:dashboard")
+        return redirect("core:dashboard")  # Ajuste para a rota do seu dashboard
 
-
-# ─────────────────────────────────────────────
-# 🏢 CONTEXTO MULTI-TENANT
-# ─────────────────────────────────────────────
-
+# 🏢 CONTEXTO MULTI-TENANT (SaaS v2.2)
 class ContextMixin:
     """
     Filtra automaticamente o queryset pela organização
-    e pelo profissional do contexto da request.
+    e lida com a injeção do tenant nos forms.
     """
 
-    def get_ctx(self):
-        return getattr(self.request, "context", None)
-
-    def get_organization(self):
-        ctx = self.get_ctx()
-        if not ctx or not ctx.organization:
+    def get_tenant(self):
+        tenant = getattr(self.request, "tenant", None)
+        if not tenant:
             raise PermissionDenied("Organização não encontrada.")
-        return ctx.organization
+        return tenant
+
+    def get_member(self):
+        return getattr(self.request, "member", None)
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        ctx = self.get_ctx()
+        tenant = getattr(self.request, "tenant", None)
+        member = getattr(self.request, "member", None)
 
-        if not ctx or not ctx.organization:
+        if not tenant:
             return queryset.none()
 
         model = queryset.model
 
-        if hasattr(model, "organization"):
-            queryset = queryset.filter(organization=ctx.organization)
+        # 1. Filtra sempre pela Organização (Isolamento de Tenant)
+        if hasattr(model, "organization") or any(f.name == 'organization' for f in model._meta.fields):
+            queryset = queryset.filter(organization=tenant)
 
-        if hasattr(model, "professional") and ctx.professional:
-            queryset = queryset.filter(professional=ctx.professional)
+        # 2. Se o modelo tiver um campo 'member' (ex: Tarefas, Clientes de um instrutor específico)
+        # e o usuário atual NÃO for admin, filtramos apenas para o que pertence a ele.
+        if hasattr(model, "member") and member and not member.is_admin:
+            queryset = queryset.filter(member=member)
 
         return queryset
 
+    def get_form_kwargs(self):
+        """Injeta o tenant e o membro nos forms que herdam de BaseModelForm"""
+        kwargs = super().get_form_kwargs()
+        kwargs['tenant'] = getattr(self.request, "tenant", None)
+        kwargs['member'] = getattr(self.request, "member", None)  # antigo 'professional'
+        return kwargs
 
-# ─────────────────────────────────────────────
 # 📋 LIST
-# ─────────────────────────────────────────────
-
 class BaseListView(ContextMixin, BaseAuthMixin, ListView):
-
     filterset_class = None
     paginate_by = 10
     ordering = None
@@ -128,53 +130,36 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
         context["filter"] = getattr(self, "filterset", None)
         return context
 
-
-# ─────────────────────────────────────────────
 # ➕ CREATE
-# ─────────────────────────────────────────────
-
 class BaseCreateView(ContextMixin, BaseAuthMixin, CreateView):
-
     def form_valid(self, form):
-        organization = self.get_organization()
+        tenant = self.get_tenant()
 
+        # Garante que o registro pertença à organização atual
         if hasattr(form.instance, "organization"):
-            form.instance.organization = organization
+            form.instance.organization = tenant
 
         return super().form_valid(form)
 
-
-# ─────────────────────────────────────────────
 # ✏️ UPDATE
-# ─────────────────────────────────────────────
-
 class BaseUpdateView(ContextMixin, BaseAuthMixin, UpdateView):
-
     def form_valid(self, form):
-        # Garante que a organização não seja alterada
-        organization = self.get_organization()
+        tenant = self.get_tenant()
 
+        # Impede que um update malicioso mude a organização do registro
         if hasattr(form.instance, "organization"):
-            form.instance.organization = organization
+            form.instance.organization = tenant
 
         return super().form_valid(form)
 
-
-# ─────────────────────────────────────────────
-# 🔍 DETAIL
-# ─────────────────────────────────────────────
-
+# 🔍 DETAIL & 🗑️ DELETE
 class BaseDetailView(ContextMixin, BaseAuthMixin, DetailView):
     pass
 
 
-# ─────────────────────────────────────────────
-# 🗑️ DELETE
-# ─────────────────────────────────────────────
-
 class BaseDeleteView(ContextMixin, BaseAuthMixin, DeleteView):
-
     def get_success_url(self):
         if not self.success_url:
             raise ValueError("Defina 'success_url' na sua view de exclusão.")
         return self.success_url
+

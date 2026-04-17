@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.contrib.auth import login
 from django.core.exceptions import ValidationError
@@ -6,41 +8,31 @@ from account.services.user_service import UserService
 from account.services.organization_service import OrganizationService
 from account.services.token_service import TokenService
 
+logger = logging.getLogger(__name__)
+
 
 class OnboardingService:
 
     @staticmethod
     @transaction.atomic
     def register_organization(user_data, organization_data, request=None):
-        """
-        Fluxo: cria User(inactive) + Organization(inactive) + Token
-        Org só ativa quando o ADMIN definir a senha via token.
-        """
         email = user_data.get("email")
         if not email:
             raise ValidationError("E-mail não informado.")
+        print(email)
 
-        # 1. Cria ou recupera o usuário (is_active=False)
-        user = UserService.get_or_create_user(email, user_data)
+        user = UserService.get_or_create_user(email)
 
-        # 2. Cria a organização (active=False)
         organization_data["owner_email"] = email
         organization = OrganizationService.create_organization(organization_data)
 
-        # 3. Vincula user como ADMIN da org
-        OrganizationService.add_member(user, organization, role_codename="ADMIN")
+        OrganizationService.add_member(user, organization, role_codename="OWNER")
 
-        # 4. Cria perfil do usuário
-        UserService.setup_profile(user, user_data)
-
-        # 5. Define o dono da org
         organization.owner = user
         organization.save(update_fields=["owner"])
 
-        # 6. Gera token de ativação
         token = TokenService.create_token(user)
 
-        # 7. Envia e-mail (fora da transaction)
         transaction.on_commit(
             lambda: OnboardingService._send_activation_email(
                 user, organization, token, request
@@ -52,9 +44,6 @@ class OnboardingService:
     @staticmethod
     @transaction.atomic
     def setup_password(token_str, password, request=None):
-        """
-        Fluxo: valida token → ativa User → ativa Organization → login automático
-        """
         token_obj = TokenService.get_valid_token(token_str)
 
         if not token_obj:
@@ -81,14 +70,26 @@ class OnboardingService:
 
         return user
 
+
     @staticmethod
     def _send_activation_email(user, organization, token, request=None):
         """
         Envia o e-mail de ativação.
         TODO: implementar com NotificationService real.
         """
-        # Por enquanto, loga no console para desenvolvimento
         setup_url = f"/setup-password/{token.token}/"
         if request:
             setup_url = request.build_absolute_uri(setup_url)
+
+        # Log bem visível no terminal (modo desenvolvimento)
+        print("\n" + "=" * 70)
+        print("📧  E-MAIL DE ATIVAÇÃO (DEV)")
+        print("-" * 70)
+        print(f"  Para:          {user.email}")
+        print(f"  Organização:   {organization.company_name}")
+        print(f"  Link de setup: {setup_url}")
+        print("=" * 70 + "\n")
+
+        # Também registra via logger (aparece se LOGGING estiver configurado)
+        logger.info("Link de ativação para %s: %s", user.email, setup_url)
 

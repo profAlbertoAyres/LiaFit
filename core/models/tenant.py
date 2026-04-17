@@ -1,5 +1,7 @@
 from django.db import models
 
+from core.managers import TenantManager
+
 
 class TenantModel(models.Model):
     """
@@ -14,9 +16,12 @@ class TenantModel(models.Model):
         verbose_name='Organização',
     )
 
+    objects = TenantManager()
+
     class Meta:
         abstract = True
 
     @classmethod
     def for_tenant(cls, organization):
-        return cls.objects.filter(organization=organization)
+        return cls.objects.for_tenant(organization)
+

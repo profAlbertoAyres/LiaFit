@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block extra_css %}
+    <!-- Flatpickr carregado apenas dentro do sistema -->
     <link rel="stylesheet" href="{% static 'css/vendor/flatpickr/flatpickr.min.css' %}">
+
     {% block page_css %}{% endblock %}
 {% endblock %}
 
@@ -25,7 +27,8 @@
         <header class="lia-header">
             <div class="lia-flex lia-items-center lia-gap-4">
                 <button class="lia-btn--ghost lia-btn--icon" id="sidebar-toggle" aria-label="Menu">
-                    ☰
+                    <!-- Ícone Lucide no lugar do "☰" -->
+                    <i data-lucide="menu" class="lucide"></i>
                 </button>
                 <span class="lia-font-semibold">{% block header_title %}LiaFit{% endblock %}</span>
             </div>
@@ -49,10 +52,12 @@
 {% endblock %}
 
 {% block extra_js %}
+    <!-- Flatpickr carregado apenas dentro do sistema -->
     <script src="{% static 'js/vendor/flatpickr/flatpickr.min.js' %}"></script>
     <script src="{% static 'js/vendor/flatpickr/flatpickr-pt.js' %}"></script>
+
     <script src="{% static 'js/modules/forms.js' %}"></script>
-    <script src="{% static 'js/modules/sidebar.js' %}"></script>  <!-- NOVO -->
+    <script src="{% static 'js/modules/sidebar.js' %}"></script>
+
     {% block page_js %}{% endblock %}
 {% endblock %}
-

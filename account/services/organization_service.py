@@ -6,9 +6,8 @@ class OrganizationService:
 
     @staticmethod
     def create_organization(data):
-        """Cria uma nova organização."""
         return Organization.objects.create(
-            name=data['name'],
+            company_name=data['company_name'],
             slug=data['slug'],
             document=data.get('document', ''),
             phone=data.get('phone', ''),
@@ -17,15 +16,14 @@ class OrganizationService:
 
     @staticmethod
     def add_member(user, organization, role_codename):
-        """Adiciona um membro à organização com um papel específico."""
+        print(role_codename)
         role = Role.objects.get(codename=role_codename)
 
         membership, created = OrganizationMember.objects.get_or_create(
             user=user,
             organization=organization,
-            role=role,
-            defaults={'is_active': True}
         )
+        membership.roles.add(role)
 
         return membership
 

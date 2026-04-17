@@ -2,54 +2,30 @@ from django import forms
 from django.db.models import QuerySet
 
 
-class BaseModelForm(forms.ModelForm):
+class BootstrapStyleMixin:
+    """
+    Mixin que aplica automaticamente as classes do Bootstrap (form-control, form-select, etc.),
+    placeholders baseados nos labels e atributos HTML necessários.
+    Pode ser injetado tanto em Forms normais quanto em ModelForms.
+    """
 
-    def __init__(self, *args, **kwargs):
-        self.tenant = kwargs.pop('tenant', None)
-        self.professional = kwargs.pop('professional', None)
-
-        super().__init__(*args, **kwargs)
-
-        self._apply_tenant_filter()
-        self._apply_bootstrap_styles()
-
-    # -------------------------
-    # TENANT FILTER (SAAS CORE)
-    # -------------------------
-    def _apply_tenant_filter(self):
-        if not self.tenant:
-            return
-
-        for field in self.fields.values():
-            if hasattr(field, 'queryset') and isinstance(field.queryset, QuerySet):
-                model = field.queryset.model
-
-                if hasattr(model, 'organization') or any(
-                    f.name == 'organization' for f in model._meta.fields
-                ):
-                    field.queryset = field.queryset.filter(
-                        organization=self.tenant
-                    )
-
-    # -------------------------
-    # UI / BOOTSTRAP LAYER
-    # -------------------------
     def _apply_bootstrap_styles(self):
-
         for field_name, field in self.fields.items():
 
+            # Localização de decimais (vírgula/ponto)
             if isinstance(field, forms.DecimalField):
                 field.localize = True
                 field.widget.is_localized = True
 
+            # Define a classe CSS correta com base no tipo de widget
             if isinstance(field.widget, (
-                forms.TextInput,
-                forms.NumberInput,
-                forms.EmailInput,
-                forms.DateInput,
-                forms.Textarea,
-                forms.URLInput,
-                forms.PasswordInput,
+                    forms.TextInput,
+                    forms.NumberInput,
+                    forms.EmailInput,
+                    forms.DateInput,
+                    forms.Textarea,
+                    forms.URLInput,
+                    forms.PasswordInput,
             )):
                 css_class = 'form-control'
 
@@ -57,8 +33,8 @@ class BaseModelForm(forms.ModelForm):
                 css_class = 'form-select'
 
             elif isinstance(field.widget, (
-                forms.CheckboxInput,
-                forms.CheckboxSelectMultiple
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple
             )):
                 css_class = 'form-check-input'
 
@@ -68,28 +44,75 @@ class BaseModelForm(forms.ModelForm):
             else:
                 css_class = ''
 
+            # Adiciona a classe CSS sem sobrescrever classes que você já tenha passado manualmente
             existing = field.widget.attrs.get('class', '')
             classes = set(existing.split())
-
             if css_class:
                 classes.add(css_class)
-
             field.widget.attrs['class'] = ' '.join(classes)
 
+            # Gera Placeholder automático baseado no Label (se não existir um)
             if (
-                not field.widget.attrs.get('placeholder') and
-                not isinstance(field.widget, (
-                    forms.Select,
-                    forms.ClearableFileInput,
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple
-                ))
+                    not field.widget.attrs.get('placeholder') and
+                    not isinstance(field.widget, (
+                            forms.Select,
+                            forms.ClearableFileInput,
+                            forms.CheckboxInput,
+                            forms.CheckboxSelectMultiple
+                    ))
             ):
                 label_text = field.label or field_name.replace('_', ' ').capitalize()
                 field.widget.attrs['placeholder'] = str(label_text).replace(':', '')
 
+            # Atributos nativos do HTML
             if field.required:
                 field.widget.attrs['required'] = True
 
             if field_name == 'email':
                 field.widget.attrs['autocomplete'] = 'email'
+
+
+class BaseForm(BootstrapStyleMixin, forms.Form):
+    """
+    Use esta classe para formulários simples que NÃO salvam diretamente em um Modelo
+    (ex: Login, Recuperar Senha, Contato, Registro Customizado).
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._apply_bootstrap_styles()
+
+
+class BaseModelForm(BootstrapStyleMixin, forms.ModelForm):
+    """
+    Use esta classe para formulários que SALVAM no banco de dados.
+    Ela já filtra automaticamente os dados (ForeignKeys) para não vazar
+    informações de um Tenant (Organização) para outro.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Remove tenant e professional dos kwargs antes de passar para o super()
+        self.tenant = kwargs.pop('tenant', None)
+        self.professional = kwargs.pop('professional', None)
+
+        super().__init__(*args, **kwargs)
+
+        # Aplica os filtros de segurança do SaaS e depois o visual
+        self._apply_tenant_filter()
+        self._apply_bootstrap_styles()
+
+    def _apply_tenant_filter(self):
+        if not self.tenant:
+            return
+
+        for field in self.fields.values():
+            if hasattr(field, 'queryset') and isinstance(field.queryset, QuerySet):
+                model = field.queryset.model
+
+                # Verifica se o modelo relacionado tem o campo 'organization'
+                if hasattr(model, 'organization') or any(
+                        f.name == 'organization' for f in model._meta.fields
+                ):
+                    field.queryset = field.queryset.filter(
+                        organization=self.tenant
+                    )

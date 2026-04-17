@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LiaFit | Gestão Inteligente para Negócios Fitness{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/pages/home.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!-- ============================================================
+         HERO SECTION - DUALIDADE (EMPRESA VS CLIENTE)
+         ============================================================ -->
+    <section class="lia-hero py-5 mb-5 bg-light">
+        <div class="container py-5 text-center">
+            <span class="lia-badge badge-success mb-3 px-3 py-2 rounded-pill shadow-sm">
+                <i data-lucide="sparkles" class="me-1" style="width: 14px; height: 14px;"></i> A nova era da gestão esportiva
+            </span>
+
+            <h1 class="display-4 fw-bolder mb-4 text-dark">
+                Conectando <span class="text-primary">Profissionais</span> e <span class="text-primary">Alunos</span> em um só lugar
+            </h1>
+
+            <p class="lead text-secondary mx-auto mb-5" style="max-width: 750px;">
+                A plataforma definitiva para academias, estúdios e personal trainers gerenciarem seus negócios, enquanto oferecem a melhor experiência digital para seus alunos.
+            </p>
+
+            <!-- CTAs Direcionados -->
+            <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 mt-2">
+
+                <!-- CTA para Empresas -->
+                <div class="p-4 bg-white rounded-4 shadow-sm border w-100" style="max-width: 350px;">
+                    <div class="mb-3 text-primary">
+                        <i data-lucide="building-2" style="width: 48px; height: 48px;"></i>
+                    </div>
+                    <h3 class="h5 fw-bold">Para Empresas</h3>
+                    <p class="text-secondary small mb-4">Gerencie clientes, pagamentos e treinos do seu negócio.</p>
+                    <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--primary w-100 d-flex justify-content-center align-items-center gap-2">
+                        Cadastrar minha Empresa
+                        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+                    </a>
+                </div>
+
+                <!-- CTA para Alunos -->
+                <div class="p-4 bg-white rounded-4 shadow-sm border w-100" style="max-width: 350px;">
+                    <div class="mb-3 text-success">
+                        <i data-lucide="smartphone" style="width: 48px; height: 48px;"></i>
+                    </div>
+                    <h3 class="h5 fw-bold">Para Alunos</h3>
+                    <p class="text-secondary small mb-4">Acesse seus treinos, agendamentos e acompanhe sua evolução.</p>
+                    <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline w-100 d-flex justify-content-center align-items-center gap-2">
+                        Área do Aluno
+                        <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FUNCIONALIDADES PARA O NEGÓCIO (TENANT)
+         ============================================================ -->
+    <section id="recursos" class="container py-5 my-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bolder mb-3">Tudo que o seu negócio precisa</h2>
+            <p class="text-secondary">Esqueça as planilhas. Centralize a gestão da sua empresa com o LiaFit.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Funcionalidade 1 -->
+            <div class="col-md-4">
+                <div class="lia-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="icon-box mb-3 text-primary bg-primary bg-opacity-10 d-inline-flex p-3 rounded-3">
+                        <i data-lucide="layout-dashboard"></i>
+                    </div>
+                    <h4 class="fw-bold h5">Painel Multi-Empresa</h4>
+                    <p class="text-secondary small mb-0">Cada unidade, estúdio ou profissional tem seu próprio ambiente isolado, seguro e personalizado com sua marca.</p>
+                </div>
+            </div>
+
+            <!-- Funcionalidade 2 -->
+            <div class="col-md-4">
+                <div class="lia-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="icon-box mb-3 text-primary bg-primary bg-opacity-10 d-inline-flex p-3 rounded-3">
+                        <i data-lucide="calendar-clock"></i>
+                    </div>
+                    <h4 class="fw-bold h5">Agenda Inteligente</h4>
+                    <p class="text-secondary small mb-0">Controle de horários, check-in de clientes e limitação de vagas para aulas em grupo em tempo real.</p>
+                </div>
+            </div>
+
+            <!-- Funcionalidade 3 -->
+            <div class="col-md-4">
+                <div class="lia-card h-100 p-4 border-0 shadow-sm rounded-4">
+                    <div class="icon-box mb-3 text-primary bg-primary bg-opacity-10 d-inline-flex p-3 rounded-3">
+                        <i data-lucide="wallet"></i>
+                    </div>
+                    <h4 class="fw-bold h5">Gestão Financeira</h4>
+                    <p class="text-secondary small mb-0">Controle de mensalidades, cobranças recorrentes e relatórios de faturamento do seu negócio.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         EXPERIÊNCIA DO CLIENTE / ALUNO
+         ============================================================ -->
+    <section class="py-5 bg-dark text-white my-5">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bolder mb-4">A melhor experiência para o seu cliente</h2>
+                    <p class="text-light text-opacity-75 mb-4 lead">
+                        Quando você usa o LiaFit, seus alunos ganham um portal exclusivo. Eles interagem com a sua marca de forma moderna e profissional.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center gap-3 mb-3">
+                            <i data-lucide="check-circle-2" class="text-success"></i>
+                            <span>Visualização de treinos no celular</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-3 mb-3">
+                            <i data-lucide="check-circle-2" class="text-success"></i>
+                            <span>Reserva de horários e check-in pelo app</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-3 mb-3">
+                            <i data-lucide="check-circle-2" class="text-success"></i>
+                            <span>Acompanhamento de evolução física e métricas</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <!-- Aqui você pode colocar a imagem de um celular mostrando o app do aluno -->
+                    <div class="bg-white bg-opacity-10 rounded-4 p-5 d-flex align-items-center justify-content-center" style="min-height: 300px; border: 1px dashed rgba(255,255,255,0.2);">
+                        <div class="text-center text-white text-opacity-50">
+                            <i data-lucide="smartphone" style="width: 64px; height: 64px; margin-bottom: 1rem;"></i>
+                            <p>Mockup do App do Aluno aqui</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         PREÇOS (PARA EMPRESAS)
+         ============================================================ -->
+    <section id="precos" class="container py-5 mb-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bolder">Planos para o seu Negócio</h2>
+            <p class="text-secondary">Alunos têm acesso 100% gratuito ao portal. O dono do negócio escolhe o plano.</p>
+        </div>
+
+        <div class="row justify-content-center g-4" style="max-width: 900px; margin: 0 auto;">
+
+            <!-- Plano Essencial -->
+            <div class="col-md-6">
+                <div class="lia-card h-100 p-5 rounded-4 border-top border-4 border-secondary shadow-sm">
+                    <h4 class="fw-bold">Profissional / Autônomo</h4>
+                    <div class="my-4">
+                        <span class="display-5 fw-bolder">R$ 49</span>
+                        <span class="text-secondary">/mês</span>
+                    </div>
+                    <p class="text-secondary small mb-4">Ideal para Personal Trainers trabalhando de forma independente.</p>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-dark"></i> Até 30 alunos ativos
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-dark"></i> Prescrição de treinos
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-dark"></i> Portal do aluno grátis
+                        </li>
+                    </ul>
+                    <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline w-100 mt-auto">Começar Essencial</a>
+                </div>
+            </div>
+
+            <!-- Plano Pro / Estúdio -->
+            <div class="col-md-6">
+                <div class="lia-card h-100 p-5 rounded-4 border-top border-4 border-primary shadow position-relative">
+                    <span class="position-absolute top-0 end-0 mt-3 me-3 badge bg-primary rounded-pill px-3 py-2">Mais escolhido</span>
+
+                    <h4 class="fw-bold text-primary">Estúdio / Academia</h4>
+                    <div class="my-4">
+                        <span class="display-5 fw-bolder text-primary">R$ 149</span>
+                        <span class="text-secondary">/mês</span>
+                    </div>
+                    <p class="text-secondary small mb-4">Para negócios físicos que precisam de gestão de turmas e financeiro.</p>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-primary"></i> <b>Alunos Ilimitados</b>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-primary"></i> Gestão Financeira Completa
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-primary"></i> Check-in e Agendamentos
+                        </li>
+                        <li class="mb-3 d-flex align-items-center gap-2 text-secondary">
+                            <i data-lucide="check" class="text-primary"></i> Multi-profissionais
+                        </li>
+                    </ul>
+                    <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--primary w-100 mt-auto shadow-sm">Assinar Pro</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}

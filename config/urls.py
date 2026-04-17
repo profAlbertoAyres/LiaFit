@@ -18,17 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    path('admin/', admin.site.urls),
-
     # Páginas públicas (sem login, sem tenant)
     path('', include('website.urls')),
 
-    # Auth (login, registro, recuperação de senha)
-    # path('auth/', include('account.urls.auth')),
+    # Todas as rotas de auth.py vão começar com meusaas.com/auth/...
+    path('auth/', include('account.urls.auth', namespace='auth')),
 
-    # Rotas com tenant — tudo dentro de /org/<slug>/
+    # Todas as rotas de management.py vão começar com meusaas.com/manage/...
+    path('manage/', include('account.urls.management', namespace='management')),
     path('org/<slug:org_slug>/', include('core.urls.tenant')),
 
 ]

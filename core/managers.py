@@ -1,4 +1,5 @@
 from django.contrib.auth.models import BaseUserManager
+from django.db import models
 
 
 class UserManager(BaseUserManager):
@@ -26,3 +27,16 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser precisa ter is_superuser=True.')
 
         return self.create_user(email, password, **extra_fields)
+
+
+class TenantQuerySet(models.QuerySet):
+    def for_tenant(self, organization):
+        return self.filter(organization=organization)
+
+
+class TenantManager(models.Manager):
+    def get_queryset(self):
+        return TenantQuerySet(self.model, using=self._db)
+
+    def for_tenant(self, organization):
+        return self.get_queryset().for_tenant(organization)

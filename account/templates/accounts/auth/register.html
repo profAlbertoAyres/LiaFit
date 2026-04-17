@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Criar conta — LiaFit{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lia-auth">
+
+    <!-- ============================================================
+         LADO ESQUERDO — FORMULÁRIO
+         ============================================================ -->
+    <div class="lia-auth__form-side">
+        <div class="lia-auth__container">
+
+            <!-- Brand -->
+            <div class="lia-auth__brand">
+                <div class="lia-auth__brand-logo">L</div>
+                <span class="lia-auth__brand-text">LiaFit</span>
+            </div>
+
+            <!-- Header -->
+            <div class="lia-auth__header">
+                <h1 class="lia-auth__title">Crie sua conta</h1>
+                <p class="lia-auth__subtitle">Preencha os dados da sua empresa para começar</p>
+            </div>
+
+            <!-- Erros gerais do formulário -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger p-2 mb-4 rounded-3 small">
+                <ul class="mb-0 ps-3">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Formulário -->
+            <form method="post" class="lia-auth__form" novalidate>
+                {% csrf_token %}
+
+                <div class="row mb-4">
+                    <!-- Nome da Empresa (company_name) -->
+                    {% include 'components/form_field.html' with field=form.company_name col="col-12" %}
+
+                    <!-- Nome Completo do Responsável (full_name) -->
+                    {% include 'components/form_field.html' with field=form.fullname col="col-12" %}
+
+                    <!-- E-mail (email) -->
+                    {% include 'components/form_field.html' with field=form.email col="col-12" %}
+                </div>
+
+                <!-- Botão -->
+                <button type="submit" class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
+                    Cadastrar Empresa
+                    <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+                </button>
+            </form>
+
+            <!-- Link para login -->
+            <div class="lia-auth__switch mt-4 text-center">
+                <span class="text-secondary">Já tem uma conta?</span>
+                <a href="{% url 'auth:login' %}" class="text-primary fw-bold text-decoration-none">Entrar</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================================================
+         LADO DIREITO — HERO
+         ============================================================ -->
+    <div class="lia-auth__hero-side">
+        <div class="lia-auth__hero-content">
+            <span class="lia-auth__hero-icon mb-3 d-inline-block p-3 bg-white bg-opacity-10 rounded-circle text-white">
+                <i data-lucide="building-2" style="width: 32px; height: 32px;"></i>
+            </span>
+            <h2 class="lia-auth__hero-title fw-bold text-white mb-3">O ambiente da sua marca</h2>
+            <p class="lia-auth__hero-text text-white text-opacity-75 lead">
+                Cadastre sua empresa e ganhe um portal exclusivo para os seus alunos interagirem com você de forma moderna e profissional.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

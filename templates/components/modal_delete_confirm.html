@@ -1,0 +1,37 @@
+<div class="modal fade" id="deleteModal{{ id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <form action="{{ url }}" method="post">
+                {% csrf_token %}
+
+                <div class="modal-header border-bottom-0 pb-0">
+                    <div class="d-flex align-items-center gap-2 text-danger">
+                        <i data-lucide="alert-triangle"></i>
+                        <h5 class="modal-title fw-bold">Confirmar Exclusão</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body pt-4">
+                    <p class="text-secondary mb-4">Tem certeza que deseja excluir <strong>{{ name }}</strong>? Esta ação não pode ser desfeita.</p>
+
+                    <div class="mb-3 bg-light p-3 rounded-3 border">
+                        <label for="password_confirm_{{ id }}" class="form-label fw-semibold small">Digite sua senha para confirmar:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i data-lucide="lock" style="width: 16px; height: 16px;"></i></span>
+                            <input type="password" name="password_confirm" id="password_confirm_{{ id }}" class="form-control" required placeholder="Sua senha de acesso">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="lia-btn lia-btn--outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="lia-btn btn-danger d-inline-flex align-items-center gap-2">
+                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                        Confirmar Exclusão
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
