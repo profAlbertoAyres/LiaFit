@@ -1,0 +1,150 @@
+/* ==========================================================================
+   static/css/pages/website.css
+   Estilos específicos para o site público (Landing Page, Preços, etc)
+   ========================================================================== */
+
+/* --- Container Base --- */
+.lia-website {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.lia-website__main {
+    flex: 1;
+}
+
+.lia-container {
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-6);
+}
+
+/* --- Navbar Pública --- */
+.lia-navbar {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.lia-navbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+}
+
+.lia-navbar__brand a {
+    text-decoration: none;
+    color: var(--color-text-primary);
+}
+
+.lia-navbar__nav {
+    display: none; /* Esconde no mobile */
+}
+
+@media (min-width: 768px) {
+    .lia-navbar__nav {
+        display: flex;
+        gap: var(--space-8);
+    }
+}
+
+.lia-navbar__link {
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.lia-navbar__link:hover {
+    color: var(--color-text-primary);
+}
+
+.lia-navbar__actions {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+}
+
+/* --- Sessão Hero (Principal) --- */
+.lia-hero {
+    padding: var(--space-12) 0;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.lia-hero__title {
+    font-size: var(--font-size-3xl);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+}
+
+@media (min-width: 768px) {
+    .lia-hero__title {
+        font-size: 3.5rem; /* Tamanho extra grande para impacto */
+    }
+}
+
+.lia-hero__subtitle {
+    font-size: var(--font-size-lg);
+    max-width: 700px;
+    margin: 0 auto;
+    color: var(--color-text-secondary);
+}
+
+/* --- Features (Cards da Home) --- */
+.lia-features {
+    background-color: var(--color-surface);
+    padding: var(--space-12) 0;
+}
+
+.lia-section-title {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.lia-feature-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.lia-feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.lia-feature-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+/* --- Grid utilitário para a Home (complemento ao seu layout.css) --- */
+.lia-grid { display: grid; }
+.lia-grid-cols-3 { grid-template-columns: 1fr; gap: var(--space-8); }
+
+@media (min-width: 768px) {
+    .lia-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- Footer Público --- */
+.lia-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-8) 0;
+}
+
+.lia-footer__links a:hover {
+    color: var(--color-primary);
+}

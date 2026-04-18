@@ -58,7 +58,7 @@
 .lia-form-control:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .lia-form-control:disabled,
@@ -92,7 +92,7 @@ select.lia-form-control {
 }
 
 .lia-form-control--error:focus {
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    box-shadow: 0 0 0 3px var(--color-danger-light);
 }
 
 .lia-form-error {

@@ -63,7 +63,14 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    max-width: 420px;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: var(--space-8);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .lia-auth__hero-icon {
@@ -148,6 +155,19 @@
     flex-direction: column;
     gap: var(--space-5);
 }
+
+.lia-auth__form .form-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); /* Um anel suave ao redor do input */
+    background-color: #ffffff;
+}
+
+.lia-auth__form .form-control {
+    background-color: #f9fafb; /* Fundo cinza beeeem claro quando inativo, dá um ar moderno */
+    border: 1px solid var(--color-border);
+    transition: all 0.2s ease;
+}
+
 
 /* Grupo de campo com ícone */
 .lia-auth__field {

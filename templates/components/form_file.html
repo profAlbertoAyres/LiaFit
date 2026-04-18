@@ -1,31 +1,30 @@
 {% load static %}
 
 <div class="{{ col|default:'col-12' }} {{ extra_class|default:'' }} mb-3">
-    <label class="form-label fw-semibold text-dark small">
+    <label class="lia-label">
         {{ field.label }}
         {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
     </label>
 
-    <div class="card border border-light shadow-sm bg-light overflow-hidden">
-        <div class="card-body p-3 text-center">
+    <div class="lia-card overflow-hidden">
+        <div class="p-3 text-center">
 
             <div class="mb-3 position-relative">
                 {% if field.value %}
                     <img src="{{ field.value.url }}" class="img-fluid rounded preview-img shadow-sm" style="max-height: 200px; width: 100%; object-fit: cover;">
                 {% else %}
-                    <!-- Substitua o src pelo caminho correto do seu placeholder -->
                     <img src="{% static 'img/placeholder-eval.png' %}" class="img-fluid rounded preview-img opacity-50" style="max-height: 200px; width: 100%; object-fit: cover;">
                 {% endif %}
             </div>
 
             <div class="d-flex gap-2 justify-content-center">
-                <label for="{{ field.id_for_label }}" class="lia-btn lia-btn--primary lia-btn--sm d-inline-flex align-items-center justify-content-center cursor-pointer m-0">
-                    <i data-lucide="camera" class="me-2" style="width: 16px; height: 16px;"></i>
+                <label for="{{ field.id_for_label }}" class="lia-btn lia-btn--primary lia-btn--sm cursor-pointer m-0">
+                    <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
                     <span>{% if field.value %}Trocar{% else %}Escolher Foto{% endif %}</span>
                 </label>
 
                 <button type="button"
-                        class="btn btn-outline-danger btn-sm btn-remove-preview d-inline-flex align-items-center justify-content-center {% if not field.value %}d-none{% endif %}"
+                        class="lia-btn lia-btn--danger lia-btn--sm btn-remove-preview {% if not field.value %}d-none{% endif %}"
                         data-placeholder="{% static 'img/placeholder-eval.png' %}"
                         title="Remover foto">
                     <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>

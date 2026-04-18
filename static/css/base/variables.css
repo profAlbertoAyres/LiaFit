@@ -21,6 +21,7 @@
     --color-success:        #16A34A;
     --color-success-light:  #F0FDF4;
     --color-success-border: #BBF7D0;
+    --color-success-hover: #15803D;
 
     --color-danger:         #DC2626;
     --color-danger-hover:   #B91C1C;
@@ -112,4 +113,40 @@
     --sidebar-collapsed-width: 72px;
     --header-height:           64px;
     --content-max-width:       1200px;
+
+    --color-focus-ring: rgba(79, 70, 229, 0.25);
+}
+
+[data-theme="dark"] {
+    /* Superfícies e Fundos (Tons de chumbo/ardósia) */
+    --color-bg:             #0F172A;
+    --color-surface:        #1E293B;
+
+    /* Bordas */
+    --color-border:         #334155;
+    --color-border-hover:   #475569;
+
+    /* Textos (Invertendo para branco/cinza claro) */
+    --color-text-primary:   #F8FAFC;
+    --color-text-secondary: #CBD5E1;
+    --color-text-muted:     #94A3B8;
+    --color-text-inverse:   #0F172A; /* Usado se houver texto sobre elementos brancos */
+
+    /* Ajuste da Cor Primária
+       (No escuro, a cor primária precisa ser levemente mais clara para dar contraste) */
+    --color-primary:        #6366F1;
+    --color-primary-hover:  #818CF8;
+
+    /* Cores de Feedback (Opacidade ajustada para fundos escuros) */
+    --color-success-light:  rgba(22, 163, 74, 0.15);
+    --color-danger-light:   rgba(220, 38, 38, 0.15);
+    --color-warning-light:  rgba(245, 158, 11, 0.15);
+    --color-info-light:     rgba(59, 130, 246, 0.15);
+    --color-primary-light: rgba(99, 102, 241, 0.1);
+
+    /* Sombras
+       (No modo escuro, as sombras precisam ser mais densas para aparecerem) */
+    --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg:  0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
 }

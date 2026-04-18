@@ -2,14 +2,14 @@ from django import forms
 from django.db.models import QuerySet
 
 
-class BootstrapStyleMixin:
+class LiaFitStyleMixin:
     """
-    Mixin que aplica automaticamente as classes do Bootstrap (form-control, form-select, etc.),
+    Mixin que aplica automaticamente as classes do LiaFit (lia-form-control, etc.),
     placeholders baseados nos labels e atributos HTML necessários.
     Pode ser injetado tanto em Forms normais quanto em ModelForms.
     """
 
-    def _apply_bootstrap_styles(self):
+    def _apply_liafit_styles(self):
         for field_name, field in self.fields.items():
 
             # Localização de decimais (vírgula/ponto)
@@ -17,7 +17,7 @@ class BootstrapStyleMixin:
                 field.localize = True
                 field.widget.is_localized = True
 
-            # Define a classe CSS correta com base no tipo de widget
+            # Define a classe CSS do LiaFit com base no tipo de widget
             if isinstance(field.widget, (
                     forms.TextInput,
                     forms.NumberInput,
@@ -27,19 +27,21 @@ class BootstrapStyleMixin:
                     forms.URLInput,
                     forms.PasswordInput,
             )):
-                css_class = 'form-control'
+                css_class = 'lia-form-control'  # ← Mudou aqui
 
             elif isinstance(field.widget, forms.Select):
-                css_class = 'form-select'
+                css_class = 'lia-form-control'  # ← Mudou aqui (Selects usam a mesma base visual)
 
             elif isinstance(field.widget, (
                     forms.CheckboxInput,
                     forms.CheckboxSelectMultiple
             )):
+                # Mantemos o form-check-input do Bootstrap aqui pois
+                # a animação do Switch de ligar/desligar depende dele
                 css_class = 'form-check-input'
 
             elif isinstance(field.widget, forms.ClearableFileInput):
-                css_class = 'form-control'
+                css_class = 'lia-form-control'  # ← Mudou aqui
 
             else:
                 css_class = ''
@@ -72,7 +74,7 @@ class BootstrapStyleMixin:
                 field.widget.attrs['autocomplete'] = 'email'
 
 
-class BaseForm(BootstrapStyleMixin, forms.Form):
+class BaseForm(LiaFitStyleMixin, forms.Form):
     """
     Use esta classe para formulários simples que NÃO salvam diretamente em um Modelo
     (ex: Login, Recuperar Senha, Contato, Registro Customizado).
@@ -80,10 +82,10 @@ class BaseForm(BootstrapStyleMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._apply_bootstrap_styles()
+        self._apply_liafit_styles()  # ← Atualizou a chamada do método
 
 
-class BaseModelForm(BootstrapStyleMixin, forms.ModelForm):
+class BaseModelForm(LiaFitStyleMixin, forms.ModelForm):
     """
     Use esta classe para formulários que SALVAM no banco de dados.
     Ela já filtra automaticamente os dados (ForeignKeys) para não vazar
@@ -99,7 +101,7 @@ class BaseModelForm(BootstrapStyleMixin, forms.ModelForm):
 
         # Aplica os filtros de segurança do SaaS e depois o visual
         self._apply_tenant_filter()
-        self._apply_bootstrap_styles()
+        self._apply_liafit_styles()  # ← Atualizou a chamada do método
 
     def _apply_tenant_filter(self):
         if not self.tenant:

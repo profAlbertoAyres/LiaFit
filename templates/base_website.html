@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <!-- Importamos componentes específicos do site público -->
+    <link rel="stylesheet" href="{% static 'css/pages/website.css' %}">
+    {% block website_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="lia-website">
+
+    <!-- Navbar Pública -->
+    <header class="lia-navbar">
+        <div class="lia-container lia-navbar__inner">
+            <div class="lia-navbar__brand">
+                <a href="{% url 'website:index' %}" class="lia-navbar__logo">
+                    <span class="lia-font-bold lia-text-xl">LiaFit</span>
+                </a>
+            </div>
+
+            <nav class="lia-navbar__nav">
+                <a href="#funcionalidades" class="lia-navbar__link">Funcionalidades</a>
+                <a href="#precos" class="lia-navbar__link">Planos</a>
+            </nav>
+
+            <div class="lia-navbar__actions">
+                <!-- Seus novos botões do LiaFit! -->
+                <a href="{% url 'auth:login' %}" class="lia-btn lia-btn--ghost">Entrar</a>
+                <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--primary">Criar Conta</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal da Landing Page -->
+    <main class="lia-website__main">
+        {% block website_content %}{% endblock %}
+    </main>
+
+    <!-- Footer Público -->
+    <footer class="lia-footer">
+        <div class="lia-container">
+            <div class="lia-footer__content lia-flex lia-justify-between lia-items-center">
+                <p class="lia-text-sm lia-text-muted">
+                    &copy; {% now "Y" %} LiaFit. Todos os direitos reservados.
+                </p>
+                <div class="lia-footer__links">
+                    <a href="#" class="lia-text-sm lia-text-muted">Termos de Uso</a>
+                    <a href="#" class="lia-text-sm lia-text-muted lia-ml-4">Privacidade</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    {% block website_js %}{% endblock %}
+{% endblock %}

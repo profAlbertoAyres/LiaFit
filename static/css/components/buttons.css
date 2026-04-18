@@ -87,7 +87,7 @@
 }
 
 .lia-btn--success:hover {
-    background-color: #15803D;
+    background-color: var(--color-success-hover);
     color: var(--color-text-inverse);
 }
 

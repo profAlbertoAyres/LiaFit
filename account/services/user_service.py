@@ -12,7 +12,7 @@ class UserService:
         user, created = User.objects.get_or_create(
             email=email,
             defaults={
-                "username": email,
+                "email": email,
                 "is_active": False,
             }
         )

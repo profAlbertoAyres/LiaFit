@@ -13,7 +13,8 @@
 |--------|------|---------------------|
 | 1.0 | 10/03/2026 | Blueprint inicial |
 | 2.0 | 16/04/2026 | Blueprint v2 aprovado — multi-tenant consolidado, ciclo de vida do User, shadow client |
-| **2.1** | **17/04/2026** | **Refatoração do `account/models.py` concluída: perfis Professional/Client/Assistant como extensões 1:1; OnboardingToken consolidado; soft-delete via archived_at** |
+| 2.1 | 17/04/2026 | Refatoração do `account/models.py` concluída: perfis Professional/Client/Assistant como extensões 1:1; OnboardingToken consolidado; soft-delete via archived_at |
+| **2.2** | **17/04/2026** | **Resolução de `OperationalError` em migrações (removendo `db.sqlite3` e arquivos de migração); `makemigrations` e `migrate` executados com sucesso para `account` e `core`; `seed_roles` aplicado.** |
 
 ---
 
@@ -372,13 +373,16 @@ Apenas **2 layouts**:
 
 **Status atual (17/04/2026):**
 - ✅ `account/models.py` refatorado e validado
-- ⏳ Migrations pendentes
-- ⏳ Seed de Roles
-- ⏳ `OnboardingService.register()`
+- ✅ Migrations pendentes (Resolvido `OperationalError` e migrações aplicadas para `account` e `core`)
+- ✅ Seed de Roles (Roles iniciais criadas com sucesso)
+- ✅ `OnboardingService.register()`
 - ⏳ `OnboardingService.setup_password()`
 - ⏳ Forms: `RegisterForm`, `SetupPasswordForm`
 - ⏳ Views + URLs
 - ⏳ Templates de registro e setup
+
+**Próximo passo imediato:** validar `core/models/tenant.py` e gerar migrations.
+
 
 **Próximo passo imediato:** validar `core/models/tenant.py` e gerar migrations.
 
@@ -426,5 +430,21 @@ Apenas **2 layouts**:
 - Escrever lógica em template além de exibição
 
 ---
+N10 — Débito técnico: OnboardingToken deveria se chamar UserToken ou AuthToken dado que agora atende múltiplos purposes. Renomear quando houver janela de migration.
+
+| Purpose | TTL | Org? | data necessário | Disparado por |
+| --- | --- | --- | --- | --- |
+| onboarding | 72h | ✅ Sim | — | Admin cria empresa |
+| reset_password | 1h | ❌ Não | — | "Esqueci minha senha" |
+| email_change | 24h | ❌ Não | {new_email} | User troca email |
+| email_verification | 48h | ❌ Não | — | Auto-registro |
+| invitation (futuro) | 7d | ✅ Sim | {role} | Admin convida user |
+| magic_link (futuro) | 15min | ❌ Não | — | Login passwordless |
+
+N11 — TTLs de tokens: centralizados em account/constants.py. Para alterar tempo de expiração, editar apenas o dict TOKEN_TTL. Services nunca devem hardcodar timedelta — sempre usar get_token_ttl() ou calculate_expires_at().
+
+N12 — Python version: projeto rodando em 3.9.6 (EOL out/2025). Planejar upgrade para 3.11+ após MVP. Verificar compatibilidade de Django, Celery e dependências antes.
+
+N13 — Auditoria de tokens: model OnboardingToken registra apenas used_ip/used_ua (uso). Avaliar adição de created_ip/created_ua (criação) quando implementar dashboard de segurança / detecção de anomalias. Baixa prioridade.
 
 **Fim do documento — v2.1**

@@ -11,7 +11,11 @@ from core.models.base import BaseModel
 from core.models.tenant import TenantModel
 from core.utils.uploads import smart_upload_to
 
+
 class User(AbstractUser):
+    username = None
+    first_name = None
+    last_name = None
     fullname = models.CharField(max_length=150, verbose_name='Nome')
     email = models.EmailField('Email', unique=True)
     cpf = models.CharField('CPF', max_length=14, blank=True)
@@ -64,13 +68,13 @@ class User(AbstractUser):
     @property
     def is_shadow(self) -> bool:
         return (
-            self.is_active
-            and self.email_verified_at is None
-            and not self.has_usable_password()
+                self.is_active
+                and self.email_verified_at is None
+                and not self.has_usable_password()
         )
 
-class Organization(BaseModel):
 
+class Organization(BaseModel):
     company_name = models.CharField(verbose_name='Nome', max_length=255)
     slug = models.SlugField(verbose_name='Slug', unique=True)
     document = models.CharField(verbose_name='CNPJ/CPF', max_length=20, blank=True)
@@ -94,7 +98,8 @@ class Organization(BaseModel):
         verbose_name_plural = 'Organizações'
 
     def __str__(self):
-        return self.name
+        return self.company_name
+
 
 class OrganizationMember(BaseModel):
     user = models.ForeignKey(
@@ -130,13 +135,13 @@ class OrganizationMember(BaseModel):
     def __str__(self):
         return f"{self.user} → {self.organization}"
 
+
 class ActiveClientManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(archived_at__isnull=True)
 
 
 class Professional(TenantModel, BaseModel):
-
     member = models.OneToOneField(
         OrganizationMember,
         on_delete=models.CASCADE,
@@ -183,7 +188,6 @@ class Client(BaseModel):
 
 
 class OrganizationClient(BaseModel):
-
     user = models.ForeignKey(
         'account.Client',
         on_delete=models.PROTECT,
@@ -267,36 +271,45 @@ class Assistant(TenantModel, BaseModel):
         user = self.member.user
         return f"Assistente: {user.get_full_name() or user.email}"
 
+
 # 🔑 ONBOARDING TOKEN
 class OnboardingToken(BaseModel):
-    """
-    Token de uso único para ações de onboarding:
-      - Setup de senha do owner (registro de empresa)
-      - Validação de email do auto-registro (pós-Sprint 3)
+    class Purpose(models.TextChoices):
+        ONBOARDING = 'onboarding', 'Onboarding'
+        RESET_PASSWORD = 'reset_password', 'Reset de Senha'
+        EMAIL_CHANGE = 'email_change', 'Troca de Email'
+        EMAIL_VERIFICATION = 'email_verification', 'Verificação de Email'
+        INVITATION = 'invitation', 'Convite para Organização'
+        MAGIC_LINK = 'magic_link', 'Login via Magic Link'
 
-    Nota futura (N5): avaliar unificação com tokens de reset de senha
-    e troca de email num único UserToken com campo purpose.
-    """
-    user = models.ForeignKey(
-        'account.User',
-        on_delete=models.CASCADE,
-        related_name='onboarding_tokens',
-        verbose_name='Usuário',
-    )
-    token = models.UUIDField(
-        'Token', default=uuid.uuid4, unique=True, editable=False,
-    )
+    user = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name='onboarding_tokens',
+                             verbose_name='Usuário', )
+    organization = models.ForeignKey('account.Organization', on_delete=models.CASCADE, related_name='onboarding_tokens',
+                                     null=True, blank=True, verbose_name='Organização',
+                                     help_text='Preenchido apenas em fluxos vinculados a uma organização (ex: onboarding).', )
+    token = models.UUIDField('Token', default=uuid.uuid4, unique=True, editable=False, )
+    purpose = models.CharField('Finalidade', max_length=32, choices=Purpose.choices, )
     expires_at = models.DateTimeField('Expira em')
-    used_at = models.DateTimeField(
-        'Utilizado em', null=True, blank=True,
-    )
+    created_ip = models.GenericIPAddressField('IP de criação', null=True, blank=True,
+                                              help_text='IP de quem solicitou a criação do token.', )
+    created_ua = models.CharField('User Agent (criação)', max_length=255, null=True, blank=True, )
+    used_at = models.DateTimeField('Utilizado em', null=True, blank=True)
+    used_ip = models.GenericIPAddressField('IP de uso', null=True, blank=True)
+    used_ua = models.CharField('User Agent', max_length=255, null=True, blank=True)
+    data = models.JSONField('Dados extras', null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Token de Onboarding'
-        verbose_name_plural = 'Tokens de Onboarding'
+        verbose_name = 'Token'
+        verbose_name_plural = 'Tokens'
+        indexes = [
+            models.Index(fields=['user', 'purpose', 'used_at']),
+        ]
 
     def __str__(self):
         return str(self.token)
+
+    def __repr__(self):
+        return f"<OnboardingToken {self.token} ({self.purpose})>"
 
     @property
     def is_used(self) -> bool:
@@ -304,7 +317,7 @@ class OnboardingToken(BaseModel):
 
     @property
     def is_expired(self) -> bool:
-        return timezone.now() > self.expires_at
+        return timezone.now() >= self.expires_at
 
     @property
     def is_valid(self) -> bool:

@@ -90,26 +90,26 @@
 .lia-alert--success {
     background-color: var(--color-success-light);
     border-color: var(--color-success-border);
-    color: #166534;
+    color: var(--color-success);
 }
 
 .lia-alert--error,
 .lia-alert--danger {
     background-color: var(--color-danger-light);
     border-color: var(--color-danger-border);
-    color: #991B1B;
+    color: var(--color-danger);
 }
 
 .lia-alert--warning {
     background-color: var(--color-warning-light);
     border-color: var(--color-warning-border);
-    color: #92400E;
+    color: var(--color-warning);
 }
 
 .lia-alert--info {
     background-color: var(--color-info-light);
     border-color: var(--color-info-border);
-    color: #1E40AF;
+    color: var(--color-info);
 }
 
 /* -------------------------------------------------------------------------
