@@ -9,38 +9,66 @@
 {% endblock %}
 
 {% block content %}
-<div class="lia-app">
-    {% block sidebar %}
-        {% include 'partials/_sidebar.html' %}
-    {% endblock %}
+    <div class="lia-app">
+        {% block sidebar %}
+            {% include 'partials/_sidebar.html' %}
+        {% endblock %}
 
-    <div class="lia-app__main">
+        <div class="lia-app__main">
 
-        <!-- HEADER DA APLICAÇÃO -->
-        <header class="lia-header">
-            <div class="lia-flex lia-items-center lia-gap-4">
-                <button class="lia-btn--ghost lia-btn--icon" id="sidebar-toggle" aria-label="Menu">
-                    <i data-lucide="menu" class="lucide"></i>
-                </button>
-                <span class="lia-font-semibold">{% block header_title %}LiaFit{% endblock %}</span>
-            </div>
+            <!-- HEADER DA APLICAÇÃO -->
+            <header class="lia-header">
+                <div class="lia-flex lia-items-center lia-gap-4">
+                    <button class="lia-btn--ghost lia-btn--icon" id="sidebar-toggle" aria-label="Menu">
+                        <i data-lucide="menu" class="lucide"></i>
+                    </button>
+                    <span class="lia-font-semibold">{% block header_title %}LiaFit{% endblock %}</span>
+                </div>
 
-            <div class="lia-flex lia-items-center lia-gap-4">
-                {% block header_actions %}
-                    <span class="lia-text-sm lia-text-muted">
-                        {{ request.user.get_short_name|default:request.user.email }}
-                    </span>
-                {% endblock %}
-            </div>
-        </header>
+                <div class="lia-flex lia-items-center lia-gap-4">
+                    {% block header_actions %}
+                        {# ── SELETOR DE ORGANIZAÇÃO ── #}
+                        {% if show_org_selector %}
+                            <div class="lia-org-selector" style="position: relative;">
+                                <button class="lia-btn--ghost lia-text-sm lia-flex lia-items-center lia-gap-2"
+                                        id="org-selector-toggle"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <i data-lucide="building-2" class="lucide" style="width:16px;height:16px;"></i>
+                                    <span>{{ current_organization.company_name }}</span>
+                                    <i data-lucide="chevron-down" class="lucide" style="width:14px;height:14px;"></i>
+                                </button>
 
-        <!-- CONTEÚDO DA PÁGINA (Tabelas, Dashboards, Formulários) -->
-        <main class="lia-content">
-            {% block page_content %}{% endblock %}
-        </main>
+                                <div class="lia-dropdown" id="org-selector-dropdown"
+                                     style="display:none; position:absolute; right:0; top:100%; min-width:220px; z-index:50;">
+                                    {% for org in user_organizations %}
+                                        <a href="{% url 'tenant:dashboard' org_slug=org.slug %}"
+                                           class="lia-dropdown__item {% if org.slug == current_organization.slug %}lia-dropdown__item--active{% endif %}">
+                                            {{ org.company_name }}
+                                            {% if org.slug == current_organization.slug %}
+                                                <i data-lucide="check" class="lucide"
+                                                   style="width:14px;height:14px;"></i>
+                                            {% endif %}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
 
+                        <span class="lia-text-sm lia-text-muted">
+        {{ request.user.get_short_name|default:request.user.email }}
+    </span>
+                    {% endblock %}
+                </div>
+            </header>
+
+            <!-- CONTEÚDO DA PÁGINA (Tabelas, Dashboards, Formulários) -->
+            <main class="lia-content">
+                {% block page_content %}{% endblock %}
+            </main>
+
+        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
