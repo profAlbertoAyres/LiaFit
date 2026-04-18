@@ -7,24 +7,34 @@
         {% endif %}
     </label>
 
-    <!-- Verifica se a variável "icon" foi passada no include -->
-    {% if icon %}
-        <div class="position-relative lia-input-has-icon">
-            <!-- Ícone flutuante dentro do input -->
-            <div class="position-absolute d-flex align-items-center justify-content-center text-muted"
-                 style="left: 12px; top: 0; bottom: 0; pointer-events: none;">
-                <i data-lucide="{{ icon }}" style="width: 18px; height: 18px;"></i>
-            </div>
+    {% if icon or is_password %}
+        <div class="position-relative {% if icon %}lia-input-has-icon{% endif %} {% if is_password %}lia-input-has-password{% endif %}">
 
-            <!-- O widget do Django entra aqui -->
+            {% if icon %}
+                <div class="position-absolute d-flex align-items-center justify-content-center text-muted"
+                     style="left: 12px; top: 0; bottom: 0; pointer-events: none;">
+                    <i data-lucide="{{ icon }}" style="width: 18px; height: 18px;"></i>
+                </div>
+            {% endif %}
+
             {{ field }}
+
+            {% if is_password %}
+                <button type="button" data-toggle-password="{{ field.id_for_label }}"
+                        class="position-absolute border-0 bg-transparent text-muted p-0 d-flex align-items-center justify-content-center"
+                        style="right: 12px; top: 0; bottom: 0; cursor: pointer; z-index: 10;">
+                    <i data-lucide="eye-off" style="width: 18px; height: 18px;"></i>
+                </button>
+            {% endif %}
         </div>
 
-        <!-- Pequeno truque de CSS para o texto não ficar em cima do ícone -->
         <style>
-            .lia-input-has-icon .lia-form-control {
-                padding-left: 2.5rem !important;
-            }
+            {% if icon %}
+            .lia-input-has-icon .lia-form-control { padding-left: 2.5rem !important; }
+            {% endif %}
+            {% if is_password %}
+            .lia-input-has-password .lia-form-control { padding-right: 2.5rem !important; }
+            {% endif %}
         </style>
 
     {% else %}

@@ -7,6 +7,118 @@
 
 ---
 
+## 📅 2026-04-18 — Sistema de Onboarding Tokens com Auditoria
+
+### 🎯 Objetivo
+Implementar infraestrutura robusta de tokens para fluxos de ativação de conta,
+reset de senha, convites e verificação de email, com trilha de auditoria completa.
+
+### ✅ Entregas
+
+#### 1. Model `OnboardingToken` (account/models.py)
+Model genérico de tokens com suporte a múltiplos propósitos via campo `purpose`.
+
+**Campos principais:**
+- `token` (UUID) — identificador único, gerado automaticamente
+- `user` (FK) — dono do token
+- `organization` (FK, nullable) — contexto organizacional (opcional)
+- `purpose` (choices) — tipo do token (`onboarding`, `reset_password`, etc.)
+- `expires_at` (datetime) — TTL do token
+- `data` (JSONField) — payload extra flexível por purpose
+
+**Auditoria — criação:**
+- `created_ip` — IP de quem solicitou
+- `created_ua` — User-Agent de quem solicitou
+
+**Auditoria — uso:**
+- `used_at` — quando foi consumido
+- `used_ip` — IP de quem consumiu
+- `used_ua` — User-Agent de quem consumiu
+
+**Timestamps (via BaseModel):**
+- `created_at`, `updated_at`
+
+**Índice composto:** `(user, purpose, used_at)` para consultas rápidas.
+
+#### 2. `TokenService` (account/services/token_service.py)
+Serviço centralizado para ciclo de vida de tokens.
+
+**Métodos:**
+- `create_token(user, purpose, ttl, organization, ip, user_agent, data)` — cria token
+- `get_valid_token(token_str, purpose=None)` — valida (existe, não expirado, não usado)
+- `invalidate_token(token, ip, user_agent)` — marca como usado com auditoria
+
+**Comportamento:**
+- Levanta exceptions tipadas em caso de falha (ver abaixo)
+- Validação de `purpose` opcional (para garantir token certo no fluxo certo)
+
+#### 3. `OnboardingService` (account/services/onboarding_service.py)
+Orquestra o cadastro completo de uma nova organização.
+
+**Método principal:** `register_organization(user_data, org_data, ip, user_agent)`
+
+**Fluxo:**
+1. Cria `User` inativo (sem senha definida)
+2. Cria `Organization` via `OrganizationService` (slug único garantido)
+3. Gera `OnboardingToken` com purpose `ONBOARDING` (TTL 3 dias)
+4. Dispara email de ativação (console em DEV)
+5. Retorna a organização criada
+
+#### 4. `OrganizationService` (refatorado)
+- Geração de slug única e determinística (resolve colisões com sufixo numérico)
+- Método `activate_organization(org)` para ativação pós-confirmação
+
+#### 5. Exceptions tipadas (account/exceptions.py)
+- `TokenExpiredError` — token fora da validade
+- `TokenAlreadyUsedError` — tentativa de reuso
+- `TokenInvalidError` — token inexistente/malformado
+- `TokenPurposeMismatchError` — purpose errado para o fluxo
+
+Permite tratamento granular nas views com mensagens específicas ao usuário.
+
+#### 6. Admin (account/admin.py)
+- `list_display` com token encurtado, status visual (🟢 válido / ⏱️ expirado / ✅ usado)
+- Fieldsets organizados (Identificação / Validade / Auditoria Criação / Auditoria Uso / Metadados)
+- `date_hierarchy` em `created_at` para navegação temporal
+- Todos os campos de auditoria como `readonly_fields`
+
+### 🧪 Validação
+Fluxo completo testado no shell:
+- ✅ Criação de org + user + token + email
+- ✅ Slug único gerado corretamente (`empresa-auditoria`)
+- ✅ Token válido aceito por `get_valid_token`
+- ✅ Consumo grava `used_ip`, `used_ua`, `used_at`
+- ✅ Tentativa de reuso bloqueada com `TokenAlreadyUsedError`
+- ✅ Teste via navegador: `created_ip` e `created_ua` preenchidos corretamente
+
+### 📦 Migrations aplicadas
+- `account/0003_alter_onboardingtoken_options_and_more.py`
+  - Novos campos: `created_ip`, `created_ua`, `organization`
+  - Alteração em `purpose` (choices expandidos)
+  - Índice composto `account_onb_user_id_b91cd1_idx`
+
+### 🎁 Purposes já suportados pelo modelo
+- ✅ `ONBOARDING` — ativação inicial de conta (implementado)
+- ⏳ `RESET_PASSWORD` — recuperação de senha
+- ⏳ `EMAIL_CHANGE` — confirmação de mudança de email
+- ⏳ `EMAIL_VERIFICATION` — verificação de email
+- ⏳ `INVITATION` — convite de membros para org
+- ⏳ `MAGIC_LINK` — login sem senha
+
+### 🔜 Próximos passos
+1. **Tela de Setup Password** — consome o token de onboarding e define senha
+2. **Fluxo de Reset Password** — reaproveita a infra com novo purpose
+3. **Sistema de convites** para adicionar membros a organizações
+
+### 💡 Decisões técnicas
+- **Por que UUID no token?** Imprevisibilidade + URL-safe sem encoding extra
+- **Por que `data` JSONField?** Flexibilidade para carregar contexto específico por purpose sem criar colunas dedicadas
+- **Por que `organization` no token?** Permite auditoria multi-tenant e tokens com contexto organizacional (ex: convite para org específica)
+- **Por que exceptions tipadas em vez de retornos booleanos?** Permite que views tratem cada caso com mensagem UX apropriada ao invés de um genérico "token inválido"
+
+---
+
+
 ## 📜 Histórico de Versões
 
 | Versão | Data | Mudanças principais |
@@ -371,15 +483,18 @@ Apenas **2 layouts**:
 
 ### 🏗️ Sprint 1 — Fundação do Onboarding (EM ANDAMENTO)
 
-**Status atual (17/04/2026):**
+**Status atual (18/04/2026):**
+### ✅ Sprint 1 — Fundação do Onboarding (concluída)
 - ✅ `account/models.py` refatorado e validado
-- ✅ Migrations pendentes (Resolvido `OperationalError` e migrações aplicadas para `account` e `core`)
-- ✅ Seed de Roles (Roles iniciais criadas com sucesso)
-- ✅ `OnboardingService.register()`
-- ⏳ `OnboardingService.setup_password()`
-- ⏳ Forms: `RegisterForm`, `SetupPasswordForm`
-- ⏳ Views + URLs
-- ⏳ Templates de registro e setup
+- ✅ Migrations aplicadas
+- ✅ Seed de Roles
+- ✅ `TokenService` com exceptions tipadas e auditoria
+- ✅ `OnboardingService.register_organization()`
+- ✅ `OnboardingService.setup_password()`
+- ✅ Forms: `RegisterForm`, `SetupPasswordForm`
+- ✅ Views + URLs (registro e setup de senha)
+- ✅ Templates de registro e setup
+
 
 **Próximo passo imediato:** validar `core/models/tenant.py` e gerar migrations.
 
@@ -447,4 +562,71 @@ N12 — Python version: projeto rodando em 3.9.6 (EOL out/2025). Planejar upgrad
 
 N13 — Auditoria de tokens: model OnboardingToken registra apenas used_ip/used_ua (uso). Avaliar adição de created_ip/created_ua (criação) quando implementar dashboard de segurança / detecção de anomalias. Baixa prioridade.
 
-**Fim do documento — v2.1**
+## 📅 2026-04-18 — Conclusão da Sprint 1: Onboarding Completo
+
+### 🎯 Objetivo
+Finalizar o fluxo completo de onboarding de empresa (Etapa 1 + Etapa 2),
+com registro público, envio de token e setup de senha com ativação.
+
+### ✅ Entregas
+
+#### 1. `OnboardingService.setup_password()` (account/services/onboarding_service.py)
+Método que consome o token de onboarding e ativa user + organização.
+
+**Fluxo (atomic):**
+1. Valida token via `TokenService.get_valid_token()`
+2. Define senha do user
+3. `user.is_active = True`
+4. `user.email_verified_at = now()`
+5. `organization.is_active = True` (via `OrganizationService.activate_organization()`)
+6. Invalida token via `TokenService.invalidate_token()` (com IP e User-Agent)
+
+#### 2. Forms (account/forms.py)
+
+- **`RegisterForm`** — captura email, nome da empresa e CNPJ para Etapa 1
+- **`SetupPasswordForm`** — captura e valida senha (com confirmação) para Etapa 2
+
+#### 3. Views + URLs (account/views.py, account/urls.py)
+
+- `RegisterView` — `GET/POST /register/` — exibe form e chama `OnboardingService.register_organization()`
+- `SetupPasswordView` — `GET/POST /setup-password/<uuid:token>/` — valida token, exibe form, chama `OnboardingService.setup_password()`
+- Tratamento de exceptions tipadas (`TokenExpiredError`, `TokenAlreadyUsedError`, etc.) com mensagens UX apropriadas
+
+#### 4. Templates (account/templates/account/)
+
+- `register.html` — formulário de registro público (layout `base.html`)
+- `setup_password.html` — formulário de definição de senha (layout `base.html`)
+
+### 🧪 Validação
+- ✅ Registro cria user inativo + org inativa + token + email (console)
+- ✅ Link de setup de senha valida e consome token
+- ✅ User ativado com senha definida e `email_verified_at` preenchido
+- ✅ Organization ativada
+- ✅ Token marcado como usado (com auditoria de IP e User-Agent)
+- ✅ Tentativa de reuso do token bloqueada com mensagem adequada
+- ✅ Token expirado tratado com mensagem adequada
+
+---
+
+### 📌 Status da Sprint 1 — ✅ CONCLUÍDA
+
+| Item | Status |
+|------|--------|
+| `account/models.py` refatorado | ✅ |
+| Migrations aplicadas | ✅ |
+| Seed de Roles | ✅ |
+| `TokenService` com exceptions tipadas | ✅ |
+| `OnboardingService.register_organization()` | ✅ |
+| `OnboardingService.setup_password()` | ✅ |
+| Forms: `RegisterForm`, `SetupPasswordForm` | ✅ |
+| Views + URLs | ✅ |
+| Templates de registro e setup | ✅ |
+
+| **2.3** | **18/04/2026** | **Sprint 1 concluída: `setup_password()`, forms, views, URLs e templates de onboarding finalizados. Fluxo completo de registro + ativação funcional.** |
+
+
+### 🔜 Próximos passos
+Iniciar **Sprint 2 — Dashboard multi-empresa + seletor de org**
+
+
+

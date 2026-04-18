@@ -9,6 +9,7 @@ const LiaForms = {
         this.initFlatpickr();
         this.initMasks();
         this.initConfirmDelete();
+        this.initPasswordToggles();
     },
 
     /* -----------------------------------------------------------------
@@ -94,6 +95,35 @@ const LiaForms = {
                     }
                 });
             }
+        });
+    },
+    /* -----------------------------------------------------------------
+       TOGGLE DE SENHA — Inicializa botões com data-toggle-password
+       <button type="button" data-toggle-password="id_da_senha">
+       ----------------------------------------------------------------- */
+    initPasswordToggles() {
+        document.querySelectorAll('[data-toggle-password]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Pega o ID do input alvo através do data-attribute
+                const targetId = btn.dataset.togglePassword;
+                const input = document.getElementById(targetId);
+
+                if (!input) return;
+
+                // Alterna o tipo do input e reinjeta a tag <i> para o Lucide
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    btn.innerHTML = '<i data-lucide="eye"></i>';
+                } else {
+                    input.type = 'password';
+                    btn.innerHTML = '<i data-lucide="eye-off"></i>';
+                }
+
+                // Renderiza o novo ícone apenas dentro deste botão
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons({ root: btn });
+                }
+            });
         });
     }
 };

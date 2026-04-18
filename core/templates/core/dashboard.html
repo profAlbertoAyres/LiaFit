@@ -1,10 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base_app.html' %}
+
+{% block header_title %}Dashboard{% endblock %}
+
+{% block page_content %}
+<div class="lia-container">
+
+    <h1 class="lia-text-2xl lia-font-semibold lia-mb-6">
+        Olá, {{ request.user.first_name|default:request.user.email }}! 👋
+    </h1>
+
+    <p class="lia-text-muted lia-mb-8">
+        Organização: <strong>{{ organization.company_name }}</strong>
+    </p>
+
+    <!-- Cards de métricas -->
+    <div class="lia-grid lia-grid-cols-4 lia-gap-4">
+        <div class="lia-card lia-text-center lia-p-6">
+            <h2 class="lia-text-3xl lia-font-bold">—</h2>
+            <small class="lia-text-muted">Clientes</small>
+        </div>
+        <div class="lia-card lia-text-center lia-p-6">
+            <h2 class="lia-text-3xl lia-font-bold">—</h2>
+            <small class="lia-text-muted">Agendamentos Hoje</small>
+        </div>
+        <div class="lia-card lia-text-center lia-p-6">
+            <h2 class="lia-text-3xl lia-font-bold">—</h2>
+            <small class="lia-text-muted">Faturamento Mês</small>
+        </div>
+        <div class="lia-card lia-text-center lia-p-6">
+            <h2 class="lia-text-3xl lia-font-bold">—</h2>
+            <small class="lia-text-muted">Serviços Ativos</small>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -44,3 +44,23 @@ Para evitar que elementos internos do sistema (como barra lateral e menu de nave
 - **Backend:** Django (Templates, Forms, CSRF, Form Errors).
 - **Estilização:** CSS Customizado (Padrão BEM `lia-*`) + Classes Utilitárias Bootstrap 5.
 - **Ícones:** Lucide Icons (via CDN e tag `<i data-lucide="...">`).
+
+## 🎨 Padrões de UI, CSS e Design Tokens
+
+Para garantir o funcionamento perfeito do sistema de temas (Light/Dark mode) e a manutenção limpa do código, as seguintes regras de frontend devem ser RIGOROSAMENTE seguidas:
+
+1. **Uso Exclusivo de Variáveis (Design Tokens):**
+   - É **EXTREMAMENTE PROIBIDO** o uso de cores hexadecimais hardcoded (ex: `#FFF`, `#000`) nos arquivos de estilo, exceto no arquivo raiz `variables.css`.
+   - É **PROIBIDO** o uso de classes utilitárias de cor do Bootstrap (ex: `bg-light`, `text-danger`, `bg-primary`).
+   - TODAS as cores, sombras, bordas e espaçamentos devem usar as variáveis globais definidas no `:root` (ex: `var(--color-bg)`, `var(--color-surface)`, `var(--space-4)`).
+
+2. **Zero CSS Inline:**
+   - É estritamente **PROIBIDO** o uso do atributo `style="..."` no HTML.
+   - Qualquer necessidade de estilização customizada deve ser feita através de classes em arquivos `.css` dedicados.
+
+3. **Classes Utilitárias Permitidas:**
+   - O uso de classes do Bootstrap é permitido APENAS para estrutura de layout, alinhamento e display (ex: `d-flex`, `align-items-center`, `gap-2`, `container`, `row`, `col`).
+
+4. **Nomenclatura de Classes CSS:**
+   - Adotar o escopo de página para as classes, evitando conflitos (ex: `.lia-auth-layout`, `.lia-auth-back__btn`). 
+   - A estilização das interações (como `:hover`) também deve depender exclusivamente das variáveis do sistema, permitindo a transição fluida entre os temas claro e escuro.

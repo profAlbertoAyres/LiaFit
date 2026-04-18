@@ -57,8 +57,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'core.middleware.SaaSContextMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.menu.context_processors.menu_context',
+    'core.context_processors.global_settings',
+    'core.context_processors.tenant_context',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -76,7 +78,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
-                'core.menu.context_processors.menu_context'
+                'core.menu.context_processors.menu_context',
+                'core.context.global_settings'
             ],
         },
     },
@@ -160,7 +163,15 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # AUTENTICAÇÃO E REDIRECIONAMENTOS
 # =============================================================================
 
-LOGIN_URL = 'account:login'
-LOGIN_REDIRECT_URL = 'account:dashboard'
-LOGOUT_REDIRECT_URL = 'page:home'
+LOGIN_URL = 'auth:login'
+LOGIN_REDIRECT_URL = 'tenant:post_login'
+LOGOUT_REDIRECT_URL = 'website:index'
+
+# Nome global da aplicação
+APP_NAME = 'Lia Linda'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+}
+
 

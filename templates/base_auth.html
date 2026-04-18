@@ -2,15 +2,24 @@
 {% load static %}
 
 {% block extra_css %}
-    <!-- CSS específico da página de login/registro entra aqui -->
+    <!-- O CSS de autenticação carregado para TODAS as telas filhas -->
+    <link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
     {% block page_css %}{% endblock %}
 {% endblock %}
 
 {% block content %}
 <!-- Layout limpo para telas de Autenticação -->
-<div class="lia-auth-layout" style="min-height: 100vh; background-color: var(--color-background-subtle);">
-    
-    <!-- O nosso layout dividido (lia-auth) vai entrar aqui e ocupar a tela livremente -->
+<div class="lia-auth-layout">
+
+    <!-- BOTÃO FLUTUANTE: VOLTAR PARA O SITE -->
+    <div class="lia-auth-back">
+        <a href="{% url 'website:index' %}" class="lia-auth-back__btn d-inline-flex align-items-center gap-2">
+            <i data-lucide="home"></i>
+            Voltar para o site
+        </a>
+    </div>
+
+    <!-- O nosso layout dividido (lia-auth) entra aqui -->
     {% block page_content %}{% endblock %}
 
 </div>
@@ -19,7 +28,5 @@
 {% block extra_js %}
     <!-- Carrega seus scripts globais de formulário -->
     <script src="{% static 'js/modules/forms.js' %}"></script>
-
-    <!-- Scripts específicos da página entram aqui -->
     {% block page_js %}{% endblock %}
 {% endblock %}

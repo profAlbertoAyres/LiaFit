@@ -12,6 +12,53 @@
     min-height: 100vh;
 }
 
+.lia-auth-layout {
+    min-height: 100vh;
+    position: relative;
+    /* Usa a cor de fundo neutra do seu sistema */
+    background-color: var(--color-bg);
+}
+
+/* Container do botão flutuante */
+.lia-auth-back {
+    position: absolute;
+    /* Usa os seus tokens de espaçamento (1.5rem = 24px) */
+    top: var(--space-6);
+    left: var(--space-6);
+    z-index: 50;
+}
+
+/* Estilo do botão "Voltar" */
+.lia-auth-back__btn {
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    /* Usando as variáveis de cor para superfície e texto */
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+/* Efeito ao passar o mouse */
+.lia-auth-back__btn:hover {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+/* Tamanho do ícone do Lucide dentro do botão */
+.lia-auth-back__btn i,
+.lia-auth-back__btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+
 /* Coluna do formulário */
 .lia-auth__form-side {
     flex: 1;

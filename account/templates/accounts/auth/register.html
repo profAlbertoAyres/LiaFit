@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'base_auth.html' %}
 {% load static %}
 
-{% block title %}Criar conta — LiaFit{% endblock %}
+{% block title %}Criar conta — {{ APP_NAME }}{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
@@ -13,8 +13,8 @@
         <div class="lia-auth__container">
 
             <div class="lia-auth__brand">
-                <div class="lia-auth__brand-logo">L</div>
-                <span class="lia-auth__brand-text">LiaFit</span>
+                <div class="lia-auth__brand-logo">{{ APP_NAME|slice:":1"|upper }}</div>
+                <span class="lia-auth__brand-text">{{ APP_NAME }}</span>
             </div>
 
             <div class="lia-auth__header">
@@ -22,7 +22,6 @@
                 <p class="lia-auth__subtitle">Preencha os dados da sua empresa para começar</p>
             </div>
 
-            <!-- Estilo LiaFit para erros gerais do formulário -->
             {% if form.non_field_errors %}
             <div class="p-3 mb-4 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger">
                 <div class="d-flex align-items-center gap-2 mb-2 fw-bold small">
@@ -41,22 +40,17 @@
                 {% csrf_token %}
 
                 <div class="row mb-4">
-                    <!-- Aqui a mágica acontece: passando os ícones dinâmicos! -->
                     {% include 'components/form_field.html' with field=form.company_name col="col-12" icon="building" %}
-
                     {% include 'components/form_field.html' with field=form.fullname col="col-12" icon="user" %}
-
                     {% include 'components/form_field.html' with field=form.email col="col-12" icon="mail" %}
                 </div>
 
-                <!-- Botão (já estava com o padrão LiaFit, apenas ajustei o gap) -->
                 <button type="submit" class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
                     Cadastrar Empresa
                     <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
                 </button>
             </form>
 
-            <!-- Link para login -->
             <div class="lia-auth__switch mt-4 text-center">
                 <span class="text-secondary">Já tem uma conta?</span>
                 <a href="{% url 'auth:login' %}" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">Entrar</a>

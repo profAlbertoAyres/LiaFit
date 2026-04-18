@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 from account.exceptions import TokenError, TokenExpiredError, TokenAlreadyUsedError, TokenInvalidError
 from account.forms import OrganizationRegistrationForm, SetupPasswordForm
@@ -15,7 +15,7 @@ class OrganizationRegisterView(FormView):
     template_name = 'accounts/auth/register.html'
     form_class = OrganizationRegistrationForm
 
-    success_url = reverse_lazy('auth:register')
+    success_url = reverse_lazy('auth:register_success')
 
     def form_valid(self, form):
         form.save()
@@ -69,7 +69,11 @@ class SetupPasswordView(View):
             return render(request, self.invalid_template_name, status=400)
 
         messages.success(request, f"Bem-vindo(a), {user.email}!")
-        return redirect("dashboard:home")  # ajuste para sua rota
+        return redirect("dashboard:home")
+
+
+class RegisterSuccess(TemplateView):
+    template_name = 'accounts/auth/register_success.html'
 
 
 def resend_password_view(request):

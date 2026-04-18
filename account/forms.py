@@ -4,12 +4,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.password_validation import validate_password
 
 from account.services.onboarding_service import OnboardingService
-from core.forms import BaseForm
+from core.forms import BaseForm, LiaFitStyleMixin
 
 User = get_user_model()
 
 class OrganizationRegistrationForm(BaseForm):
-    company_name = forms.CharField(label="Nome da Empresa (Clínica/Estúdio)", max_length=255)
+    company_name = forms.CharField(label="Nome da Empresa (Clínica/Estúdio/Acadêmia)", max_length=255)
     fullname = forms.CharField(label='Nome completo', max_length=150)
     email = forms.EmailField(label='Email')
 
@@ -57,11 +57,16 @@ class SetupPasswordForm(BaseForm):
         )
 
 
-class LoginForm(AuthenticationForm):
+class LoginForm(LiaFitStyleMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['email'].widget.attrs.update({'class': 'lia-form-control'})
-        self.fields['password'].widget.attrs.update({'class': 'lia-form-control'})
+        if 'username' in self.fields:
+            self.fields['username'].widget.input_type = 'email'
+            self.fields['username'].label = 'E-mail'
+            self.fields['username'].widget.attrs['autocomplete'] = 'email'
+
+        # Aplica toda a mágica do seu Mixin (lia-form-control, placeholders, etc.)
+        self._apply_liafit_styles()
 
 

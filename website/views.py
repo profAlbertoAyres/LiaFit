@@ -1,4 +1,4 @@
-# website/views.py
+# website/dashboard.py
 
 from django.views.generic import TemplateView
 

@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Cadastro Concluído — {{ APP_NAME }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/pages/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lia-auth">
+    <div class="lia-auth__form-side">
+        <div class="lia-auth__container" style="text-align: center;">
+
+            <!-- Logo Dinâmica e Centralizada -->
+            <div class="lia-auth__brand d-flex justify-content-center mb-4">
+                <div class="lia-auth__brand-logo">{{ APP_NAME|slice:":1"|upper }}</div>
+                <span class="lia-auth__brand-text">{{ APP_NAME }}</span>
+            </div>
+
+            <div style="font-size: 3.5rem; margin-bottom: var(--space-6);">
+                🎉
+            </div>
+
+            <h1 class="lia-auth__title" style="margin-bottom: var(--space-4);">Empresa cadastrada!</h1>
+            <p class="lia-auth__subtitle" style="margin-bottom: var(--space-8); font-size: 1.1rem; line-height: 1.6;">
+                Sua conta foi criada com sucesso. Enviamos um link de ativação para o seu e-mail.<br><br>
+                <strong>Por favor, verifique sua caixa de entrada e a pasta de spam para definir sua senha e acessar o painel.</strong>
+            </p>
+
+            <a href="{% url 'auth:login' %}" class="lia-btn lia-btn--primary lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
+                Ir para o Login
+                <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="lia-auth__hero-side">
+        <div class="lia-auth__hero-content">
+            <span class="lia-auth__hero-icon mb-3 d-inline-block p-3 bg-white bg-opacity-10 rounded-circle text-white">
+                <i data-lucide="rocket" style="width: 32px; height: 32px;"></i>
+            </span>
+            <h2 class="lia-auth__hero-title fw-bold text-white mb-3">Tudo pronto para decolar!</h2>
+            <p class="lia-auth__hero-text text-white text-opacity-75 lead">
+                Falta muito pouco para você começar a gerenciar seus agendamentos, clientes e serviços com a tecnologia da {{ APP_NAME }}.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
