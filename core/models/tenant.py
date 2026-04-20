@@ -1,13 +1,10 @@
 from django.db import models
 
 from core.managers import TenantManager
+from core.models import BaseModel
 
 
-class TenantModel(models.Model):
-    """
-    Model abstrato para isolamento multi-tenant.
-    Todo model que pertence a uma organização herda deste.
-    """
+class TenantModel(BaseModel):
     organization = models.ForeignKey(
         'account.Organization',
         on_delete=models.CASCADE,

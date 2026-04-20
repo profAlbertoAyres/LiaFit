@@ -1,28 +1,62 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'website:index' %}">LiaFit</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="main-nav">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Recursos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Preços</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contato</a>
-                </li>
-                <li class="nav-item ms-lg-3">
-                    <a class="nav-link" href="{% url 'auth:login' %}">Entrar</a>
-                </li>
-                <li class="nav-item">
-                    {# Usando as classes de botão que você já tem linkadas #}
-                    <a class="btn btn-primary" href="/register/">Começar gratuitamente</a>
-                </li>
-            </ul>
+<header class="lia-navbar">
+    <div class="lia-container lia-navbar__inner">
+        <div class="lia-navbar__brand">
+            <a href="{% url 'website:index' %}" class="lia-navbar__logo">
+                <span class="lia-font-bold lia-text-xl">LiaFit</span>
+            </a>
         </div>
+
+        <nav class="lia-navbar__nav">
+            <a href="#funcionalidades" class="lia-navbar__link">Funcionalidades</a>
+            <a href="#precos" class="lia-navbar__link">Planos</a>
+        </nav>
+        <div class="lia-navbar__actions lia-flex lia-items-center lia-gap-4">
+            {% if user.is_authenticated %}
+
+                <!-- Se o usuário está logado, ele sempre tem o painel dele -->
+                <a href="{% url 'core:dashboard' %}" class="lia-btn lia-btn--primary">
+                    Meu Painel
+                </a>
+
+                <!-- Futuramente, podemos checar se ele JÁ É dono de empresa.
+                     Se não for, mostramos o botão de Upsell (Registre sua empresa) -->
+                <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline lia-hidden-mobile">
+                    Registre sua Empresa
+                </a>
+
+            {% else %}
+
+                <!-- Visitante Não Logado -->
+                <a href="{% url 'auth:login' %}" class="lia-btn lia-btn--ghost">Entrar</a>
+
+                <!-- Dropdown do Bootstrap com estilo LiaFit -->
+                <div class="dropdown">
+                    <button class="lia-btn lia-btn--primary dropdown-toggle" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Criar Conta
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                        <li>
+                            <a class="dropdown-item py-2" href="#">
+                                <strong>Sou Cliente</strong><br>
+                                <small class="text-muted">Quero encontrar serviços</small>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'auth:register' %}">
+                                <strong>Sou Empresa / Profissional</strong><br>
+                                <small class="text-muted">Quero oferecer meus serviços</small>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            {% endif %}
+        </div>
+
+
     </div>
-</nav>
+</header>

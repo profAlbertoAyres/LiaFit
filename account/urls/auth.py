@@ -1,7 +1,7 @@
 from django.urls import path
 
 from account import views
-from account.forms import LoginForm
+from account.forms.auth import LoginForm
 from account.views import OrganizationRegisterView, SetupPasswordView, RegisterSuccess
 from django.contrib.auth import views as auth_views
 
@@ -16,5 +16,6 @@ urlpatterns = [
     ), name='login'),
     path('setup-password/<str:token>/', SetupPasswordView.as_view(), name='setup_password'),
     path("resend-password/", views.resend_password_view, name="resend_password"),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
 ]

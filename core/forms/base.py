@@ -3,12 +3,6 @@ from django.db.models import QuerySet
 
 
 class LiaFitStyleMixin:
-    """
-    Mixin que aplica automaticamente as classes do LiaFit (lia-form-control, etc.),
-    placeholders baseados nos labels e atributos HTML necessários.
-    Pode ser injetado tanto em Forms normais quanto em ModelForms.
-    """
-
     def _apply_liafit_styles(self):
         for field_name, field in self.fields.items():
 
@@ -17,7 +11,7 @@ class LiaFitStyleMixin:
                 field.localize = True
                 field.widget.is_localized = True
 
-            # Define a classe CSS do LiaFit com base no tipo de widget
+            # Define a classe CSS do LiaFit com filters no tipo de widget
             if isinstance(field.widget, (
                     forms.TextInput,
                     forms.NumberInput,
@@ -30,7 +24,7 @@ class LiaFitStyleMixin:
                 css_class = 'lia-form-control'  # ← Mudou aqui
 
             elif isinstance(field.widget, forms.Select):
-                css_class = 'lia-form-control'  # ← Mudou aqui (Selects usam a mesma base visual)
+                css_class = 'lia-form-control'  # ← Mudou aqui (Selects usam a mesma filters visual)
 
             elif isinstance(field.widget, (
                     forms.CheckboxInput,

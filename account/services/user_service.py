@@ -8,18 +8,23 @@ User = get_user_model()
 class UserService:
 
     @staticmethod
-    def get_or_create_user(email):
+    def get_or_create_user(email, fullname=None):
+        defaults = {
+            "email": email,
+            "is_active": False,
+        }
+
+        if fullname:
+            defaults["fullname"] = fullname
+
         user, created = User.objects.get_or_create(
             email=email,
-            defaults={
-                "email": email,
-                "is_active": False,
-            }
+            defaults=defaults,
         )
 
         if created:
-            user.set_unusable_password()
-            user.save()
+                user.set_unusable_password()
+                user.save()
 
         return user
 

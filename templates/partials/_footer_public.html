@@ -1,46 +1,60 @@
-<footer class="bg-light pt-5 pb-4 mt-auto">
-    <div class="container text-center text-md-start">
-        <div class="row">
-            <!-- Coluna 1: Marca -->
-            <div class="col-md-4 col-lg-4 col-xl-4 mx-auto mb-4">
-                <h6 class="text-uppercase fw-bold mb-4">
-                    LiaFit
-                </h6>
-                <p>
-                    A plataforma definitiva para unificar a gestão do seu negócio de saúde e movimento.
+<footer class="lia-footer lia-pt-6">
+    <div class="lia-container">
+        <!-- Usando o grid do Bootstrap que já temos, mas com as cores e fontes do LiaFit -->
+        <div class="row lia-mb-6">
+
+            <!-- Coluna 1: Marca e Propósito -->
+            <div class="col-12 col-md-4 mb-4 mb-md-0">
+                <h6 class="lia-font-bold lia-text-xl lia-mb-4">LiaFit</h6>
+                <p class="lia-text-muted lia-text-sm lia-mb-4" style="max-width: 90%;">
+                    O maior ecossistema de saúde e movimento. Encontre os melhores profissionais para cuidar de você, ou impulsione a gestão do seu negócio.
                 </p>
-                <div class="mt-4">
-                    <a href="#" class="me-3 text-reset"><i data-lucide="instagram"></i></a>
-                    <a href="#" class="me-3 text-reset"><i data-lucide="facebook"></i></a>
-                    <a href="#" class="me-3 text-reset"><i data-lucide="linkedin"></i></a>
+                <div class="lia-flex lia-gap-4">
+                    <a href="#" class="lia-text-muted"><i data-lucide="instagram" class="lucide-sm"></i></a>
+                    <a href="#" class="lia-text-muted"><i data-lucide="facebook" class="lucide-sm"></i></a>
+                    <a href="#" class="lia-text-muted"><i data-lucide="linkedin" class="lucide-sm"></i></a>
                 </div>
             </div>
 
-            <!-- Coluna 2: Produto -->
-            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                <h6 class="text-uppercase fw-bold mb-4">Produto</h6>
-                <p><a href="#!" class="text-reset">Recursos</a></p>
-                <p><a href="#!" class="text-reset">Preços</a></p>
-                <p><a href="#!" class="text-reset">Segurança</a></p>
+            <!-- Coluna 2: Para Clientes (B2C) -->
+            <div class="col-12 col-md-2 mb-4 mb-md-0">
+                <h6 class="lia-font-bold lia-text-sm text-uppercase lia-mb-4">Para Clientes</h6>
+                <ul class="lia-flex lia-flex-col lia-gap-2 p-0 m-0">
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Buscar Profissionais</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Academias e Studios</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Como Funciona</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Central de Ajuda</a></li>
+                </ul>
             </div>
 
-            <!-- Coluna 3: Empresa -->
-            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
-                <h6 class="text-uppercase fw-bold mb-4">Empresa</h6>
-                <p><a href="#!" class="text-reset">Sobre nós</a></p>
-                <p><a href="#!" class="text-reset">Contato</a></p>
-                <p><a href="#!" class="text-reset">Blog</a></p>
+            <!-- Coluna 3: Para Empresas (B2B) -->
+            <div class="col-12 col-md-3 mb-4 mb-md-0">
+                <h6 class="lia-font-bold lia-text-sm text-uppercase lia-mb-4">Para Profissionais</h6>
+                <ul class="lia-flex lia-flex-col lia-gap-2 p-0 m-0">
+                    <li><a href="{% url 'auth:register' %}" class="lia-text-muted lia-text-sm text-decoration-none">Cadastre seu Negócio</a></li>
+                    <li><a href="#precos" class="lia-text-muted lia-text-sm text-decoration-none">Planos e Preços</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Recursos do Sistema</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Suporte para Parceiros</a></li>
+                </ul>
             </div>
 
-            <!-- Coluna 4: Legal -->
-            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-md-0 mb-4">
-                <h6 class="text-uppercase fw-bold mb-4">Legal</h6>
-                <p><a href="#!" class="text-reset">Termos de Uso</a></p>
-                <p><a href="#!" class="text-reset">Política de Privacidade</a></p>
+            <!-- Coluna 4: Institucional -->
+            <div class="col-12 col-md-3">
+                <h6 class="lia-font-bold lia-text-sm text-uppercase lia-mb-4">LiaFit</h6>
+                <ul class="lia-flex lia-flex-col lia-gap-2 p-0 m-0">
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Sobre Nós</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Termos de Uso</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Privacidade</a></li>
+                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Trabalhe Conosco</a></li>
+                </ul>
             </div>
         </div>
-    </div>
-    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-        © {% now "Y" %} LiaFit. Todos os direitos reservados.
+
+        <!-- Linha de Copyright -->
+        <div class="lia-text-center lia-pt-4" style="border-top: 1px solid var(--color-border);">
+            <p class="lia-text-sm lia-text-muted m-0">
+                &copy; {% now "Y" %} LiaFit. Todos os direitos reservados.
+            </p>
+        </div>
     </div>
 </footer>

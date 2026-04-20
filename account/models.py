@@ -20,28 +20,12 @@ class User(AbstractUser):
     email = models.EmailField('Email', unique=True)
     cpf = models.CharField('CPF', max_length=14, blank=True)
     phone = models.CharField('Telefone', max_length=20, blank=True)
-    photo = models.ImageField(
-        'Foto',
-        upload_to=smart_upload_to,
-        blank=True,
-        null=True,
-    )
+    photo = models.ImageField('Foto', upload_to=smart_upload_to, blank=True, null=True, )
     birth_date = models.DateField('Data de Nascimento', null=True, blank=True)
-    gender = models.CharField(
-        'Gênero',
-        max_length=1,
-        choices=Gender.choices,
-        blank=True,
-    )
-    emergency_contact = models.CharField(
-        'Contato de Emergência', max_length=100, blank=True,
-    )
-    emergency_phone = models.CharField(
-        'Telefone de Emergência', max_length=20, blank=True,
-    )
-    email_verified_at = models.DateTimeField(
-        'Email verificado em', null=True, blank=True,
-    )
+    gender = models.CharField('Gênero', max_length=1, choices=Gender.choices, blank=True, )
+    emergency_contact = models.CharField('Contato de Emergência', max_length=100, blank=True, )
+    emergency_phone = models.CharField('Telefone de Emergência', max_length=20, blank=True, )
+    email_verified_at = models.DateTimeField('Email verificado em', null=True, blank=True, )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -82,16 +66,9 @@ class Organization(BaseModel):
     email = models.EmailField(verbose_name='Email', blank=True)
     is_active = models.BooleanField(verbose_name='Ativa', default=False)
 
-    owner = models.ForeignKey(
-        'account.User',
-        on_delete=models.PROTECT,
-        related_name='owned_organizations',
-        verbose_name='Proprietário',
-        null=True,
-        blank=True,
-        help_text='Sempre preenchido via OnboardingService.register(). '
-                  'Nullable apenas por ordem de criação na transaction.',
-    )
+    owner = models.ForeignKey('account.User', on_delete=models.PROTECT, related_name='owned_organizations',
+                              verbose_name='Proprietário', null=True, blank=True,
+                              help_text='Sempre preenchido via OnboardingService.register(). Nullable apenas por ordem de criação na transaction.', )
 
     class Meta:
         verbose_name = 'Organização'
@@ -102,24 +79,11 @@ class Organization(BaseModel):
 
 
 class OrganizationMember(BaseModel):
-    user = models.ForeignKey(
-        'account.User',
-        on_delete=models.PROTECT,
-        related_name='memberships',
-        verbose_name='Usuário',
-    )
-    organization = models.ForeignKey(
-        'account.Organization',
-        on_delete=models.CASCADE,
-        related_name='members',
-        verbose_name='Organização',
-    )
-    roles = models.ManyToManyField(
-        'core.Role',
-        related_name='members',
-        verbose_name='Papéis',
-        blank=True,
-    )
+    user = models.ForeignKey('account.User', on_delete=models.PROTECT, related_name='memberships',
+                             verbose_name='Usuário', )
+    organization = models.ForeignKey('account.Organization', on_delete=models.CASCADE, related_name='members',
+                                     verbose_name='Organização', )
+    roles = models.ManyToManyField('core.Role', related_name='members', verbose_name='Papéis', blank=True, )
     is_active = models.BooleanField('Ativo', default=True)
 
     class Meta:
@@ -135,6 +99,18 @@ class OrganizationMember(BaseModel):
     def __str__(self):
         return f"{self.user} → {self.organization}"
 
+    @property
+    def highest_role_name(self):
+        """Retorna o nome do papel com o nível mais alto (maior número)"""
+        # Busca o papel ativo com o maior 'level'
+        # O sinal de menos (-) no '-level' ordena do maior para o menor
+        highest_role = self.roles.filter(is_active=True).order_by('-level').first()
+
+        if highest_role:
+            return highest_role.name
+
+        return "Colaborador"
+
 
 class ActiveClientManager(models.Manager):
     def get_queryset(self):
@@ -142,24 +118,12 @@ class ActiveClientManager(models.Manager):
 
 
 class Professional(TenantModel, BaseModel):
-    member = models.OneToOneField(
-        OrganizationMember,
-        on_delete=models.CASCADE,
-        related_name='professional_profile',
-        verbose_name='Membro',
-    )
+    member = models.OneToOneField(OrganizationMember, on_delete=models.CASCADE, related_name='professional_profile',
+                                  verbose_name='Membro', )
     specialty = models.CharField('Especialidade', max_length=100, blank=True)
-    registration_type = models.CharField(
-        'Tipo de Registro',
-        max_length=10,
-        blank=True,
-        help_text='Ex: CREF, CRP, CRN, CREFITO',
-    )
-    registration_number = models.CharField(
-        'Nº Registro',
-        max_length=50,
-        blank=True,
-    )
+    registration_type = models.CharField('Tipo de Registro', max_length=10, blank=True,
+                                         help_text='Ex: CREF, CRP, CRN, CREFITO', )
+    registration_number = models.CharField('Nº Registro', max_length=50, blank=True, )
     bio = models.TextField('Bio', blank=True)
 
     class Meta:
@@ -172,12 +136,8 @@ class Professional(TenantModel, BaseModel):
 
 
 class Client(BaseModel):
-    user = models.OneToOneField(
-        'account.User',
-        on_delete=models.CASCADE,
-        related_name='client_profile',
-        verbose_name='Usuário',
-    )
+    user = models.OneToOneField('account.User', on_delete=models.CASCADE, related_name='client_profile',
+                                verbose_name='Usuário', )
 
     class Meta:
         verbose_name = 'Perfil de Cliente'
@@ -188,49 +148,21 @@ class Client(BaseModel):
 
 
 class OrganizationClient(BaseModel):
-    user = models.ForeignKey(
-        'account.Client',
-        on_delete=models.PROTECT,
-        related_name='client_links',
-        verbose_name='Usuário',
-    )
-    organization = models.ForeignKey(
-        'account.Organization',
-        on_delete=models.CASCADE,
-        related_name='client_links',
-        verbose_name='Organização',
-    )
-    created_by = models.ForeignKey(
-        'account.User',
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='created_client_links',
-        verbose_name='Cadastrado por',
-        help_text='Membro da empresa que criou o vínculo (shadow client). '
-                  'Vazio se o cliente se cadastrou sozinho.',
-    )
-    first_service_at = models.DateTimeField(
-        'Primeiro serviço em',
-        null=True, blank=True,
-        help_text='Preenchido automaticamente no 1º agendamento.',
-    )
-    welcome_email_sent = models.BooleanField(
-        'Email de boas-vindas enviado',
-        default=False,
-    )
-    objective = models.TextField(
-        'Objetivo',
-        blank=True,
-        help_text='Ex: emagrecimento, hipertrofia, condicionamento, '
-                  'reabilitação, qualidade de vida.',
-    )
+    user = models.ForeignKey('account.Client', on_delete=models.PROTECT, related_name='client_links',
+                             verbose_name='Usuário', )
+    organization = models.ForeignKey('account.Organization', on_delete=models.CASCADE, related_name='client_links',
+                                     verbose_name='Organização', )
+    created_by = models.ForeignKey('account.User', on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_client_links', verbose_name='Cadastrado por',
+                                   help_text='Membro da empresa que criou o vínculo (shadow client). Vazio se o cliente se cadastrou sozinho.', )
+    first_service_at = models.DateTimeField('Primeiro serviço em', null=True, blank=True,
+                                            help_text='Preenchido automaticamente no 1º agendamento.', )
+    welcome_email_sent = models.BooleanField('Email de boas-vindas enviado', default=False, )
+    objective = models.TextField('Objetivo', blank=True,
+                                 help_text='Ex: emagrecimento, hipertrofia, condicionamento, reabilitação, qualidade de vida.', )
     notes = models.TextField('Observações internas da empresa', blank=True)
-    archived_at = models.DateTimeField(
-        'Arquivado em',
-        null=True, blank=True,
-        help_text='Preenchido ao desvincular cliente. '
-                  'Preserva histórico operacional — use ClientService.archive().',
-    )
+    archived_at = models.DateTimeField('Arquivado em', null=True, blank=True,
+                                       help_text='Preenchido ao desvincular cliente. Preserva histórico operacional — use ClientService.archive().', )
 
     objects = ActiveClientManager()
     all_objects = models.Manager()
@@ -255,12 +187,7 @@ class OrganizationClient(BaseModel):
 
 
 class Assistant(TenantModel, BaseModel):
-    member = models.OneToOneField(
-        OrganizationMember,
-        on_delete=models.CASCADE,
-        related_name='assistant_profile',
-        verbose_name='Membro',
-    )
+    member = models.OneToOneField(OrganizationMember, on_delete=models.CASCADE, related_name='assistant_profile', verbose_name='Membro',)
     department = models.CharField('Setor', max_length=100, blank=True)
 
     class Meta:
@@ -272,7 +199,6 @@ class Assistant(TenantModel, BaseModel):
         return f"Assistente: {user.get_full_name() or user.email}"
 
 
-# 🔑 ONBOARDING TOKEN
 class OnboardingToken(BaseModel):
     class Purpose(models.TextChoices):
         ONBOARDING = 'onboarding', 'Onboarding'

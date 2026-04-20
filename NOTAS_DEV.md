@@ -624,7 +624,116 @@ Método que consome o token de onboarding e ativa user + organização.
 
 | **2.3** | **18/04/2026** | **Sprint 1 concluída: `setup_password()`, forms, views, URLs e templates de onboarding finalizados. Fluxo completo de registro + ativação funcional.** |
 
+# LiaFit — Notas de Desenvolvimento
 
+## Arquitetura
+
+- **Multi-tenant** via `org_slug` na URL (ex: `/app/{slug}/dashboard/`)
+- **Middleware** `TenantMiddleware` injeta `request.context` com org, membership, roles, modules, permissions
+- **RBAC** baseado em roles + permissions por módulo
+- **Superuser** tem bypass total (não precisa de membership)
+
+---
+
+## Estrutura de Apps
+
+| App | Responsabilidade |
+|---|---|
+| `account` | User, Organization, OrganizationMember, Role, Module, Permission |
+| `core` | Views base (mixins), Dashboard, templates globais |
+| `manage` | Seleção/criação de organização (pré-tenant) |
+
+---
+
+## Fluxo de Acesso
+
+
+---
+
+## Views Base (`core/views/base.py`)
+
+- `BaseAuthMixin` — Login + membership + RBAC (superuser bypassa)
+- `ContextMixin` — Filtra queryset por org, injeta tenant/membership nos forms
+- `BaseListView` — Lista + filtro + paginação
+- `BaseCreateView` — Cria com org automática
+- `BaseUpdateView` — Edita com org automática
+- `BaseDetailView` — Detalhe filtrado por org
+- `BaseDeleteView` — Exclusão filtrada por org
+
+---
+
+## Templates
+
+
+---
+
+## Middleware
+
+### TenantMiddleware
+- Extrai `org_slug` da URL
+- Busca `Organization` + `OrganizationMember`
+- Monta `request.context` (namedtuple `RequestContext`)
+- Rotas sem `org_slug` passam sem contexto
+
+---
+
+## JavaScript
+
+| Arquivo | Função |
+|---|---|
+| `js/modules/sidebar.js` | Toggle sidebar (desktop colapso + mobile overlay) |
+| `js/modules/forms.js` | Helpers de formulário |
+
+---
+
+## Checklist de Progresso
+
+- [x] Models: User, Organization, OrganizationMember, Role, Module, Permission
+- [x] Middleware: TenantMiddleware
+- [x] Views base: BaseAuthMixin, ContextMixin, CRUD views
+- [x] Superuser bypass no BaseAuthMixin e ContextMixin
+- [x] Template: base_app.html (layout logado)
+- [x] Template: dashboard.html
+- [x] JS: sidebar.js
+- [ ] Views: manage (select_organization, create_organization)
+- [ ] Context processor: tenant_context (org selector no header)
+- [ ] Testes automatizados
+- [ ] Módulos do SaaS (clients, schedule, financial, etc.)
+
+---
+
+## Último Commit
+
+- **Data**: 2026-04-18
+- **Descrição**: Superuser bypass + dashboard + base_app.html
+- **Arquivos alterados**:
+  - `core/views/base.py` — Superuser bypass no dispatch + queryset
+  - `core/views/dashboard.py` — DashboardView
+  - `templates/core/dashboard.html` — Template do dashboard
+  - `templates/base_app.html` — Layout da área logada
+  - `static/js/modules/sidebar.js` — Controle da sidebar
+
+
+
+Estrutura de Módulos no Banco: Criamos o modelo de dados para menus dinâmicos (Module e ModuleItem) com suporte a ícones, rotas e controle de exibição.
+Correção de Permissões do Superuser:
+Alteramos o base.py para que o superuser não seja barrado pela falta de vínculo (membership) com a clínica.
+Ajustamos o registry.py para o superuser carregar os módulos do banco ignorando a trava de "módulo comprado/ativado" da organização.
+Ativação dos Menus Estáticos: Inserimos o carregamento do menus.py dentro do apps.py (método ready()), fazendo com que os menus fixos do sistema (Global, Tenant e Master) aparecessem com sucesso na tela.
+Layout Consolidado: A barra lateral da LiaFit já está exibindo os ícones do Lucide, agrupamentos corretos e os dados do usuário logado (julia@linda.com).
+🔍 Diagnóstico Rápido (Observação sobre o seu HTML)
+No HTML que você enviou, notei uma coisa importante: Os menus estáticos apareceram, mas os menus do banco de dados (Dashboard, Cadastros) não. Além disso, no meio da tela está escrito: Organização: <strong></strong> (vazio!).
+
+O que isso significa? Você acessou uma URL global (provavelmente a raiz /), onde o sistema ainda não selecionou nenhuma clínica/organização (ou seja, ctx.organization está vazio). Como o registry.py atual só busca no banco se houver uma organização no contexto, os módulos dinâmicos não foram desenhados. Isso está certinho arquiteturalmente, mas amanhã vamos ajustar o fluxo para o usuário entrar na clínica certa.
+
+🚀 O que devemos fazer amanhã (Próximos Passos)
+Resolver o Fluxo de Entrada (Tenant Context):
+Fazer com que, ao logar, o usuário seja redirecionado para a URL da sua clínica (ex: /org/minha-clinica/dashboard/) para que a tag Organização: seja preenchida e os menus do banco de dados apareçam.
+Ou ajustar o registry.py para que o superuser veja os menus do banco mesmo estando fora de uma clínica.
+Criar as Views e Rotas que Faltam:
+O menu HTML aponta para href="#". Precisamos garantir que as rotas configuradas nos itens do banco e no menus.py (ex: tenant:agenda, master:organizations) existam no urls.py para os links funcionarem e não darem erro 404.
+Dar vida aos Cards do Dashboard:
+Substituir os — (traços) dos cards de Clientes, Agendamentos Hoje, Faturamento e Serviços Ativos por variáveis de contexto na View (context['total_clientes'], etc) puxando os dados reais do banco.
 ### 🔜 Próximos passos
 Iniciar **Sprint 2 — Dashboard multi-empresa + seletor de org**
 

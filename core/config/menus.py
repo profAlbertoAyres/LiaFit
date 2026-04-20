@@ -1,99 +1,48 @@
 # core/config/menus.py
-
-"""
-Definição de TODOS os menus do sistema.
-
-Aqui é onde você configura o que aparece na sidebar.
-Cada app pode ter seu próprio grupo.
-
-Este arquivo é carregado uma vez pelo AppConfig do core.
-"""
-
 from django.utils.translation import gettext_lazy as _
 from core.menu import MenuItem, MenuGroup, menu_registry
 
-
 def register_menus():
-    """Registra todos os menus do sistema."""
-
-    # ── Dashboard (sempre visível para logados) ──────
+    # ── 1. MENU DO CLIENTE (Global) ──────
     menu_registry.register(
         MenuGroup(
-            label=_("Geral"),
-            icon="layout-dashboard",
+            label=_("Minha Área"),
+            icon="user",
             order=0,
+            scope="global",  # <-- Sempre visível
             items=[
                 MenuItem(
                     label=_("Dashboard"),
-                    url_name="dashboard:index",
-                    icon="home",
+                    url_name="dashboard", # Rota sem slug
+                    icon="layout-dashboard",
+                ),
+                MenuItem(
+                    label=_("Minhas Avaliações"),
+                    url_name="client:evaluations",
+                    icon="activity",
                 ),
             ],
         )
     )
 
-    # ── Pacientes / Clientes ─────────────────────────
-    # TODO: descomentar quando criar o app
-    # menu_registry.register(
-    #     MenuGroup(
-    #         label=_("Atendimento"),
-    #         icon="users",
-    #         order=10,
-    #         items=[
-    #             MenuItem(
-    #                 label=_("Pacientes"),
-    #                 url_name="patient:list",
-    #                 icon="user",
-    #                 permission="patient.view_patient",
-    #             ),
-    #             MenuItem(
-    #                 label=_("Consultas"),
-    #                 url_name="appointment:list",
-    #                 icon="calendar",
-    #                 permission="appointment.view_appointment",
-    #             ),
-    #         ],
-    #     )
-    # )
-
-    # ── Financeiro ───────────────────────────────────
-    # TODO: descomentar quando criar o app
-    # menu_registry.register(
-    #     MenuGroup(
-    #         label=_("Financeiro"),
-    #         icon="wallet",
-    #         order=20,
-    #         items=[
-    #             MenuItem(
-    #                 label=_("Lançamentos"),
-    #                 url_name="financial:list",
-    #                 icon="receipt",
-    #                 permission="financial.view_record",
-    #             ),
-    #         ],
-    #     )
-    # )
-
-    # ── Administração ────────────────────────────────
-    # TODO: descomentar quando criar o app
-    # menu_registry.register(
-    #     MenuGroup(
-    #         label=_("Administração"),
-    #         icon="settings",
-    #         order=100,
-    #         items=[
-    #             MenuItem(
-    #                 label=_("Profissionais"),
-    #                 url_name="account:professional_list",
-    #                 icon="briefcase",
-    #                 permission="account.view_professional",
-    #             ),
-    #             MenuItem(
-    #                 label=_("Permissões"),
-    #                 url_name="account:group_list",
-    #                 icon="shield",
-    #                 permission="auth.view_group",
-    #             ),
-    #         ],
-    #     )
-    # )
+    # ── 3. MENU DO DONO DO SISTEMA (Superuser) ───────────
+    menu_registry.register(
+        MenuGroup(
+            label=_("Administração SaaS"),
+            icon="settings",
+            order=1000,
+            scope="superuser", # <-- Só aparece para is_superuser=True
+            items=[
+                MenuItem(
+                    label=_("Todas as Clínicas"),
+                    url_name="master:organizations",
+                    icon="building",
+                ),
+                MenuItem(
+                    label=_("Faturamento SaaS"),
+                    url_name="master:billing",
+                    icon="dollar-sign",
+                ),
+            ],
+        )
+    )

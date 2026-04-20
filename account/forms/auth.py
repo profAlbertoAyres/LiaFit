@@ -1,17 +1,18 @@
-from django.contrib.auth import get_user_model
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.password_validation import validate_password
+from django.utils.translation import gettext_lazy as _
 
 from account.services.onboarding_service import OnboardingService
-from core.forms import BaseForm, LiaFitStyleMixin
+from core.forms.base import BaseForm, LiaFitStyleMixin
 
 User = get_user_model()
 
 class OrganizationRegistrationForm(BaseForm):
-    company_name = forms.CharField(label="Nome da Empresa (Clínica/Estúdio/Acadêmia)", max_length=255)
-    fullname = forms.CharField(label='Nome completo', max_length=150)
-    email = forms.EmailField(label='Email')
+    company_name = forms.CharField(label=_("Nome da Empresa (Clínica/Estúdio/Acadêmia)"), max_length=255)
+    fullname = forms.CharField(label=_('Nome completo'), max_length=150)
+    email = forms.EmailField(label=_('E-mail'),max_length=150)
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -19,22 +20,21 @@ class OrganizationRegistrationForm(BaseForm):
             raise forms.ValidationError("Este e-mail já está cadastrado no sistema.")
         return email
 
-    def save(self):
+    def save(self, request=None):
         user_data = {
             'fullname': self.cleaned_data['fullname'],
             'email': self.cleaned_data['email'],
         }
         org_data = {
-            'company_name': self.cleaned_data['company_name'], # <--- MAPEADO AQUI!
-            'slug': self.cleaned_data['company_name']  # <--- MAPEADO AQUI!
+            'company_name': self.cleaned_data['company_name'],
         }
 
-        return OnboardingService.register_organization(user_data, org_data)
+        return OnboardingService.register_organization(user_data, org_data, request=request)
 
 
 class SetupPasswordForm(BaseForm):
-    password1 = forms.CharField(label="Nova senha", widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Confirmação da senha", widget=forms.PasswordInput)
+    password1 = forms.CharField(label=_("Nova senha"), widget=forms.PasswordInput)
+    password2 = forms.CharField(label=_("Confirmação da senha"), widget=forms.PasswordInput)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -63,8 +63,12 @@ class LoginForm(LiaFitStyleMixin, AuthenticationForm):
 
         if 'username' in self.fields:
             self.fields['username'].widget.input_type = 'email'
-            self.fields['username'].label = 'E-mail'
+            self.fields['username'].label = _('E-mail')
             self.fields['username'].widget.attrs['autocomplete'] = 'email'
+
+        # Ajusta o campo de senha
+        if 'password' in self.fields:
+            self.fields['password'].label = _("Senha")
 
         # Aplica toda a mágica do seu Mixin (lia-form-control, placeholders, etc.)
         self._apply_liafit_styles()

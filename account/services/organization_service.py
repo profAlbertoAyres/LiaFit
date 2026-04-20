@@ -5,6 +5,7 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from account.models import Organization, OrganizationMember
+from core.bootstrap import bootstrap_organization
 from core.models.role import Role
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,10 @@ class OrganizationService:
     @transaction.atomic
     def add_member(user, organization, role_codename):
         try:
-            role = Role.objects.get(codename=role_codename)
+            role = Role.objects.get(
+                slug=role_codename.lower(),
+                organization=organization  # Filtra pela organização!
+            )
         except Role.DoesNotExist:
             logger.error("Role inexistente: codename=%s", role_codename)
             raise ValidationError(f"Role '{role_codename}' não encontrada.")
@@ -81,12 +85,22 @@ class OrganizationService:
     # ──────────────── ATIVAÇÃO ────────────────
 
     @staticmethod
+    @transaction.atomic
     def activate_organization(organization):
         """Ativa a organização (idempotente)."""
         if organization.is_active:
             logger.debug("Organização %s já está ativa.", organization.slug)
             return organization
+        logger.info("Iniciando bootstrap para a organização %s", organization.slug)
+        stats = bootstrap_organization(organization)
 
+        logger.info(
+            "Bootstrap concluído. Módulos: %d | Roles: %d criadas, %d atualizadas | Permissões: %d",
+            stats["modules_enabled"],
+            stats["roles_created"],
+            stats["roles_updated"],
+            stats["role_permissions_created"]
+        )
         organization.is_active = True
         organization.save(update_fields=['is_active'])
         logger.info("Organização ativada: %s", organization.slug)

@@ -1,0 +1,134 @@
+{% extends 'base_app.html' %}
+{% load i18n %}
+
+{% block header_title %}{% translate "Painel de Controle" %}{% endblock %}
+
+{% block page_content %}
+<div class="lia-container">
+
+    <!-- Cabeçalho de Boas Vindas -->
+    <div class="lia-flex lia-items-center lia-justify-between lia-mb-8">
+        <div>
+            <h1 class="lia-text-2xl lia-font-semibold">
+                {% blocktranslate with name=request.user.get_short_name|default:request.user.email %}
+                    Olá, {{ name }}! 👋
+                {% endblocktranslate %}
+            </h1>
+            <p class="lia-text-muted lia-mt-1">
+                {% translate "Acompanhe o resumo da sua organização:" %} <strong>{{ current_organization.company_name }}</strong>
+            </p>
+        </div>
+
+        <!-- Botão de Ação Rápida Principal -->
+        <div>
+            <a href="#" class="lia-btn lia-btn--primary">
+                <i data-lucide="plus" class="lucide lia-mr-2"></i>
+                {% translate "Novo Cliente" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Cards de Métricas Principais (KPIs) -->
+    <div class="lia-grid lia-grid-cols-4 lia-gap-4 lia-mb-8">
+
+        <div class="lia-card lia-p-6">
+            <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
+                <small class="lia-text-muted lia-font-medium">{% translate "Total de Clientes" %}</small>
+                <i data-lucide="users" class="lucide lia-text-primary"></i>
+            </div>
+            <h2 class="lia-text-3xl lia-font-bold">{{ metrics.total_clients }}</h2>
+        </div>
+
+        <div class="lia-card lia-p-6">
+            <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
+                <small class="lia-text-muted lia-font-medium">{% translate "Equipe" %}</small>
+                <i data-lucide="contact" class="lucide lia-text-info"></i>
+            </div>
+            <h2 class="lia-text-3xl lia-font-bold">{{ metrics.total_team }}</h2>
+        </div>
+
+        <div class="lia-card lia-p-6">
+            <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
+                <small class="lia-text-muted lia-font-medium">{% translate "Agendamentos Hoje" %}</small>
+                <i data-lucide="calendar" class="lucide lia-text-warning"></i>
+            </div>
+            <h2 class="lia-text-3xl lia-font-bold">{{ metrics.today_appointments }}</h2>
+        </div>
+
+        <div class="lia-card lia-p-6">
+            <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
+                <small class="lia-text-muted lia-font-medium">{% translate "Faturamento Mês" %}</small>
+                <i data-lucide="trending-up" class="lucide lia-text-success"></i>
+            </div>
+            <h2 class="lia-text-3xl lia-font-bold">
+                <span class="lia-text-sm lia-font-normal lia-text-muted">R$</span> {{ metrics.monthly_revenue|floatformat:2 }}
+            </h2>
+        </div>
+
+    </div>
+
+    <!-- Seção de Tabelas e Informações Adicionais -->
+    <div class="lia-grid lia-grid-cols-3 lia-gap-6">
+
+        <!-- Tabela de Últimos Clientes (Ocupa 2 colunas) -->
+        <div class="lia-card lia-p-6 lia-col-span-2">
+            <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
+                <h3 class="lia-font-semibold">{% translate "Últimos Clientes Cadastrados" %}</h3>
+                <a href="#" class="lia-text-sm lia-text-primary hover:lia-underline">{% translate "Ver todos" %}</a>
+            </div>
+
+            <div class="lia-table-responsive">
+                <table class="lia-table">
+                    <thead>
+                        <tr>
+                            <th>{% translate "Nome" %}</th>
+                            <th>{% translate "Objetivo" %}</th>
+                            <th>{% translate "Data de Cadastro" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in recent_clients %}
+                        <tr>
+                            <td>
+                                <div class="lia-font-medium">{{ client.user.get_full_name }}</div>
+                                <div class="lia-text-xs lia-text-muted">{{ client.user.email }}</div>
+                            </td>
+                            <td>{{ client.objective|default:"—"|truncatechars:30 }}</td>
+                            <td>{{ client.created_at|date:"d/m/Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="lia-text-center lia-text-muted lia-py-4">
+                                {% translate "Nenhum cliente cadastrado ainda." %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Painel de Ações Rápidas (Ocupa 1 coluna) -->
+        <div class="lia-card lia-p-6">
+            <h3 class="lia-font-semibold lia-mb-4">{% translate "Ações Rápidas" %}</h3>
+
+            <div class="lia-flex lia-flex-col lia-gap-3">
+                <a href="#" class="lia-btn lia-btn--ghost lia-justify-start">
+                    <i data-lucide="calendar-plus" class="lucide lia-mr-2"></i>
+                    {% translate "Novo Agendamento" %}
+                </a>
+                <a href="#" class="lia-btn lia-btn--ghost lia-justify-start">
+                    <i data-lucide="file-text" class="lucide lia-mr-2"></i>
+                    {% translate "Registrar Avaliação" %}
+                </a>
+                <a href="#" class="lia-btn lia-btn--ghost lia-justify-start">
+                    <i data-lucide="settings" class="lucide lia-mr-2"></i>
+                    {% translate "Configurações da Clínica" %}
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

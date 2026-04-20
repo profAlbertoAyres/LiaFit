@@ -1,8 +1,9 @@
 /* =============================================================================
-   LIAFIT — SIDEBAR
-   Controle de colapso (desktop) e abertura/fechamento (mobile).
+   LIAFIT — SIDEBAR & HEADER COMPONENTS
+   Controle de colapso da sidebar (desktop/mobile) e dropdown do header.
    ============================================================================= */
 
+// ─── 1. CONTROLE DA SIDEBAR ──────────────────────────────────────────────────
 const LiaSidebar = {
     STORAGE_KEY: 'lia-sidebar-collapsed',
     MOBILE_BREAKPOINT: 768,
@@ -33,12 +34,10 @@ const LiaSidebar = {
         window.addEventListener('resize', () => this.handleResize());
     },
 
-    /** Verifica se é mobile */
     isMobile() {
         return window.innerWidth <= this.MOBILE_BREAKPOINT;
     },
 
-    /** Toggle geral */
     toggle() {
         if (this.isMobile()) {
             this.toggleMobile();
@@ -47,13 +46,11 @@ const LiaSidebar = {
         }
     },
 
-    /** Desktop: colapsa / expande */
     toggleCollapse() {
         const isCollapsed = this.sidebar.classList.toggle('lia-sidebar--collapsed');
         localStorage.setItem(this.STORAGE_KEY, isCollapsed ? 'true' : 'false');
     },
 
-    /** Mobile: abre */
     toggleMobile() {
         const isOpen = this.sidebar.classList.toggle('lia-sidebar--mobile-open');
         if (this.overlay) {
@@ -62,7 +59,6 @@ const LiaSidebar = {
         document.body.style.overflow = isOpen ? 'hidden' : '';
     },
 
-    /** Mobile: fecha */
     closeMobile() {
         this.sidebar.classList.remove('lia-sidebar--mobile-open');
         if (this.overlay) {
@@ -71,7 +67,6 @@ const LiaSidebar = {
         document.body.style.overflow = '';
     },
 
-    /** Restaura estado do localStorage */
     restoreState() {
         if (this.isMobile()) return;
         const saved = localStorage.getItem(this.STORAGE_KEY);
@@ -80,13 +75,52 @@ const LiaSidebar = {
         }
     },
 
-    /** Ao redimensionar, limpa estados inconsistentes */
     handleResize() {
         if (!this.isMobile()) {
-            // Saiu do mobile → fecha overlay, restaura collapse
             this.closeMobile();
         }
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => LiaSidebar.init());
+
+// ─── 2. CONTROLE DO SELETOR DE CLÍNICAS (HEADER) ─────────────────────────────
+const LiaOrgSelector = {
+    toggleBtn: null,
+    dropdown: null,
+
+    init() {
+        this.toggleBtn = document.getElementById('org-selector-toggle');
+        this.dropdown = document.getElementById('org-selector-dropdown');
+
+        // Se o usuário não tiver mais de uma clínica, esses elementos não existirão no HTML
+        if (!this.toggleBtn || !this.dropdown) return;
+
+        // Botão de abrir/fechar o dropdown
+        this.toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita que o clique feche imediatamente
+            this.toggle();
+        });
+
+        // Clicar fora do dropdown faz ele fechar
+        document.addEventListener('click', (e) => this.closeIfOutside(e));
+    },
+
+    toggle() {
+        const isVisible = this.dropdown.style.display === 'block';
+        this.dropdown.style.display = isVisible ? 'none' : 'block';
+    },
+
+    closeIfOutside(e) {
+        // Se o clique não foi no botão nem dentro do dropdown, esconde o dropdown
+        if (!this.toggleBtn.contains(e.target) && !this.dropdown.contains(e.target)) {
+            this.dropdown.style.display = 'none';
+        }
+    }
+};
+
+
+// ─── 3. INICIALIZAÇÃO GLOBAL ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    LiaSidebar.init();
+    LiaOrgSelector.init();
+});

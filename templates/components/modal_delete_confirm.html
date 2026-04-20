@@ -1,39 +1,62 @@
+<!-- Mantemos as classes estruturais do Bootstrap apenas para o JS continuar funcionando -->
 <div class="modal fade" id="deleteModal{{ id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-lg); background-color: var(--color-bg);">
-            <form action="{{ url }}" method="post">
+
+        <!-- Removemos o visual do modal-content do Bootstrap e delegamos para o lia-card -->
+        <div class="modal-content" style="background-color: transparent; border: none; box-shadow: none;">
+
+            <form action="{{ url }}" method="post" class="lia-card" style="box-shadow: var(--shadow-lg);">
                 {% csrf_token %}
 
-                <div class="modal-header border-bottom-0 pb-0">
-                    <div class="d-flex align-items-center gap-2 text-danger">
-                        <i data-lucide="alert-triangle"></i>
-                        <h5 class="modal-title fw-bold" style="color: var(--color-text-muted);">Confirmar Exclusão</h5>
+                <!-- HEADER -->
+                <div class="lia-flex lia-items-center lia-justify-between lia-p-6" style="padding-bottom: var(--space-4);">
+                    <div class="lia-flex lia-items-center lia-gap-2" style="color: var(--color-danger);">
+                        <i data-lucide="alert-triangle" class="lucide"></i>
+                        <h5 class="lia-font-bold" style="font-size: var(--font-size-lg); margin: 0;">Confirmar Exclusão</h5>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    <!-- Botão de fechar nativo do LiaFit -->
+                    <button type="button" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" data-bs-dismiss="modal" aria-label="Close" style="color: var(--color-text-muted);">
+                        <i data-lucide="x" class="lucide"></i>
+                    </button>
                 </div>
 
-                <div class="modal-body pt-4">
-                    <p class="mb-4" style="color: var(--color-text-muted);">Tem certeza que deseja excluir <strong>{{ name }}</strong>? Esta ação não pode ser desfeita.</p>
+                <!-- BODY -->
+                <div class="lia-px-6" style="padding-bottom: var(--space-6);">
+                    <p class="lia-text-secondary" style="margin-bottom: var(--space-6);">
+                        Tem certeza que deseja excluir <strong>{{ name }}</strong>? Esta ação não pode ser desfeita.
+                    </p>
 
-                    <div class="mb-3 p-3 rounded-3" style="background-color: var(--color-focus-ring); border: 1px solid var(--color-border);">
-                        <label for="password_confirm_{{ id }}" class="lia-label">Digite sua senha para confirmar:</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                                <i data-lucide="lock" style="width: 16px; height: 16px; color: var(--color-text-muted);"></i>
-                            </span>
-                            <input type="password" name="password_confirm" id="password_confirm_{{ id }}" class="lia-form-control border-start-0" required placeholder="Sua senha de acesso">
+                    <!-- CAIXA DE CONFIRMAÇÃO (Área de Risco) -->
+                    <div style="background-color: var(--color-danger-light); border: 1px solid var(--color-danger-border); border-radius: var(--radius-md); padding: var(--space-4);">
+                        <div class="lia-form-group" style="margin-bottom: 0;">
+                            <label for="password_confirm_{{ id }}" class="lia-form-label" style="color: var(--color-danger);">
+                                Digite sua senha para confirmar:
+                            </label>
+
+                            <!-- Input Group simulado com CSS nativo (inspirado no seu auth.css) -->
+                            <div style="position: relative;">
+                                <div style="position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); display: flex; align-items: center; pointer-events: none; color: var(--color-text-muted);">
+                                    <i data-lucide="lock" class="lucide-sm"></i>
+                                </div>
+                                <input type="password" name="password_confirm" id="password_confirm_{{ id }}" class="lia-form-control" required placeholder="Sua senha de acesso" style="padding-left: var(--space-10);">
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="lia-btn lia-btn--ghost" data-bs-dismiss="modal">Cancelar</button>
+                <!-- FOOTER (Nativo do cards.css) -->
+                <div class="lia-card__footer">
+                    <button type="button" class="lia-btn lia-btn--ghost" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
                     <button type="submit" class="lia-btn lia-btn--danger">
-                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
-                        Confirmar Exclusão
+                        <i data-lucide="trash-2" class="lucide-sm"></i>
+                        <span>Confirmar Exclusão</span>
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>

@@ -3,10 +3,7 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    """
-    Manager customizado para o model User.
-    Usa email como identificador único ao invés de username.
-    """
+
 
     def create_user(self, email, password=None, **extra_fields):
         if not email:

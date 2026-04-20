@@ -17,7 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from core.views import PostLoginRedirectView, DashboardView
+
 urlpatterns = [
+    path('admin/', admin.site.urls),
+
     # Páginas públicas (sem login, sem tenant)
     path('', include('website.urls')),
 
@@ -27,5 +31,6 @@ urlpatterns = [
     # Todas as rotas de management.py vão começar com meusaas.com/manage/...
     path('manage/', include('account.urls.management', namespace='management')),
     path('org/<slug:org_slug>/', include('core.urls.tenant')),
+    path('', include('core.urls.master')),
 
 ]

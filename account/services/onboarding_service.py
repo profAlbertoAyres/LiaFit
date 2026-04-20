@@ -1,7 +1,7 @@
 import logging
 
-from django.conf import settings  # ← corrigido
-from django.contrib.auth import login
+from django.conf import settings
+from django.contrib.auth import login, get_user_model
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
@@ -10,8 +10,11 @@ from account.models import OnboardingToken
 from account.services.organization_service import OrganizationService
 from account.services.token_service import TokenService
 from account.services.user_service import UserService
+from core.constants import ROLES
+from core.models import Role
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
 
 
 class OnboardingService:
@@ -23,11 +26,24 @@ class OnboardingService:
         if not email:
             raise ValidationError("E-mail não informado.")
 
-        user = UserService.get_or_create_user(email)
+        fullname = user_data.get("fullname")
+        user = UserService.get_or_create_user(email, fullname=fullname)
 
         organization_data["owner_email"] = email
         organization = OrganizationService.create_organization(organization_data)
-        OrganizationService.add_member(user, organization, role_codename="OWNER")
+        owner_def = next((r for r in ROLES if r["slug"] == "owner"), None)
+        if not owner_def:
+            raise ValueError("Role 'owner' não encontrada em core.constants.ROLES")
+
+        # Cria apenas o registro base da Role para podermos vincular o usuário
+        Role.objects.create(
+            organization=organization,
+            slug=owner_def["slug"],
+            name=owner_def["name"],
+            description=owner_def.get("description", ""),
+            level=owner_def.get("level", 0)
+        )
+        OrganizationService.add_member(user, organization, role_codename="owner")
 
         organization.owner = user
         organization.save(update_fields=["owner"])
@@ -49,14 +65,6 @@ class OnboardingService:
     @staticmethod
     @transaction.atomic
     def setup_password(token_str, password, request=None):
-        """
-        Consome um token de ONBOARDING para ativar user + organização.
-
-        Raises:
-            TokenInvalidError, TokenExpiredError, TokenAlreadyUsedError,
-            TokenPurposeMismatchError, NoMembershipError, ValidationError
-        """
-        # 1. Valida token (já lança exceptions específicas)
         token_obj = TokenService.get_valid_token(
             token_str,
             expected_purpose=OnboardingToken.Purpose.ONBOARDING,
@@ -64,26 +72,20 @@ class OnboardingService:
 
         user = token_obj.user
 
-        # 2. Ativa usuário (define senha, marca email_verified_at, is_active)
         UserService.activate_user(user, password)
 
-        # 3. Busca organização via token (mais confiável que memberships.first())
         organization = token_obj.organization
         if not organization:
-            # Fallback: se token não tem org, tenta via membership
             membership = user.memberships.select_related("organization").first()
             if not membership:
                 raise NoMembershipError()
             organization = membership.organization
 
-        # 4. Ativa organização
         OrganizationService.activate_organization(organization)
 
-        # 5. Invalida token (com rastreio de IP/UA)
         ip, ua = OnboardingService._extract_request_meta(request)
         TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
 
-        # 6. Auto-login opcional
         if request:
             login(request, user)
 
@@ -94,7 +96,45 @@ class OnboardingService:
 
         return user
 
-    # ──────────────── Helpers privados ────────────────
+    @staticmethod
+    @transaction.atomic
+    def resend_password_token(email, request=None):
+        if not email:
+            return
+
+        user = (
+            User.objects
+            .filter(email__iexact=email.strip())
+            .first()
+        )
+        if not user:
+            return
+
+        membership = user.memberships.select_related("organization").first()
+        if not membership:
+            return
+
+        organization = membership.organization
+        ip, ua = OnboardingService._extract_request_meta(request)
+
+        token = TokenService.create_token(
+            user=user,
+            purpose=OnboardingToken.Purpose.ONBOARDING,
+            organization=organization,
+            created_ip=ip,
+            created_ua=ua,
+        )
+
+        transaction.on_commit(
+            lambda: OnboardingService._send_activation_email(
+                user, organization, token, request
+            )
+        )
+
+        logger.info(
+            "Reenvio de ativação solicitado: user=%s org=%s",
+            user.email, organization.company_name
+        )
 
     @staticmethod
     def _extract_request_meta(request):
@@ -102,12 +142,11 @@ class OnboardingService:
         if not request:
             return None, None
 
-        # IP (respeita proxy reverso)
         ip = (
             request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
             or request.META.get("REMOTE_ADDR")
         )
-        ua = request.META.get("HTTP_USER_AGENT", "")[:500]  # trunca por segurança
+        ua = request.META.get("HTTP_USER_AGENT", "")[:500]
         return ip or None, ua or None
 
     @staticmethod

@@ -44,3 +44,22 @@ class OnboardingTokenAdmin(admin.ModelAdmin):
         if obj.is_expired:
             return '⏱️ Expirado'
         return '🟢 Válido'
+
+from django.contrib import admin
+from .models import Organization, OrganizationMember
+
+from django.contrib import admin
+from .models import Organization, OrganizationMember
+
+@admin.register(Organization)
+class OrganizationAdmin(admin.ModelAdmin):
+    # Removi os campos 'name' e prepopulated para não dar erro
+    list_display = ('id', 'slug', 'is_active')
+    search_fields = ('slug',)
+    list_filter = ('is_active',)
+
+@admin.register(OrganizationMember)
+class OrganizationMemberAdmin(admin.ModelAdmin):
+    # Removi 'role' e 'autocomplete_fields' para não dar erro
+    list_display = ('id', 'user', 'organization', 'is_active')
+    list_filter = ('is_active', 'organization')

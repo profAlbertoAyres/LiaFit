@@ -64,3 +64,21 @@ Para garantir o funcionamento perfeito do sistema de temas (Light/Dark mode) e a
 4. **Nomenclatura de Classes CSS:**
    - Adotar o escopo de página para as classes, evitando conflitos (ex: `.lia-auth-layout`, `.lia-auth-back__btn`). 
    - A estilização das interações (como `:hover`) também deve depender exclusivamente das variáveis do sistema, permitindo a transição fluida entre os temas claro e escuro.
+
+# Contexto: Criação do Painel Master SaaS (Gestão de Organizações/Clínicas)
+
+## 🎯 Objetivo
+Criar uma área administrativa exclusiva para os donos do sistema (Superusers) gerenciarem os Tenants (Clínicas/Organizações). O objetivo principal é manter este módulo 100% isolado das regras de negócio internas de uma clínica, garantindo uma arquitetura Multi-Tenant limpa, segura e escalável.
+
+## 🛠️ O que foi construído/alterado
+
+### 1. Backend: Views Master (SaaS)
+- Foram criadas as views de CRUD (`OrganizationCreateView`, `OrganizationUpdateView`, `OrganizationListView`) herdando das classes base do sistema (`BaseCreateView`, `BaseUpdateView`, etc).
+- **Regras de Isolamento (Crucial):**
+  - Implementação da flag `require_tenant = False`: Como o superuser gerencia as clínicas "de fora", essa flag desativa a injeção obrigatória de um tenant no formulário/queryset, evitando bugs estruturais.
+  - Uso do `UserPassesTestMixin`: Garantia de segurança travando o acesso exclusivamente para usuários onde `is_superuser == True`.
+
+### 2. Integração de Formulários (Design System)
+- Criação do `OrganizationForm` integrando o `LiaFitStyleMixin`. 
+- Isso garante que os campos de criação/edição de clínicas recebam automaticamente as classes de estilo padrão (`lia-form-control`, etc) antes de chegarem ao template.
+

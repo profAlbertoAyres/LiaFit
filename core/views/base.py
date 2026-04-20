@@ -14,65 +14,55 @@ from django.views.generic import (
 # ─── AUTENTICAÇÃO + PERMISSÃO ────────────────────────────────
 
 class BaseAuthMixin(LoginRequiredMixin):
-    """
-    Mixin que verifica:
-    1. Usuário autenticado
-    2. Superuser → acesso total (bypass)
-    3. Membro ativo na Organização atual
-    4. Permissão (RBAC) via request.context
-    """
-
-    login_url = "auth:login"
-    permission_required = None
+    require_tenant = True  # <--- Por padrão, toda view EXIGE uma clínica na URL!
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
-        ctx = getattr(request, 'context', None)
-        organization = getattr(ctx, 'organization', None)
-        membership = getattr(ctx, 'membership', None)
+        if self.require_tenant:
+            ctx = getattr(request, 'context', None)
+            organization = getattr(ctx, 'organization', None)
+            membership = getattr(ctx, 'membership', None)
 
-        # ── Superuser: bypass de membership e RBAC ──
-        if request.user.is_superuser:
-            if not organization:
-                return self._deny(
-                    "Organização não encontrada na URL."
-                )
-            # Superuser não precisa de membership — acesso total
-            return super().dispatch(request, *args, **kwargs)
+            # ── Superuser: bypass de membership e RBAC ──
+            # if request.user.is_superuser:
+            #     if not organization:
+            #         return self._deny(
+            #             "Organização não encontrada na URL."
+            #         )
+            #     # Superuser não precisa de membership — acesso total
+            #     return super().dispatch(request, *args, **kwargs)
+            #
+            # # ── Usuário comum: exige org + membership ──
+            # if not organization or not membership:
+            #     return self._deny(
+            #         "Contexto de organização não encontrado. "
+            #         "Faça login novamente."
+            #     )
 
-        # ── Usuário comum: exige org + membership ──
-        if not organization or not membership:
-            return self._deny(
-                "Contexto de organização não encontrado. "
-                "Faça login novamente."
-            )
-
-        # Verifica permissão RBAC
-        if self.permission_required:
-            permissions = getattr(ctx, 'permissions', [])
-            if self.permission_required not in permissions:
-                return self._deny(
-                    "Você não tem permissão para acessar esta funcionalidade."
-                )
+            # Verifica permissão RBAC
+            if self.permission_required:
+                permissions = getattr(ctx, 'permissions', [])
+                if self.permission_required not in permissions:
+                    return self._deny(
+                        "Você não tem permissão para acessar esta funcionalidade."
+                    )
 
         return super().dispatch(request, *args, **kwargs)
 
     def _deny(self, message):
         messages.error(self.request, message)
-        return redirect("core:dashboard")
+        return redirect("post_login")
 
 
 # ─── CONTEXTO MULTI-TENANT ───────────────────────────────────
 
 class ContextMixin:
-    """
-    Filtra automaticamente o queryset pela organização
-    e injeta tenant/membership nos forms.
-    """
 
     def get_tenant(self):
+        if getattr(self, 'require_tenant', True) is False:
+            return None
         ctx = getattr(self.request, 'context', None)
         tenant = getattr(ctx, 'organization', None)
         if not tenant:
@@ -85,6 +75,8 @@ class ContextMixin:
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if getattr(self, 'require_tenant', True) is False:
+            return queryset
         tenant = getattr(self.request.context, 'organization', None)
         membership = getattr(self.request.context, 'membership', None)
 

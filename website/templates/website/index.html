@@ -1,69 +1,53 @@
 {% extends 'base_website.html' %}
 {% load static %}
 
-{% block title %}LiaFit - A plataforma completa para o movimento{% endblock %}
-
 {% block website_content %}
-    <!-- Sessão Hero (Principal) -->
+    <!-- Sessão Hero (Focada no Cliente Final / Marketplace) -->
     <section class="lia-hero">
         <div class="lia-container lia-hero__inner lia-text-center">
+
             <h1 class="lia-hero__title lia-mb-4">
-                Gestão integrada para academias,<br> estúdios e clínicas
+                Encontre os melhores serviços de <br>
+                <span class="lia-text-primary">saúde e bem-estar</span>
             </h1>
             <p class="lia-hero__subtitle lia-text-muted lia-mb-8">
-                Agenda, financeiro, fichas de treino e comunicação em um único lugar.
-                Uma experiência fluida para a empresa, para o profissional e para o cliente.
+                Agende horários com personais, nutricionistas, clínicas e academias perto de você.
             </p>
-            <div class="lia-hero__actions lia-flex lia-justify-center lia-gap-4">
-                <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--primary lia-btn--lg">
-                    Comece Gratuitamente
-                </a>
-                <a href="#funcionalidades" class="lia-btn lia-btn--outline lia-btn--lg">
-                    Conhecer a Plataforma
-                </a>
+
+            <!-- BARRA DE BUSCA (Estilo Marketplace) -->
+            <div class="lia-search-box mx-auto" style="max-width: 600px; background: var(--color-surface); padding: var(--space-2); border-radius: var(--radius-full); box-shadow: var(--shadow-md); border: 1px solid var(--color-border); display: flex; gap: 8px;">
+
+                <div style="flex: 1; display: flex; align-items: center; padding-left: var(--space-4);">
+                    <i data-lucide="search" class="text-muted mr-2"></i>
+                    <input type="text" placeholder="Ex: Personal Trainer, Pilates, Nutricionista..."
+                           style="border: none; outline: none; width: 100%; padding: var(--space-2); background: transparent;">
+                </div>
+
+                <button class="lia-btn lia-btn--primary" style="border-radius: var(--radius-full); padding-left: var(--space-6); padding-right: var(--space-6);">
+                    Buscar
+                </button>
             </div>
+
+            <!-- Tags Rápidas -->
+            <div class="lia-mt-6 lia-flex lia-justify-center lia-gap-4 lia-flex-wrap">
+                <span class="lia-text-sm lia-text-muted">Buscas populares:</span>
+                <a href="#" class="badge bg-light text-dark text-decoration-none border">Musculação</a>
+                <a href="#" class="badge bg-light text-dark text-decoration-none border">Fisioterapia</a>
+                <a href="#" class="badge bg-light text-dark text-decoration-none border">Yoga</a>
+            </div>
+
         </div>
     </section>
 
-    <!-- Sessão de Funcionalidades -->
-    <section id="funcionalidades" class="lia-features lia-py-12">
-        <div class="lia-container">
-            <h2 class="lia-section-title lia-text-center lia-mb-10">Tudo que você precisa em um só lugar</h2>
-
-            <div class="lia-grid lia-grid-cols-3 lia-gap-8">
-                <!-- Card Feature 1 -->
-                <div class="lia-feature-card">
-                    <div class="lia-feature-card__icon lia-mb-4">
-                        <i data-lucide="building-2" class="lia-text-primary"></i>
-                    </div>
-                    <h3 class="lia-font-semibold lia-mb-2">Para a Empresa</h3>
-                    <p class="lia-text-sm lia-text-muted">
-                        Controle total do financeiro, agenda da equipe, contratos e relatórios de desempenho.
-                    </p>
-                </div>
-
-                <!-- Card Feature 2 -->
-                <div class="lia-feature-card">
-                    <div class="lia-feature-card__icon lia-mb-4">
-                        <i data-lucide="stethoscope" class="lia-text-primary"></i>
-                    </div>
-                    <h3 class="lia-font-semibold lia-mb-2">Para o Profissional</h3>
-                    <p class="lia-text-sm lia-text-muted">
-                        Prescrição de treinos, evolução clínica e agenda sempre na palma da mão.
-                    </p>
-                </div>
-
-                <!-- Card Feature 3 -->
-                <div class="lia-feature-card">
-                    <div class="lia-feature-card__icon lia-mb-4">
-                        <i data-lucide="smartphone" class="lia-text-primary"></i>
-                    </div>
-                    <h3 class="lia-font-semibold lia-mb-2">Para o Cliente</h3>
-                    <p class="lia-text-sm lia-text-muted">
-                        Um único app para ver treinos da academia e a reabilitação na clínica. Login unificado.
-                    </p>
-                </div>
-            </div>
+    <!-- Sessão "Para Empresas" (A isca B2B escondida na home B2C) -->
+    <section class="lia-features" style="background-color: var(--color-bg);">
+        <div class="lia-container lia-text-center">
+            <h2 class="lia-section-title lia-mb-2">Você é um profissional da área?</h2>
+            <p class="lia-text-muted lia-mb-6">Junte-se a milhares de profissionais que usam o LiaFit para gerenciar e crescer seus negócios.</p>
+            <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline lia-btn--lg">
+                Conheça nossa plataforma para Empresas
+            </a>
         </div>
     </section>
+
 {% endblock %}

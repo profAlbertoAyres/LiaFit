@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+import ssl
 from pathlib import Path
+
+import certifi
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,8 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h04r+#5q!94-ub)^_goet$vpx$#_gi=tzo#hdx@hcn5!u$e5n)'
-
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -58,9 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.menu.context_processors.menu_context',
-    'core.context_processors.global_settings',
-    'core.context_processors.tenant_context',
+    'core.middleware.SaaSContextMiddleware',
+
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -79,7 +80,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
                 'core.menu.context_processors.menu_context',
-                'core.context.global_settings'
+                'core.context_processors.global_settings',
+                'core.context_processors.tenant_context',
             ],
         },
     },
@@ -119,13 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
-
 TIME_ZONE = 'America/Porto_Velho'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
@@ -164,7 +162,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # =============================================================================
 
 LOGIN_URL = 'auth:login'
-LOGIN_REDIRECT_URL = 'tenant:post_login'
+LOGIN_REDIRECT_URL = 'core:dashboard'
 LOGOUT_REDIRECT_URL = 'website:index'
 
 # Nome global da aplicação
@@ -174,4 +172,20 @@ LOGGING = {
     'disable_existing_loggers': False,
 }
 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '465'))
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
+
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+
+EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    'DEFAULT_FROM_EMAIL',
+    'Alberto Ayres Benicio | PersonalPro <noreply@example.com>'
+)
 
