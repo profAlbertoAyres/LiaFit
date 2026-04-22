@@ -25,7 +25,7 @@ class ModuleAdmin(admin.ModelAdmin):
 class ModuleItemAdmin(admin.ModelAdmin):
     list_display = ("name", "module", "slug", "order", "is_active", "show_in_menu")
     list_filter = ("module", "is_active", "show_in_menu")
-    search_fields = ("name", "slug", "url_name")
+    search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("module__order", "order", "name")
     autocomplete_fields = ("module",)

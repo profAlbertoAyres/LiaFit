@@ -89,6 +89,7 @@ class BaseModelForm(LiaFitStyleMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Remove tenant e professional dos kwargs antes de passar para o super()
         self.tenant = kwargs.pop('tenant', None)
+        self.membership = kwargs.pop('membership', None) # <-- ADICIONE ESTA LINHA
         self.professional = kwargs.pop('professional', None)
 
         super().__init__(*args, **kwargs)

@@ -39,19 +39,19 @@
                                     <i data-lucide="chevron-down" class="lucide" style="width:14px;height:14px;"></i>
                                 </button>
 
-{#                                <div class="lia-dropdown" id="org-selector-dropdown"#}
-{#                                     style="display:none; position:absolute; right:0; top:100%; min-width:220px; z-index:50;">#}
-{#                                    {% for org in user_organizations %}#}
-{#                                        <a href="{% url 'tenant:dashboard' org_slug=org.slug %}"#}
-{#                                           class="lia-dropdown__item {% if org.slug == current_organization.slug %}lia-dropdown__item--active{% endif %}">#}
-{#                                            {{ org.company_name }}#}
-{#                                            {% if org.slug == current_organization.slug %}#}
-{#                                                <i data-lucide="check" class="lucide"#}
-{#                                                   style="width:14px;height:14px;"></i>#}
-{#                                            {% endif %}#}
-{#                                        </a>#}
-{#                                    {% endfor %}#}
-{#                                </div>#}
+                                <div class="lia-dropdown" id="org-selector-dropdown"
+                                     style="display:none; position:absolute; right:0; top:100%; min-width:220px; z-index:50;">
+                                    {% for org in user_organizations %}
+                                        <a href="{% url 'tenant:dashboard' org_slug=org.slug %}"
+                                           class="lia-dropdown__item {% if org.slug == current_organization.slug %}lia-dropdown__item--active{% endif %}">
+                                            {{ org.company_name }}
+                                            {% if org.slug == current_organization.slug %}
+                                                <i data-lucide="check" class="lucide"
+                                                   style="width:14px;height:14px;"></i>
+                                            {% endif %}
+                                        </a>
+                                    {% endfor %}
+                                </div>
                             </div>
                         {% endif %}
 

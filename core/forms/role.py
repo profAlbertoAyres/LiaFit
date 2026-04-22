@@ -22,6 +22,20 @@ class RoleForm(BaseModelForm):
             'description': forms.Textarea(attrs={'rows': 3}),
         }
 
+    def clean_level(self):
+        level = self.cleaned_data.get('level')
+
+        # O membership já vem injetado pela sua classe BaseModelForm!
+        if self.membership and not self.membership.user.is_superuser:
+            user_level = self.membership.highest_role_level
+
+            # Trava matemática: não pode criar papel com nível maior ou igual ao dele
+            if level >= user_level:
+                raise forms.ValidationError(
+                    f"Você só pode criar ou editar papéis com nível menor que o seu (Seu nível máximo atual é {user_level})."
+                )
+
+        return level
 
 class RolePermissionForm(BaseModelForm):
 

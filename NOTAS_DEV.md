@@ -734,8 +734,104 @@ Criar as Views e Rotas que Faltam:
 O menu HTML aponta para href="#". Precisamos garantir que as rotas configuradas nos itens do banco e no menus.py (ex: tenant:agenda, master:organizations) existam no urls.py para os links funcionarem e não darem erro 404.
 Dar vida aos Cards do Dashboard:
 Substituir os — (traços) dos cards de Clientes, Agendamentos Hoje, Faturamento e Serviços Ativos por variáveis de contexto na View (context['total_clientes'], etc) puxando os dados reais do banco.
-### 🔜 Próximos passos
-Iniciar **Sprint 2 — Dashboard multi-empresa + seletor de org**
 
 
+## Último Commit
+
+- **Data**: 2026-04-20
+- **Descrição**: Ordenação de menus estáticos/dinâmicos e hierarquia visual de papéis na sidebar.
+- **Arquivos alterados**:
+  - `core/config/menus.py` — Adicionado atributo `order=0` (Global) e `order=1000` (Master) para ensanduichar os módulos dinâmicos do tenant.
+  - `core/menu/registry.py` — Garantida a ordenação `sort(key=lambda x: getattr(x, 'order', 99))` na lista final de menus.
+  - `account/models.py` (ou `core/models.py`) — Adicionada `@property highest_role_name` no `OrganizationMember` para buscar a role ativa de maior `level`.
+  - `templates/base_app.html` — Atualizada a div `lia-sidebar__user-role` para exibir "Admin SaaS" (se superuser) ou o cargo de nível mais alto dinamicamente.
+
+
+| # | Nota | Status |
+|---|------|--------|
+| N9 | Hierarquia visual de papéis (UI): A sidebar exibe o cargo do usuário baseada na `@property highest_role_name` de `OrganizationMember`, que ordena as Roles ativas pelo maior `level`. | **Implementado** |
+
+
+- [x] Correção da ordem dos Menus (Global -> Módulos Dinâmicos -> Master)
+- [x] Exibição dinâmica do cargo/papel de maior nível na Sidebar (UI)
+
+
+🚀 **Próximos Passos (Foco Atual):**
+1. **Resolver o Fluxo de Entrada (Tenant Context):** Redirecionar usuário logado para `/org/<slug>/dashboard/` para garantir a injeção do tenant e carregamento dos módulos do DB.
+2. **Criar as Views e Rotas faltantes:** Trocar os `href="#` pelas rotas reais configuradas no banco e `menus.py`.
+3. **Cards do Dashboard:** Popular o contexto da view com dados reais para substituir os marcadores `—`.
+
+
+Role é por organização.
+Unicidade: (organization, name) e (organization, slug).
+Seed: criar roles padrão por organização no onboarding da org ou via comando que percorre todas as orgs.
+Todas as views herdam BaseAuthMixin com require_tenant=True; RBAC via request.context.permissions.
+Pronto. Se quiser, eu já preparo:
+
+link no menu lateral “Papéis (Cargos)”
+view de listar permissões de um papel usando seu RolePermissionFilter (se já existir tela).
+
+| N10 | Ativação/desativação de permissões por papel na camada de gestão/RBAC | Pendente |
+
+
+## Checklist de Progresso
+
+- [x] Models: User, Organization, OrganizationMember, Role, Module, Permission
+- [x] Middleware: TenantMiddleware
+- [x] Views base: BaseAuthMixin, ContextMixin, CRUD views
+- [x] Superuser bypass no BaseAuthMixin e ContextMixin
+- [x] Template: base_app.html (layout logado)
+- [x] Template: dashboard.html
+- [x] JS: sidebar.js
+- [x] Fluxo de entrada com redirecionamento para `/org/<slug>/dashboard/`
+- [x] Rotas reais dos itens de menu
+- [ ] Views: manage (`select_organization`, `create_organization`)
+- [ ] Context processor: tenant_context (org selector no header)
+- [ ] Cards do dashboard com dados reais
+- [ ] Ativar/desativar permissões dos papéis
+- [ ] Testes automatizados
+- [ ] Módulos do SaaS (clients, schedule, financial, etc.)
+
+
+🚀 **Próximos Passos (Foco Atual):**
+1. **Views de manage:** implementar seleção/criação de organização fora do contexto tenant.
+2. **Context processor `tenant_context`:** disponibilizar seletor de organização no header da área logada.
+3. **Cards do Dashboard:** popular o contexto da view com dados reais para substituir os marcadores `—`.
+4. **Permissões por papel:** permitir ativar ou desativar permissões associadas aos papéis.
+5. **Testes automatizados:** cobrir middleware, fluxo tenant, onboarding e RBAC.
+
+## 📌 Arquitetura SaaS / Multi-Tenant
+
+### 1. Modelos (app `account`)
+* **`Organization`**: O campo que guarda o nome da empresa se chama **`company_name`** (e não `name`). Todos os templates e queries devem refletir isso.
+* **Mapeamento de Tenant**: Identificado pelo campo `slug` na URL (`/app/<org_slug>/...`).
+
+### 2. Middleware (`core.middleware.SaaSContextMiddleware`)
+* Intercepta requisições que possuem `org_slug` na URL.
+* Valida se a organização está ativa e se o usuário tem uma associação (`OrganizationMember`) ativa.
+* **Injeções no `request`**:
+  * `request.tenant`: Instância da Organização atual.
+  * `request.user_role`: Instância da role (papel/cargo) principal do usuário naquele tenant.
+* **Sessão**: Salva o `org_slug` acessado na chave `request.session['last_org_slug']` para lembrar a última clínica acessada pelo usuário.
+
+### 3. Context Processors (`core.context_processors.saas_context`)
+* Disponibiliza variáveis globais para os templates (ex: `base_app.html`):
+  * `current_organization`: O tenant atual (pego de `request.tenant`).
+  * `current_role`: O cargo atual (pego de `request.user_role`).
+  * `user_organizations`: Lista de todas as organizações que o usuário faz parte (usado para montar o dropdown de troca de clínica no header).
+
+### 4. Fluxo de Login Dinâmico (Frictionless Login)
+* Local: `core.services.post_login.resolve_post_login_redirect`
+* **Regras de Redirecionamento Pós-Login:**
+  1. **Superusuário**: Vai para o `core:dashboard` ("painel pessoal").
+  2. **Usuário sem organização**: Vai para o `core:dashboard`.
+  3. **Usuário com 1 organização**: Vai direto para o `tenant:dashboard` da clínica.
+  4. **Usuário com múltiplas organizações**: 
+     * Tenta direcionar para a última acessada (`last_org_slug` salvo na sessão pelo Middleware).
+     * Se não houver histórico, vai para a primeira da lista.
+     * Recebe um Toast (mensagem) avisando que pode usar o dropdown do menu para alternar entre os espaços.
+
+### 5. Templates Base (`base_app.html`)
+* O Dropdown de seleção de empresas está ativo, iterando sobre `user_organizations`.
+* Ao renderizar nomes, sempre utilizar `{{ current_organization.company_name }}` ou `{{ org.company_name }}`.
 

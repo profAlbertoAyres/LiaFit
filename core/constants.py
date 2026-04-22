@@ -34,7 +34,6 @@ DEFAULT_ACTIONS = ("view", "add", "change", "delete")
 #         {
 #             "slug": "...",              # NO SINGULAR! Mapeia para o model_name no Django (ex: 'client')
 #             "name": "...",
-#             "url_name": "...",          # opcional (name da URL Django)
 #             "icon": "...",              # opcional
 #             "order": 10,
 #             "show_in_menu": bool,
@@ -55,7 +54,6 @@ MODULES = [
             {
                 "slug": "dashboard",
                 "name": "Dashboard",
-                "url_name": "core:dashboard",
                 "icon": "home",
                 "order": 10,
                 "show_in_menu": True,
@@ -74,7 +72,6 @@ MODULES = [
             {
                 "slug": "member",
                 "name": "Membros",
-                "url_name": "account:member_list",
                 "icon": "users",
                 "order": 10,
                 "show_in_menu": True,
@@ -82,7 +79,6 @@ MODULES = [
             {
                 "slug": "role",
                 "name": "Papéis",
-                "url_name": "account:role_list",
                 "icon": "shield",
                 "order": 20,
                 "show_in_menu": True,
@@ -90,7 +86,6 @@ MODULES = [
             {
                 "slug": "organization",
                 "name": "Organização",
-                "url_name": "account:organization_detail",
                 "icon": "briefcase",
                 "order": 30,
                 "show_in_menu": True,
@@ -109,7 +104,6 @@ MODULES = [
             {
                 "slug": "client",
                 "name": "Clientes",
-                "url_name": "clients:client_list",
                 "icon": "user-check",
                 "order": 10,
                 "show_in_menu": True,
@@ -127,7 +121,6 @@ MODULES = [
             {
                 "slug": "workout",
                 "name": "Treinos",
-                "url_name": "workouts:workout_list",
                 "icon": "activity",
                 "order": 10,
                 "show_in_menu": True,
@@ -135,7 +128,6 @@ MODULES = [
             {
                 "slug": "template",
                 "name": "Modelos",
-                "url_name": "workouts:template_list",
                 "icon": "layout",
                 "order": 20,
                 "show_in_menu": True,
@@ -153,7 +145,6 @@ MODULES = [
             {
                 "slug": "exercise",
                 "name": "Exercícios",
-                "url_name": "exercises:exercise_list",
                 "icon": "dumbbell",
                 "order": 10,
                 "show_in_menu": True,
@@ -171,7 +162,6 @@ MODULES = [
             {
                 "slug": "assessment",
                 "name": "Avaliações",
-                "url_name": "assessments:assessment_list",
                 "icon": "clipboard",
                 "order": 10,
                 "show_in_menu": True,
@@ -189,7 +179,6 @@ MODULES = [
             {
                 "slug": "appointment",
                 "name": "Agendamentos",
-                "url_name": "schedule:appointment_list",
                 "icon": "calendar",
                 "order": 10,
                 "show_in_menu": True,
@@ -207,7 +196,6 @@ MODULES = [
             {
                 "slug": "invoice",
                 "name": "Mensalidades",
-                "url_name": "financial:invoice_list",
                 "icon": "dollar-sign",
                 "order": 10,
                 "show_in_menu": True,
@@ -215,7 +203,6 @@ MODULES = [
             {
                 "slug": "payment",
                 "name": "Pagamentos",
-                "url_name": "financial:payment_list",
                 "icon": "credit-card",
                 "order": 20,
                 "show_in_menu": True,
@@ -258,7 +245,7 @@ ROLES = [
             "module:exercises",
             "module:assessments",
             "module:schedule",
-            "item:financial.invoice",  # Atualizado para o slug no singular
+            "item:financial.invoice",
         ],
     },
     {

@@ -15,7 +15,7 @@ from django.views.generic import (
 
 class BaseAuthMixin(LoginRequiredMixin):
     require_tenant = True  # <--- Por padrão, toda view EXIGE uma clínica na URL!
-
+    permission_required = None
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
@@ -53,7 +53,7 @@ class BaseAuthMixin(LoginRequiredMixin):
 
     def _deny(self, message):
         messages.error(self.request, message)
-        return redirect("post_login")
+        return redirect("core:dashboard")
 
 
 # ─── CONTEXTO MULTI-TENANT ───────────────────────────────────
@@ -164,8 +164,9 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
 class BaseCreateView(ContextMixin, BaseAuthMixin, CreateView):
     def form_valid(self, form):
         tenant = self.get_tenant()
-        if hasattr(form.instance, 'organization'):
+        if any(f.name == 'organization' for f in form.instance._meta.fields):
             form.instance.organization = tenant
+
         return super().form_valid(form)
 
 
@@ -173,10 +174,10 @@ class BaseCreateView(ContextMixin, BaseAuthMixin, CreateView):
 class BaseUpdateView(ContextMixin, BaseAuthMixin, UpdateView):
     def form_valid(self, form):
         tenant = self.get_tenant()
-        if hasattr(form.instance, 'organization'):
+        if any(f.name == 'organization' for f in form.instance._meta.fields):
             form.instance.organization = tenant
-        return super().form_valid(form)
 
+        return super().form_valid(form)
 
 # 🔍 DETAIL
 class BaseDetailView(ContextMixin, BaseAuthMixin, DetailView):

@@ -111,6 +111,14 @@ class OrganizationMember(BaseModel):
 
         return "Colaborador"
 
+    @property
+    def highest_role_level(self):
+        """Retorna o número do nível mais alto que este membro possui"""
+        highest_role = self.roles.filter(is_active=True).order_by('-level').first()
+        if highest_role:
+            return highest_role.level
+        return 0
+
 
 class ActiveClientManager(models.Manager):
     def get_queryset(self):

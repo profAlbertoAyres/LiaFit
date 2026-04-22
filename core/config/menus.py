@@ -13,7 +13,7 @@ def register_menus():
             items=[
                 MenuItem(
                     label=_("Dashboard"),
-                    url_name="dashboard", # Rota sem slug
+                    url_name="core:dashboard", # Rota sem slug
                     icon="layout-dashboard",
                 ),
                 MenuItem(

@@ -7,10 +7,10 @@ from account.models import Organization, OrganizationMember
 
 
 class RequestContext:
-    """Objeto leve que carrega o contexto do request."""
     organization = None
     membership = None
     professional = None
+    client = None
     roles = []
     modules = []
     permissions = []
@@ -40,28 +40,25 @@ class SaaSContextMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Inicializa contexto limpo
         request.context = RequestContext()
         request.context.user = request.user
 
-        # Rotas isentas de tudo
         if self._is_exempt(request.path):
             return self.get_response(request)
 
-        # Usuário não logado não precisa de contexto
         if not request.user.is_authenticated:
             return self.get_response(request)
 
-        # Rotas que não exigem tenant (mas user está logado)
+        if hasattr(request.user, 'client_profile'):
+            request.context.client = request.user.client_profile
+
         if self._is_no_tenant(request.path):
             return self.get_response(request)
 
-        # ── RESOLUÇÃO DE TENANT ──────────────────────────
         org_slug = self._extract_slug(request.path)
         if not org_slug:
             return self.get_response(request)
 
-        # 1. Busca a organização pelo slug
         try:
             organization = Organization.objects.get(
                 slug=org_slug,
@@ -72,7 +69,6 @@ class SaaSContextMiddleware:
                 "Organização não encontrada ou inativa."
             )
 
-        # 2. Busca o membership do usuário nessa organização
         membership = (
             OrganizationMember.objects
             .filter(

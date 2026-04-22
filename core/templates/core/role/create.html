@@ -1,0 +1,75 @@
+{% extends 'base_app.html' %}
+
+{% block title %}
+    {% if object %}Editar {{ object.name }}{% else %}Novo Papel de Acesso{% endif %} | {{ APP_NAME }}
+{% endblock %}
+
+{% block page_content %}
+<!-- HEADER DA PÁGINA -->
+<div class="lia-flex lia-items-center lia-gap-3 lia-mb-6">
+    <a href="javascript:history.back()" class="lia-btn lia-btn--icon lia-btn--ghost">
+        <i data-lucide="arrow-left" class="lucide"></i>
+    </a>
+    <div>
+        <h2 class="lia-font-bold" style="font-size: var(--font-size-xl); margin: 0;">
+            {% if object %}Editar Papel de Acesso{% else %}Novo Papel de Acesso{% endif %}
+        </h2>
+        <p class="lia-text-muted lia-text-sm" style="margin: var(--space-1) 0 0 0;">
+            {% if object %}Atualize as configurações de {{ object.name }}{% else %}Crie um novo perfil de acesso para os usuários do sistema.{% endif %}
+        </p>
+    </div>
+</div>
+
+<div>
+    <form method="post" novalidate class="lia-card">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="lia-card__body pb-0">
+            <div class="lia-alert lia-alert--danger lia-alert--inline">
+                <i data-lucide="alert-circle" class="lia-alert__icon"></i>
+                <div class="lia-alert__content">
+                    <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- DADOS DO PAPEL -->
+        <div class="lia-card__header" style="border-bottom: none; padding-bottom: 0;">
+            <div>
+                <h3 class="lia-card__title">Dados do Papel</h3>
+                <p class="lia-card__subtitle">Defina o nome e as características deste perfil.</p>
+            </div>
+        </div>
+
+        <div class="lia-card__body">
+
+            <!-- CAMPO DE STATUS: Tratamento especial para ficar com visual de Checkbox -->
+            {% if form.is_active %}
+                <div class="row">
+
+                    {% include "components/form_field.html" with field=form.name col="col-md-8" %}
+                    {% include "components/form_field.html" with field=form.level col="col-md-4" %}
+                    {% include "components/form_textarea.html" with field=form.description %}
+                    {% include "components/form_switch.html" with field=form.is_active col="col-md-3" %}
+                </div>
+
+
+            {% endif %}
+
+        </div>
+
+        <!-- AÇÕES NO FOOTER NATIVO DO CARD -->
+        <div class="lia-card__footer">
+            <a href="javascript:history.back()" class="lia-btn lia-btn--outline">
+                Cancelar
+            </a>
+            <button type="submit" class="lia-btn lia-btn--primary">
+                <i data-lucide="save" class="lucide-sm"></i>
+                <span>{% if object %}Salvar Alterações{% else %}Criar Papel{% endif %}</span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

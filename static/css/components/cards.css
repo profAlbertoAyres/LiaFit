@@ -83,3 +83,14 @@
 .lia-stat-card__trend--down {
     color: var(--color-danger);
 }
+
+/* -------------------------------------------------------------------------
+   GRID DE CARDS (Lado a lado, auto-responsivo)
+   ------------------------------------------------------------------------- */
+.lia-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-6);
+    align-items: start;
+}
+

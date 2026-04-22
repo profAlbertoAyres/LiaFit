@@ -1,7 +1,7 @@
 {% extends 'base_app.html' %}
 
 {% block title %}
-    {% if object %}Editar {{ object.company_name }}{% else %}Nova Organização{% endif %} | LiaFit Master
+    {% if object %}Editar {{ object.company_name }}{% else %}Nova Organização{% endif %} | {{ APP_NAME }} Master
 {% endblock %}
 
 {% block page_content %}

@@ -30,7 +30,7 @@ urlpatterns = [
 
     # Todas as rotas de management.py vão começar com meusaas.com/manage/...
     path('manage/', include('account.urls.management', namespace='management')),
-    path('org/<slug:org_slug>/', include('core.urls.tenant')),
+    path('org/<slug:org_slug>/', include(('core.urls.tenant', 'tenant'))),
     path('', include('core.urls.master')),
 
 ]

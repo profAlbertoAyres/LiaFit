@@ -11,19 +11,23 @@ class MenuItem:
 
     def get_url(self, request):
         try:
-            # 1. Tenta resolver injetando o org_slug (URL de Tenant)
             ctx = getattr(request, 'context', None)
             if ctx and ctx.organization:
                 try:
                     return reverse(self.url_name, kwargs={'org_slug': ctx.organization.slug})
                 except NoReverseMatch:
                     pass
-
             return reverse(self.url_name)
         except NoReverseMatch:
             return "#"
 
     def is_visible(self, request):
+        # 🔥 MODO DESENVOLVIMENTO: Ignora permissões e mostra todos os itens!
+        # Para ativar a segurança novamente no futuro, apague este "return True"
+        # e descomente o bloco de código abaixo.
+        return True
+
+        """
         if not self.permission:
             return True
 
@@ -35,11 +39,11 @@ class MenuItem:
             perm_list = [p.codename if hasattr(p, 'codename') else p for p in ctx.permissions]
             permission_codename = self.permission.split('.')[-1] if '.' in self.permission else self.permission
 
-            # Checa se o Tenant tem a permissão (completa ou parcial)
             if self.permission in perm_list or permission_codename in perm_list:
                 return True
-        # Fallback para permissões globais do Django auth
+
         return request.user.has_perm(self.permission)
+        """
 
 
 class MenuGroup:
@@ -55,7 +59,6 @@ class MenuGroup:
         return [item for item in self.items if item.is_visible(request)]
 
     def is_visible(self, request):
-        # 1. Bloqueio por Escopo
         if self.scope == 'superuser' and not request.user.is_superuser:
             return False
 
@@ -65,7 +68,9 @@ class MenuGroup:
                 if not ctx or not getattr(ctx, 'membership', None):
                     return False
 
-        # 2. Bloqueio por Permissão do Grupo
+        # 🔥 MODO DESENVOLVIMENTO: Ignora permissão de grupo
+        # Descomente no futuro para reativar
+        """
         if self.permission:
             if not request.user.is_superuser:
                 ctx = getattr(request, 'context', None)
@@ -78,6 +83,7 @@ class MenuGroup:
 
                 if not (has_tenant_perm or has_global_perm):
                     return False
+        """
 
-        # 3. Só mostra o grupo se tiver pelo menos 1 item visível dentro dele
+        # Só mostra o grupo se tiver pelo menos 1 item visível dentro dele
         return len(self.get_visible_items(request)) > 0

@@ -64,7 +64,6 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
                 slug=item_def["slug"],
                 defaults={
                     "name": item_def["name"],
-                    "url_name": item_def.get("url_name", ""),
                     "icon": item_def.get("icon", ""),
                     "order": item_def.get("order", 0),
                     "show_in_menu": item_def.get("show_in_menu", True),
@@ -107,13 +106,6 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
 
 
 def _resolve_role_permissions(spec: Iterable[str]) -> List[Permission]:
-    """
-    Resolve uma lista de permissões a partir de um spec que aceita:
-      - "*" (todas as permissões)
-      - "module:<module_slug>" (todas as permissões de um módulo)
-      - "item:<module_slug>.<item_slug>" (todas as permissões de um item)
-      - codename direto (ex.: "view_core.dashboard")
-    """
     if "*" in spec:
         return list(Permission.objects.all())
 
@@ -151,12 +143,7 @@ def _resolve_role_permissions(spec: Iterable[str]) -> List[Permission]:
 
 @transaction.atomic
 def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
-    """
-    Prepara uma organização:
-      - Ativa módulos core em OrganizationModule (is_active=True)
-      - Cria/atualiza Roles
-      - Vincula RolePermission conforme ROLES
-    """
+
     stats = {
         "modules_enabled": 0,
         "roles_created": 0,

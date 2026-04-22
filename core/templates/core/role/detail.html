@@ -1,0 +1,168 @@
+{% extends 'base_app.html' %}
+
+{% block title %}{{ object.name }} - Detalhes |
+    {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+
+{% block page_content %}
+    <div class="lia-page-header">
+        <div class="lia-flex lia-items-center lia-gap-4">
+            <a href="{% url 'tenant:role_list' org_slug=request.context.organization.slug %}"
+               class="lia-btn lia-btn--icon lia-btn--ghost">
+                <i data-lucide="arrow-left" class="lucide"></i>
+            </a>
+            <div>
+                <h2 class="lia-page-header__title lia-flex lia-items-center lia-gap-3">
+                    {{ object.name }}
+                    {% if object.is_active %}
+                        <span style="background-color: var(--color-success-light); color: var(--color-success); padding: 4px 10px; border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: 1;">Ativo</span>
+                    {% else %}
+                        <span style="background-color: var(--color-danger-light); color: var(--color-danger); padding: 4px 10px; border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: 1;">Inativo</span>
+                    {% endif %}
+                </h2>
+                <p class="lia-page-header__subtitle">Configure as informações e permissões deste papel.</p>
+            </div>
+        </div>
+
+        <div class="lia-page-header__actions">
+            {% if request.user.is_superuser or object.level < request.context.membership.highest_role_level %}
+                <a href="{% url 'tenant:role_update' org_slug=request.context.organization.slug pk=object.pk %}"
+                   class="lia-btn lia-btn--outline">
+                    <i data-lucide="edit-2" class="lucide-sm"></i>
+                    <span>Editar Dados do Papel</span>
+                </a>
+            {% else %}
+                <button class="lia-btn lia-btn--outline" disabled style="opacity: 0.6; cursor: not-allowed;"
+                        title="Nível hierárquico igual ou superior ao seu.">
+                    <i data-lucide="lock" class="lucide-sm"></i>
+                    <span>Edição Bloqueada</span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Informações do Papel</h3>
+        </div>
+        <div class="lia-card__body"
+             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
+            <!-- Meta 1: Nome -->
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold"
+                      style="text-transform: uppercase; letter-spacing: 0.05em;">Nome do Papel</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1">{{ object.name }}</p>
+            </div>
+
+            <!-- Meta 2: Nível -->
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold"
+                      style="text-transform: uppercase; letter-spacing: 0.05em;">Nível de Hierarquia</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="bar-chart-2" class="lucide-sm lia-text-primary"></i>
+                    {{ object.level }}
+                </p>
+            </div>
+
+            <!-- Meta 3: Descrição -->
+            <div style="grid-column: 1 / -1;">
+                <span class="lia-text-xs lia-text-muted lia-font-semibold"
+                      style="text-transform: uppercase; letter-spacing: 0.05em;">Descrição</span>
+                <p class="lia-text-sm lia-text-secondary lia-mt-1">
+                    {{ object.description|default:"Nenhuma descrição informada." }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÁREA DE PERMISSÕES: Layout em Grade de Módulos -->
+    <div class="lia-mt-6">
+        <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
+            <div>
+                <h3 class="lia-font-bold" style="font-size: var(--font-size-xl); color: var(--color-text-primary);">
+                    Permissões de Acesso</h3>
+                <p class="lia-text-sm lia-text-muted lia-mt-1">Visualize ou modifique o que este perfil pode acessar no
+                    sistema.</p>
+            </div>
+
+            {% if can_change_permissions and object.level < request.context.membership.highest_role_level %}
+                <button type="submit" form="form-permissions" class="lia-btn lia-btn--primary">
+                    <i data-lucide="save" class="lucide-sm"></i>
+                    <span>Salvar Permissões</span>
+                </button>
+            {% endif %}
+        </div>
+
+        <form id="form-permissions" method="post" action="">
+            {% csrf_token %}
+
+            <div class="accordion" id="accordionPermissoes">
+
+                <!-- NÍVEL 1: LOOP DOS MÓDULOS PAI (ACCORDIONS) -->
+                {% for modulo in modules_with_permissions %}
+                    <div class="accordion-item lia-accordion-item">
+
+                        <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
+                            <button class="accordion-button lia-accordion-button {% if not forloop.first %}collapsed{% endif %}"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-{{ forloop.counter }}"
+                                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+                                {{ modulo.name }}
+                            </button>
+                        </h2>
+
+                        <div id="collapse-{{ forloop.counter }}"
+                             class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                             data-bs-parent="#accordionPermissoes">
+
+                            <div class="accordion-body lia-accordion-body">
+
+                                <!-- WRAPPER DO GRID: Lado a lado responsivo -->
+                                <div class="lia-card-grid">
+
+                                    <!-- NÍVEL 2: LOOP DAS TELAS (CARDS) -->
+                                    {% for tela in modulo.items %}
+
+                                        <div class="lia-card">
+                                            <div class="lia-card__header">
+                                                <h5 class="lia-card__title">{{ tela.name }}</h5>
+
+                                            </div>
+                                            <div class="lia-card__body">
+
+                                                <!-- NÍVEL 3: CHAVINHAS DE PERMISSÕES -->
+                                                <div class="lia-flex lia-flex-col lia-gap-3">
+
+                                                    {% for perm in tela.permissions %}
+                                                        <div class="form-check form-switch lia-flex lia-items-center lia-gap-2 lia-mb-0">
+                                                            <input type="checkbox"
+                                                                   name="permissions"
+                                                                   value="{{ perm.id }}"
+                                                                   id="perm_{{ perm.id }}"
+                                                                   class="form-check-input cursor-pointer"
+                                                                   {% if perm.id in permissoes_atuais_ids %}checked{% endif %}>
+
+                                                            <label for="perm_{{ perm.id }}"
+                                                                   class="form-check-label lia-form-label lia-switch-label cursor-pointer">
+                                                                {{ perm.display_name }}
+                                                            </label>
+                                                        </div>
+                                                    {% endfor %}
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

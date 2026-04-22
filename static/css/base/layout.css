@@ -113,6 +113,36 @@
 /* Esconder elementos */
 .lia-hidden { display: none !important; }
 
+.lia-accordion-item {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-4);
+    overflow: hidden;
+}
+
+.lia-accordion-button {
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    box-shadow: none !important;
+    padding: var(--space-4) var(--space-6);
+}
+
+/* Estado aberto */
+.lia-accordion-button:not(.collapsed) {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.lia-accordion-body {
+    background-color: var(--color-bg);
+    padding: var(--space-6);
+    border-top: 1px solid var(--color-border);
+}
+
 /* -------------------------------------------------------------------------
    RESPONSIVIDADE
    ------------------------------------------------------------------------- */
