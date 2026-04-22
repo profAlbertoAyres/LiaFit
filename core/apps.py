@@ -13,3 +13,5 @@ class CoreConfig(AppConfig):
             register_menus()
         except ImportError:
             pass
+
+        from core import signals
