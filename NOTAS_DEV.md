@@ -835,3 +835,114 @@ view de listar permissões de um papel usando seu RolePermissionFilter (se já e
 * O Dropdown de seleção de empresas está ativo, iterando sobre `user_organizations`.
 * Ao renderizar nomes, sempre utilizar `{{ current_organization.company_name }}` ou `{{ org.company_name }}`.
 
+| N14 | Catálogo de Módulos: fonte da verdade é `core/seeds/modules.py`. 
+       Banco é sincronizado via `python manage.py sync_modules` (idempotente). 
+       Slugs são readonly no admin. Validação de URLs/permissions via 
+       `python manage.py check_modules`. | **Implementado** |
+## 📌 Decisões de Arquitetura — Cache RBAC
+
+**Data:** 22/04/2026
+**Contexto:** Otimização do `ContextService` (cálculo de permissões por request).
+
+---
+
+### 🎯 Problema identificado
+
+- `ContextService.build_member_context()` executa **5 queries por request**:
+  1. Roles do membership
+  2. Módulos ativos da organization
+  3. Role permissions (filtradas por módulos ativos)
+  4. User permissions ALLOW (filtradas por módulos ativos)
+  5. User permissions DENY (sem filtro de módulo — DENY sempre vence)
+- Precedência: `final = (role_perms ∪ allow_perms) − deny_perms`
+- Sem cache → mesmo cálculo repetido em toda request autenticada.
+- Benchmark inicial mostrou "speedup 1.3x" que era ilusão (page cache do SO, não cache aplicacional).
+
+---
+
+### ✅ Decisão: Cache adaptativo via env var
+
+**Dev local:** `LocMemCache` (zero setup, funciona igual em Mac e Windows).
+**Produção futura:** Upstash Redis (tier grátis, URL no `.env`).
+**Seleção automática:** `settings.py` detecta `REDIS_URL` — se existir, usa Redis; senão, LocMem.
+
+**Motivação:**
+- Desenvolvimento em 2 OS (Mac + Windows) sem instalar Docker/Redis/Memurai.
+- Mesmo código funciona em dev e produção — troca só a env var.
+- Django 4.2 já inclui backend `django.core.cache.backends.redis.RedisCache` nativo.
+
+---
+
+### 🛠️ Implementação
+
+#### `settings.py`
+```python
+import os
+
+REDIS_URL = os.getenv('REDIS_URL', '').strip()
+
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+            'TIMEOUT': 300,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'liafit-default',
+            'TIMEOUT': 300,
+            'OPTIONS': {'MAX_ENTRIES': 10000},
+        }
+    }
+
+RBAC_CACHE_TTL = 60 * 15       # 15 minutos
+RBAC_CACHE_VERSION = 1         # bump para invalidar tudo em deploy
+context_service.py
+MemberContext e ClientContext como dataclasses.
+build_member_context() consulta cache primeiro (HOT path reidrata com objetos Django vivos do request).
+COLD path executa 5 queries e popula o cache apenas com dados serializáveis (roles, modules, permissions — sets de strings).
+Chave de cache: rbac:ctx:v{version}:u{user_id}:o{organization_id}.
+Método ContextService.invalidate(user_id, org_id) para invalidação manual (chamar em signals quando roles/permissions/modules mudarem).
+📦 Dependências
+Agora (LocMem): nenhuma adicional. Quando migrar pra Redis: adicionar ao requirements.txt:
+
+txt
+
+
+redis==5.0.8
+🎯 Expectativa de performance
+
+
+
+Métrica	Valor esperado
+❄️ Cold (cache miss)	3–8 ms
+🔥 Hot (cache hit)	0.02–0.1 ms
+🚀 Speedup	50x – 200x
+🔮 Roadmap
+ Aplicar cache adaptativo no settings.py
+ Refatorar context_service.py com HOT/COLD path
+ Rodar benchmark (cold vs hot 100x)
+ Adicionar signals de invalidação em mudanças de:
+OrganizationMember.roles (M2M change)
+UserPermission (save/delete)
+RolePermission (save/delete)
+OrganizationModule.is_active (save)
+ Migrar pra Upstash quando for pra staging/produção
+ Considerar bump do RBAC_CACHE_VERSION no CI em cada deploy (invalida tudo automaticamente)
+🖥️ Workflow Mac + Windows
+Código → GitHub
+.env → gerenciador de senhas (1Password/Bitwarden)
+.venv → recriado em cada máquina (pip install -r requirements.txt)
+db.sqlite3 → local em cada máquina (não sincronizar)
+Cache → LocMem local (não sincroniza — é o comportamento desejado em dev)
+📚 Stack de referência (22/04/2026)
+Python 3.14.0
+Django 4.2.30 (LTS — suporte até abril/2026)
+SQLite (dev)
+Pillow 11.3.0
+django-filter 25.1
+asgiref 3.11.1
