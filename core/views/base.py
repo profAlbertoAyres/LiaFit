@@ -14,47 +14,77 @@ from django.views.generic import (
 # ─── AUTENTICAÇÃO + PERMISSÃO ────────────────────────────────
 
 class BaseAuthMixin(LoginRequiredMixin):
-    require_tenant = True  # <--- Por padrão, toda view EXIGE uma clínica na URL!
+    """
+    Exige usuário autenticado + (opcionalmente) tenant + permissão RBAC.
+
+    Atributos:
+        require_tenant: bool  — exige org na URL (default: True)
+        permission_required: str | tuple[str] | None
+            - str   → exige essa única permissão
+            - tuple → AND: exige TODAS
+            - None  → não checa permissão (só auth + tenant)
+        permission_required_any: tuple[str] | None
+            - tuple → OR: basta ter UMA
+    """
+
+    require_tenant = True
     permission_required = None
+    permission_required_any = None
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
 
         if self.require_tenant:
-            ctx = getattr(request, 'context', None)
-            organization = getattr(ctx, 'organization', None)
-            membership = getattr(ctx, 'membership', None)
-
-            # ── Superuser: bypass de membership e RBAC ──
-            # if request.user.is_superuser:
-            #     if not organization:
-            #         return self._deny(
-            #             "Organização não encontrada na URL."
-            #         )
-            #     # Superuser não precisa de membership — acesso total
-            #     return super().dispatch(request, *args, **kwargs)
-            #
-            # # ── Usuário comum: exige org + membership ──
-            # if not organization or not membership:
-            #     return self._deny(
-            #         "Contexto de organização não encontrado. "
-            #         "Faça login novamente."
-            #     )
-
-            # Verifica permissão RBAC
-            if self.permission_required:
-                permissions = getattr(ctx, 'permissions', [])
-                if self.permission_required not in permissions:
-                    return self._deny(
-                        "Você não tem permissão para acessar esta funcionalidade."
-                    )
+            denied = self._check_tenant_access(request)
+            if denied:
+                return denied
 
         return super().dispatch(request, *args, **kwargs)
+
+    # ─── Helpers privados ────────────────────────────────────
+
+    def _check_tenant_access(self, request):
+        """Retorna um redirect se negado, ou None se OK."""
+        ctx = getattr(request, 'context', None)
+        member_ctx = getattr(ctx, 'member_ctx', None)
+
+        # Superuser: só precisa de org na URL
+        if request.user.is_superuser:
+            if not getattr(ctx, 'organization', None):
+                return self._deny("Organização não encontrada na URL.")
+            return None
+
+        # Usuário comum: exige contexto completo
+        if not member_ctx:
+            return self._deny(
+                "Contexto de organização não encontrado. Faça login novamente."
+            )
+
+        # RBAC
+        if not self._has_required_permission(member_ctx):
+            return self._deny(
+                "Você não tem permissão para acessar esta funcionalidade."
+            )
+
+        return None
+
+    def _has_required_permission(self, member_ctx) -> bool:
+        """Delega a decisão pro MemberContext."""
+        if self.permission_required:
+            required = self.permission_required
+            if isinstance(required, str):
+                return member_ctx.has_permission(required)
+            return member_ctx.has_all_permissions(*required)
+
+        if self.permission_required_any:
+            return member_ctx.has_any_permission(*self.permission_required_any)
+
+        return True  # nenhuma perm exigida
 
     def _deny(self, message):
         messages.error(self.request, message)
         return redirect("core:dashboard")
-
 
 # ─── CONTEXTO MULTI-TENANT ───────────────────────────────────
 
@@ -77,8 +107,11 @@ class ContextMixin:
         queryset = super().get_queryset()
         if getattr(self, 'require_tenant', True) is False:
             return queryset
-        tenant = getattr(self.request.context, 'organization', None)
-        membership = getattr(self.request.context, 'membership', None)
+
+        ctx = self.request.context
+        tenant = getattr(ctx, 'organization', None)
+        membership = getattr(ctx, 'membership', None)
+        member_ctx = getattr(ctx, 'member_ctx', None)
 
         if not tenant:
             return queryset.none()
@@ -97,7 +130,7 @@ class ContextMixin:
             hasattr(model, 'member')
             and membership
             and not self.request.user.is_superuser
-            and not self._is_admin(membership)
+            and not (member_ctx and member_ctx.is_admin())
         ):
             queryset = queryset.filter(member=membership)
 
