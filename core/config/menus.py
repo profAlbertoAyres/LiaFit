@@ -16,11 +16,6 @@ def register_menus():
                     url_name="core:dashboard", # Rota sem slug
                     icon="layout-dashboard",
                 ),
-                MenuItem(
-                    label=_("Minhas Avaliações"),
-                    url_name="client:evaluations",
-                    icon="activity",
-                ),
             ],
         )
     )
