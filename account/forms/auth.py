@@ -15,7 +15,7 @@ class OrganizationRegistrationForm(BaseForm):
     email = forms.EmailField(label=_('E-mail'),max_length=150)
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data['email'].strip().lower() 
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("Este e-mail já está cadastrado no sistema.")
         return email
