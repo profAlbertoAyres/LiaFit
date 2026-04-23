@@ -43,7 +43,7 @@ class Permission(BaseModel):
             self.name = f"{self.get_action_display()} {self.item.name}"
 
         if not self.codename:
-            self.codename = f"{self.action}_{self.item.codename_prefix}"
+            self.codename = self.item.permission_codename(self.action)
 
         super().save(*args, **kwargs)
 
