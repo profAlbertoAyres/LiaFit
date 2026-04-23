@@ -5,7 +5,7 @@
 - **Ambiente:** desenvolvimento local (SQLite, `python manage.py shell`)
 - **Objetivo:** Provar que `post_save` e `post_delete` de `UserPermission`
   invalidam corretamente o cache do `ContextService`.
-- **Relacionado:** [ADR-001](./adr-001-cache-invalidation.md)
+- **Relacionado:** [ADR-001](refactor/adr-001-cache-invalidation.md)
 
 ---
 

@@ -1,6 +1,6 @@
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.text import slugify
 
@@ -17,25 +17,45 @@ class OrganizationService:
 
     @staticmethod
     @transaction.atomic
-    def create_organization(data):
-        company_name = data.get('company_name')
+    def create_organization(data, owner=None):
+        """
+        Cria a organização (inativa) + executa bootstrap (roles, permissões, módulos).
+        Se `owner` for informado, já vincula como dono e membro com role 'owner'.
+        """
+        company_name = data.get("company_name")
         if not company_name:
             raise ValidationError("company_name é obrigatório.")
 
-        slug = data.get('slug') or OrganizationService._generate_unique_slug(company_name)
+        slug = data.get("slug") or OrganizationService._generate_unique_slug(company_name)
 
         organization = Organization.objects.create(
             company_name=company_name,
             slug=slug,
-            document=data.get('document', ''),
-            phone=data.get('phone', ''),
-            email=data.get('email', ''),
+            document=data.get("document", ""),
+            phone=data.get("phone", ""),
+            email=data.get("email", ""),
+            owner=owner,
         )
 
         logger.info(
             "Organização criada: id=%s name=%s slug=%s",
             organization.id, company_name, slug,
         )
+
+        # 🔧 Bootstrap: cria roles + permissões + módulos logo na criação
+        stats = bootstrap_organization(organization)
+        logger.info(
+            "Bootstrap: modules=%d roles_created=%d roles_updated=%d perms=%d",
+            stats["modules_enabled"],
+            stats["roles_created"],
+            stats["roles_updated"],
+            stats["role_permissions_created"],
+        )
+
+        # 🔗 Se houver owner, já adiciona como membro
+        if owner:
+            OrganizationService.add_member(owner, organization, role_codename="owner")
+
         return organization
 
     @staticmethod
@@ -63,10 +83,13 @@ class OrganizationService:
         try:
             role = Role.objects.get(
                 slug=role_codename.lower(),
-                organization=organization  # Filtra pela organização!
+                organization=organization,
             )
         except Role.DoesNotExist:
-            logger.error("Role inexistente: codename=%s", role_codename)
+            logger.error(
+                "Role inexistente: org=%s codename=%s",
+                organization.slug, role_codename,
+            )
             raise ValidationError(f"Role '{role_codename}' não encontrada.")
 
         membership, created = OrganizationMember.objects.get_or_create(
@@ -87,21 +110,12 @@ class OrganizationService:
     @staticmethod
     @transaction.atomic
     def activate_organization(organization):
-        """Ativa a organização (idempotente)."""
+        """Apenas marca a organização como ativa (idempotente)."""
         if organization.is_active:
-            logger.debug("Organização %s já está ativa.", organization.slug)
+            logger.debug("Organização %s já estava ativa.", organization.slug)
             return organization
-        logger.info("Iniciando bootstrap para a organização %s", organization.slug)
-        stats = bootstrap_organization(organization)
 
-        logger.info(
-            "Bootstrap concluído. Módulos: %d | Roles: %d criadas, %d atualizadas | Permissões: %d",
-            stats["modules_enabled"],
-            stats["roles_created"],
-            stats["roles_updated"],
-            stats["role_permissions_created"]
-        )
         organization.is_active = True
-        organization.save(update_fields=['is_active'])
+        organization.save(update_fields=["is_active"])
         logger.info("Organização ativada: %s", organization.slug)
         return organization
