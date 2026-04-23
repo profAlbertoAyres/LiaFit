@@ -11,9 +11,10 @@ class RequestContext:
     membership = None
     professional = None
     client = None
-    roles = []
-    modules = []
-    permissions = []
+    roles: set = frozenset()
+    modules: set = frozenset()
+    permissions: set = frozenset()
+    member_ctx = None
 
 
 # Regex pra extrair o slug da URL: /org/<slug>/...
@@ -86,21 +87,20 @@ class SaaSContextMiddleware:
                 "Você não tem acesso a esta organização."
             )
 
-        # 3. Monta o contexto
-        request.context.organization = organization
-        request.context.membership = membership
-        request.context.professional = getattr(
-            membership, 'professional_profile', None
+        # 3 + 4. Monta contexto completo de uma vez
+        member_ctx = ContextService.build_member_context(
+            user=request.user,
+            organization=organization,
+            membership=membership,
         )
 
-        # 4. RBAC
-        roles = ContextService.load_roles(membership)
-        modules = ContextService.load_modules(organization)
-        permissions = ContextService.load_permissions(roles, modules)
-
-        request.context.roles = roles
-        request.context.modules = modules
-        request.context.permissions = permissions
+        request.context.member_ctx = member_ctx
+        request.context.organization = member_ctx.organization
+        request.context.membership = member_ctx.membership
+        request.context.professional = member_ctx.professional
+        request.context.roles = member_ctx.roles
+        request.context.modules = member_ctx.modules
+        request.context.permissions = member_ctx.permissions
 
         # 5. Salva última org na sessão (para redirect pós-login)
         request.session['last_org_slug'] = org_slug

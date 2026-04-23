@@ -117,6 +117,37 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# =============================================================================
+# CACHE — adapta automaticamente conforme REDIS_URL estiver setado
+# =============================================================================
+
+REDIS_URL = os.getenv('REDIS_URL', '').strip()
+
+if REDIS_URL:
+    # 🔥 Produção / staging — usa Redis (Upstash, Render, etc.)
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+            'TIMEOUT': 300,
+        }
+    }
+else:
+    # 💻 Dev local — LocMem, zero dependências
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'liafit-default',
+            'TIMEOUT': 300,
+            'OPTIONS': {'MAX_ENTRIES': 10000},
+        }
+    }
+
+# RBAC Cache
+RBAC_CACHE_TTL = 60 * 15
+RBAC_CACHE_VERSION = 1
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
