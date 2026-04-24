@@ -14,7 +14,6 @@ from typing import Iterable, List, Set, Tuple
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
-from core.constants import DEFAULT_ACTIONS, MODULES, ROLES
 from core.models import (
     Module,
     ModuleItem,

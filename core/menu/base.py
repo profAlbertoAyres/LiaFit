@@ -4,11 +4,15 @@ from django.urls import reverse, NoReverseMatch
 
 class MenuNode:
     def _check_scope(self, request):
+        if request.user.is_superuser:
+            return True
         if self.scope == "superuser":
-            return request.user.is_superuser
+            return False  # já filtrado acima, mas por segurança
         if self.scope == "tenant":
-            return bool(getattr(request, "context", None))
-        # scope == "public" ou None
+            ctx = getattr(request, "context", None)
+            return bool(ctx and getattr(ctx, "organization", None))
+        if self.scope == "global":
+            return request.user.is_authenticated
         return True
 
     def _check_module(self, request):

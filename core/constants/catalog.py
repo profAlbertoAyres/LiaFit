@@ -1,236 +1,130 @@
+# core/constants/catalog.py
+"""
+Catálogo declarativo do sistema. Descreve a ESTRUTURA de menu/permissions.
+Os slugs vêm de core.permissions (fonte única da verdade).
+"""
+from core.constants.permissions import ModuleSlug, ItemSlug, ActionSlug
 
-# ============================================================
-# ACTIONS PADRÃO
-# ============================================================
+# Ações padrão CRUD
+CRUD = [ActionSlug.VIEW, ActionSlug.ADD, ActionSlug.CHANGE, ActionSlug.DELETE]
+RO   = [ActionSlug.VIEW]
+RW   = [ActionSlug.VIEW, ActionSlug.CHANGE]
 
-DEFAULT_ACTIONS = ("view", "add", "change", "delete")
 
-
-# ============================================================
-# MÓDULOS E ITEMS
-# ============================================================
-# Estrutura:
-# {
-#     "slug": "...",                 # app_label (ex: 'clients')
-#     "name": "...",
-#     "scope": "tenant|global|superuser",   # default="tenant" se omitido
-#     "description": "...",
-#     "order": 10,
-#     "is_core": bool,               # ativado auto em toda org nova (só faz sentido p/ tenant)
-#     "show_in_menu": bool,
-#     "items": [
-#         {
-#             "slug": "...",         # singular; mapeia model_name (ex: 'client')
-#             "name": "...",
-#             "icon": "...",
-#             "order": 10,
-#             "show_in_menu": bool,
-#             "actions": [...],      # default = DEFAULT_ACTIONS
-#             "owner_slug": "...",   # (opcional) slug do Module controlador (owner)
-#         },
-#     ],
-# }
-
-MODULES = [
-    # ============================================================
-    # TENANT (dentro da organização)
-    # ============================================================
+SYSTEM_CATALOG = [
+    # ─────────────── ACCOUNT ───────────────
     {
-        "slug": "account",
+        "slug": ModuleSlug.ACCOUNT,
         "name": "Configurações",
+        "icon": "settings",
+        "order": 10,
         "scope": "tenant",
-        "description": "Usuários, organizações e membros.",
-        "order": 20,
         "is_core": True,
         "show_in_menu": True,
         "items": [
-            {"slug": "member",       "name": "Membros",      "icon": "users",     "order": 10, "show_in_menu": True},
-            {"slug": "role",         "name": "Papéis",       "icon": "shield",    "order": 20, "show_in_menu": True},
             {
-                "slug": "organization",
-                "name": "Organização",
-                "icon": "briefcase",
-                "order": 30,
-                "show_in_menu": True,
-                "actions": ("view", "change"),
-            },
-        ],
-    },
-    {
-        "slug": "settings",
-        "name": "Cadastros",
-        "scope": "tenant",
-        "description": "Cadastro e gestão de pessoas.",
-        "order": 30,
-        "is_core": True,
-        "show_in_menu": True,
-        "items": [
-            {"slug": "client", "name": "Clientes", "icon": "user-check", "order": 10, "show_in_menu": True},
-            {"slug": "collaborator", "name": "Colaboradores", "icon": "shield-user", "order": 20, "show_in_menu": True},
-        ],
-    },
-
-    # ============================================================
-    # GLOBAL (área do cliente logado, fora de organização)
-    # ============================================================
-    {
-        "slug": "my-area",
-        "name": "Minha Área",
-        "scope": "global",
-        "description": "Área pessoal do usuário (fora de organização).",
-        "order": 100,
-        "is_core": False,         
-        "show_in_menu": True,
-        "items": [
-            {
-                "slug": "dashboard",
-                "name": "Início",
-                "icon": "home",
+                "slug": ItemSlug.ROLE,
+                "name": "Papéis",
+                "icon": "shield",
                 "order": 10,
-                "show_in_menu": True,
-                "actions": ("view",),
+                "route": "account:role_list",
+                "actions": CRUD,
             },
             {
-                "slug": "profile",
-                "name": "Meu Perfil",
-                "icon": "user",
+                "slug": ItemSlug.MEMBER,
+                "name": "Membros",
+                "icon": "users",
+                "order": 20,
+                "route": "account:member_list",
+                "actions": CRUD,
+            },
+            {
+                "slug": ItemSlug.ORGANIZATION,
+                "name": "Organização",
+                "icon": "building",
                 "order": 30,
-                "show_in_menu": True,
-                "actions": ("view", "change"),
+                "route": "account:organization_detail",
+                "actions": RW,
             },
         ],
     },
 
-    # ============================================================
-    # SUPERUSER (administração da plataforma SaaS)
-    # ============================================================
+    # ─────────────── SETTINGS ───────────────
     {
-        "slug": "saas-admin",
-        "name": "Admin SaaS",
-        "scope": "superuser",
-        "description": "Administração da plataforma (staff/superuser).",
-        "order": 200,
-        "is_core": False,
+        "slug": ModuleSlug.SETTINGS,
+        "name": "Cadastros",
+        "icon": "database",
+        "order": 20,
+        "scope": "tenant",
+        "is_core": True,
         "show_in_menu": True,
         "items": [
             {
-                "slug": "organizations",
-                "name": "Organizações",
+                "slug": ItemSlug.CLIENT,
+                "name": "Clientes",
+                "icon": "user",
+                "order": 10,
+                "route": "settings:client_list",
+                "actions": CRUD,
+            },
+            {
+                "slug": ItemSlug.COLLABORATOR,
+                "name": "Colaboradores",
                 "icon": "briefcase",
                 "order": 20,
-                "show_in_menu": True,
+                "route": "settings:collaborator_list",
+                "actions": CRUD,
             },
         ],
     },
-]
 
-
-# ============================================================
-# ROLES PADRÃO
-# ============================================================
-# `permissions` aceita:
-#   - "*"                              → todas as permissões do sistema
-#   - "module:<module_slug>"           → todas as permissões do módulo
-#   - "item:<module_slug>.<item_slug>" → todas as permissões do item
-#   - "<codename>"                     → permissão específica (ex: "clients.view_client")
-#
-# `scope` indica onde o role é criado:
-#   - "tenant"    → criado em cada organização (fluxo atual)
-#   - "global"    → criado sem organização; pertence ao usuário
-#   - "superuser" → criado sem organização; só staff/superuser
-#
-# Roles sem `scope` assumem "tenant" por padrão.
-
-ROLES = [
-    # ---- TENANT ----
+    # ─────────────── MY AREA ───────────────
     {
-        "slug": "owner",
-        "name": "Proprietário",
+        "slug": ModuleSlug.MY_AREA,
+        "name": "Minha Área",
+        "icon": "home",
+        "order": 1,
         "scope": "tenant",
-        "description": "Dono da organização. Acesso total à organização.",
-        "level": 100,
-        "permissions": [
-            "module:core",
-            "module:account",
-            "module:clients",
-            "module:workouts",
-            "module:exercises",
-            "module:assessments",
-            "module:schedule",
-            "module:financial",
-        ],
-    },
-    {
-        "slug": "admin",
-        "name": "Administrador",
-        "scope": "tenant",
-        "description": "Gerencia toda a organização exceto billing.",
-        "level": 80,
-        "permissions": [
-            "module:core",
-            "module:account",
-            "module:clients",
-            "module:workouts",
-            "module:exercises",
-            "module:assessments",
-            "module:schedule",
-            "item:financial.invoice",
-        ],
-    },
-    {
-        "slug": "professional",
-        "name": "Profissional",
-        "scope": "tenant",
-        "description": "Personal/professor. Acessa alunos, treinos e avaliações.",
-        "level": 50,
-        "permissions": [
-            "core.view_dashboard",
-            "module:clients",
-            "module:workouts",
-            "module:exercises",
-            "module:assessments",
-            "schedule.view_appointment",
-            "schedule.add_appointment",
-            "schedule.change_appointment",
-        ],
-    },
-    {
-        "slug": "assistant",
-        "name": "Assistente",
-        "scope": "tenant",
-        "description": "Recepção/secretaria. Agenda e cadastros básicos.",
-        "level": 30,
-        "permissions": [
-            "core.view_dashboard",
-            "clients.view_client",
-            "clients.add_client",
-            "clients.change_client",
-            "module:schedule",
-            "financial.view_invoice",
+        "is_core": True,
+        "show_in_menu": True,
+        "items": [
+            {
+                "slug": ItemSlug.DASHBOARD,
+                "name": "Dashboard",
+                "icon": "layout-dashboard",
+                "order": 10,
+                "route": "my_area:dashboard",
+                "actions": RO,
+            },
+            {
+                "slug": ItemSlug.PROFILE,
+                "name": "Meu Perfil",
+                "icon": "user-circle",
+                "order": 20,
+                "route": "my_area:profile",
+                "actions": RW,
+            },
         ],
     },
 
-    # ---- GLOBAL ----
+    # ─────────────── SAAS ADMIN ───────────────
     {
-        "slug": "client",
-        "name": "Cliente",
-        "scope": "global",
-        "description": "Usuário comum da plataforma (sem organização).",
-        "level": 10,
-        "permissions": [
-            "module:my-area",
-        ],
-    },
-
-    # ---- SUPERUSER ----
-    {
-        "slug": "platform_admin",
-        "name": "Admin da Plataforma",
+        "slug": ModuleSlug.SAAS_ADMIN,
+        "name": "Admin SaaS",
+        "icon": "server",
+        "order": 100,
         "scope": "superuser",
-        "description": "Administrador global do SaaS (staff/superuser).",
-        "level": 1000,
-        "permissions": [
-            "module:saas-admin",
+        "is_core": True,
+        "show_in_menu": True,
+        "items": [
+            {
+                "slug": ItemSlug.ORGANIZATIONS,
+                "name": "Organizações",
+                "icon": "building-2",
+                "order": 10,
+                "route": "saas_admin:organization_list",
+                "actions": CRUD,
+            },
         ],
     },
 ]

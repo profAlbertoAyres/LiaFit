@@ -1,47 +1,20 @@
 # core/signals.py
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from account.models import Organization
+from core.services.bootstrap import bootstrap_organization_core
 
-@receiver(post_migrate)
-def sync_core_after_migrate(sender, **kwargs):
+
+@receiver(post_save, sender=Organization)
+def bootstrap_org_core_modules(sender, instance, created, **kwargs):
     """
-    Sincroniza catálogo + SystemRoles automaticamente após cada 'migrate'.
+    Quando uma Organization é criada, ativa automaticamente os módulos
+    is_core=True e concede suas permissions ao Role de maior nível.
 
-    Roda apenas quando o app 'core' é migrado (evita disparar N vezes,
-    uma por cada app do projeto).
-    Pula em testes (verbosity=0) pra acelerar a suíte.
+    Observação: roda também quando você edita a org, mas é idempotente
+    (update_or_create + get_or_create), então é barato.
     """
-    if sender.name != "core":
+    if not created:
         return
-
-    if kwargs.get("verbosity", 1) == 0:
-        return
-
-    # Import tardio: evita problema de app ainda não carregado
-    from core.bootstrap import sync_system_catalog, sync_system_roles
-
-    # --- 1) Catálogo (Modules / Items / Permissions) ---
-    try:
-        cat_stats = sync_system_catalog(verbose=False)
-        print(
-            f"  ✓ Catálogo sincronizado: "
-            f"+{cat_stats['modules_created']} módulos, "
-            f"+{cat_stats['items_created']} itens, "
-            f"+{cat_stats['permissions_created']} permissões"
-        )
-    except Exception as e:
-        print(f"  ⚠️  Falha ao sincronizar catálogo: {e}")
-        return  # sem catálogo não adianta tentar roles
-
-    # --- 2) SystemRoles (depende das permissions existirem) ---
-    try:
-        role_stats = sync_system_roles(verbose=False)
-        print(
-            f"  ✓ SystemRoles sincronizados: "
-            f"+{role_stats['system_roles_created']} criados, "
-            f"~{role_stats['system_roles_updated']} atualizados, "
-            f"{role_stats['system_role_permissions_set']} permissões vinculadas"
-        )
-    except Exception as e:
-        print(f"  ⚠️  Falha ao sincronizar SystemRoles: {e}")
+    bootstrap_organization_core(instance)

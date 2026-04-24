@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+from core.constants.permissions import ModuleSlug
 from core.models.base import BaseModel
 
 
@@ -11,7 +12,7 @@ class Module(BaseModel):
         TENANT = "tenant", "Organização"
 
     name = models.CharField("nome", max_length=100, unique=True)
-    slug = models.SlugField("slug", max_length=120, unique=True, blank=True)
+    slug = models.SlugField("slug", max_length=120, unique=True, choices=ModuleSlug.choices,)
     description = models.TextField("descrição", blank=True, default="")
     icon = models.CharField("ícone", max_length=50, blank=True, default="")
     order = models.PositiveIntegerField("ordem", default=0)
