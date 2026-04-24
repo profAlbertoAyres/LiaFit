@@ -85,7 +85,7 @@ class SetupPasswordView(View):
                 {'error_message': 'Token inválido.'}, status=400)
 
         messages.success(request, f"Bem-vindo(a), {user.email}!")
-        return redirect("core:dashboard")
+        return redirect("master:dashboard")
 
 
 class RegisterSuccess(TemplateView):

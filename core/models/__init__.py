@@ -7,6 +7,8 @@ from core.models.permission import Permission
 from core.models.role import Role
 from core.models.role_permission import RolePermission
 from core.models.user_permission import UserPermission
+from core.models.system_role import SystemRole
+from core.models.user_system_role import UserSystemRole
 
 __all__ = [
     "BaseModel",
@@ -17,4 +19,6 @@ __all__ = [
     "Role",
     "RolePermission",
     "UserPermission",
+    "SystemRole",
+    "UserSystemRole",
 ]

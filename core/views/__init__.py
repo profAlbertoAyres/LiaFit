@@ -7,5 +7,4 @@ from .base import (
     BaseDetailView,
     BaseDeleteView,
 )
-from .post_login import PostLoginRedirectView
 from .dashboard import DashboardView

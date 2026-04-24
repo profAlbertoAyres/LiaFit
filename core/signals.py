@@ -1,100 +1,47 @@
 # core/signals.py
-"""
-Signals de invalidação de cache do ContextService (RBAC).
-
-================================================================
-PROPÓSITO
-================================================================
-O ContextService mantém em cache o "contexto" de cada membro de
-uma organização — um snapshot com:
-  • roles ativas
-  • permissões efetivas (union de roles + allows - denies)
-  • metadados do membership
-
-Ler esse contexto do cache é O(1). Reconstruí-lo envolve múltiplas
-queries no banco. Por isso cacheamos agressivamente.
-
-O problema: se o cache ficar *stale* (desatualizado) depois que
-um admin mexe nas permissões, o usuário continua com acesso
-indevido (ou bloqueado indevidamente) até o TTL expirar.
-
-SOLUÇÃO: sempre que algo que compõe o contexto mudar, disparamos
-um signal que INVALIDA a entrada de cache correspondente. Na
-próxima leitura, o contexto é reconstruído fresco do banco.
-
-================================================================
-ESCOPO ATUAL (Passo 3.3)
-================================================================
-Este arquivo cobre apenas `UserPermission` (allow/deny individuais).
-
-Outros modelos que afetam o contexto e ainda precisam de signals
-(Passo 3.4):
-  • RolePermission         → afeta todos os membros com a role
-  • OrganizationMember     → afeta o membro específico
-  • Role (delete/rename)   → edge cases
-
-================================================================
-GARANTIAS
-================================================================
-  ✅ Invalidação síncrona (post_save/post_delete rodam na mesma
-     transação do ORM).
-  ✅ Escopo mínimo: invalida apenas (user, organization) afetado.
-  ✅ Idempotente: invalidar uma chave inexistente é no-op seguro.
-
-Validação ponta-a-ponta: ver `docs/rbac/passo-3.3-validacao.md`.
-"""
-
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
-from core.models import UserPermission
-from core.services.context_service import ContextService
 
-
-# ─────────────────────────────────────────────────────────────────
-# UserPermission (allow / deny individuais por usuário+organização)
-# ─────────────────────────────────────────────────────────────────
-@receiver(post_save, sender=UserPermission)
-def invalidate_on_user_permission_saved(sender, instance, **kwargs):
+@receiver(post_migrate)
+def sync_core_after_migrate(sender, **kwargs):
     """
-    Invalida o cache quando uma UserPermission é criada ou alterada.
+    Sincroniza catálogo + SystemRoles automaticamente após cada 'migrate'.
 
-    Disparado em:
-      • Criação de novo allow/deny individual.
-      • Alteração do campo `effect` (allow ↔ deny).
-      • Qualquer `.save()` na instância (mesmo sem mudança real).
-
-    Args:
-        sender: Classe UserPermission (não usado).
-        instance: A instância salva. Usamos `user_id` e
-                  `organization_id` para identificar qual cache
-                  deve ser invalidado.
-        **kwargs: `created`, `raw`, `using`, `update_fields` (ignorados).
-
-    Efeito:
-        Remove a chave de cache do par (user_id, organization_id).
-        Próxima chamada a `ContextService.build_member_context`
-        reconstrói do banco.
+    Roda apenas quando o app 'core' é migrado (evita disparar N vezes,
+    uma por cada app do projeto).
+    Pula em testes (verbosity=0) pra acelerar a suíte.
     """
-    ContextService.invalidate(instance.user_id, instance.organization_id)
+    if sender.name != "core":
+        return
 
+    if kwargs.get("verbosity", 1) == 0:
+        return
 
-@receiver(post_delete, sender=UserPermission)
-def invalidate_on_user_permission_deleted(sender, instance, **kwargs):
-    """
-    Invalida o cache quando uma UserPermission é deletada.
+    # Import tardio: evita problema de app ainda não carregado
+    from core.bootstrap import sync_system_catalog, sync_system_roles
 
-    Cenário típico: admin remove um `deny` individual, esperando
-    que o usuário recupere imediatamente a permissão vinda da role.
+    # --- 1) Catálogo (Modules / Items / Permissions) ---
+    try:
+        cat_stats = sync_system_catalog(verbose=False)
+        print(
+            f"  ✓ Catálogo sincronizado: "
+            f"+{cat_stats['modules_created']} módulos, "
+            f"+{cat_stats['items_created']} itens, "
+            f"+{cat_stats['permissions_created']} permissões"
+        )
+    except Exception as e:
+        print(f"  ⚠️  Falha ao sincronizar catálogo: {e}")
+        return  # sem catálogo não adianta tentar roles
 
-    Args:
-        sender: Classe UserPermission (não usado).
-        instance: A instância deletada. Seus campos ainda estão
-                  acessíveis em memória neste ponto.
-        **kwargs: `using` (ignorado).
-
-    Efeito:
-        Mesma lógica do post_save: remove a chave do par
-        (user_id, organization_id).
-    """
-    ContextService.invalidate(instance.user_id, instance.organization_id)
+    # --- 2) SystemRoles (depende das permissions existirem) ---
+    try:
+        role_stats = sync_system_roles(verbose=False)
+        print(
+            f"  ✓ SystemRoles sincronizados: "
+            f"+{role_stats['system_roles_created']} criados, "
+            f"~{role_stats['system_roles_updated']} atualizados, "
+            f"{role_stats['system_role_permissions_set']} permissões vinculadas"
+        )
+    except Exception as e:
+        print(f"  ⚠️  Falha ao sincronizar SystemRoles: {e}")

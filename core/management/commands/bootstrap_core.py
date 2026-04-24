@@ -3,26 +3,33 @@ Management command: bootstrap_core
 
 Uso:
     python manage.py bootstrap_core
-        → Sincroniza o catálogo do sistema (Module, ModuleItem, Permission).
+        → Sincroniza catálogo + SystemRoles do sistema.
 
     python manage.py bootstrap_core --all-orgs
-        → Sincroniza catálogo + aplica bootstrap em TODAS as organizações.
+        → Sincroniza catálogo + SystemRoles + bootstrap em TODAS as organizações.
 
     python manage.py bootstrap_core --org <id>
-        → Sincroniza catálogo + aplica bootstrap em UMA organização específica.
+        → Sincroniza catálogo + SystemRoles + bootstrap em UMA organização específica.
 
     python manage.py bootstrap_core --skip-catalog --all-orgs
-        → Pula a sincronização do catálogo (útil se só quer reaplicar bootstrap).
+        → Pula catálogo e SystemRoles (útil se só quer reaplicar bootstrap nas orgs).
+
+    python manage.py bootstrap_core --skip-roles
+        → Pula apenas a sincronização de SystemRoles.
 """
 
 from django.core.management.base import BaseCommand, CommandError
 
 from account.models import Organization
-from core.bootstrap import bootstrap_organization, sync_system_catalog
+from core.bootstrap import (
+    bootstrap_organization,
+    sync_system_catalog,
+    sync_system_roles,
+)
 
 
 class Command(BaseCommand):
-    help = "Sincroniza o catálogo do sistema e aplica bootstrap em organizações."
+    help = "Sincroniza catálogo + SystemRoles e aplica bootstrap em organizações."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -41,11 +48,17 @@ class Command(BaseCommand):
             action="store_true",
             help="Pula a sincronização do catálogo do sistema.",
         )
+        parser.add_argument(
+            "--skip-roles",
+            action="store_true",
+            help="Pula a sincronização de SystemRoles (global/superuser).",
+        )
 
     def handle(self, *args, **options):
         org_id = options["org"]
         all_orgs = options["all_orgs"]
         skip_catalog = options["skip_catalog"]
+        skip_roles = options["skip_roles"]
 
         # ---------------------------------------------------------
         # 1) Sincroniza o catálogo do sistema
@@ -62,7 +75,22 @@ class Command(BaseCommand):
             ))
 
         # ---------------------------------------------------------
-        # 2) Determina quais orgs receberão bootstrap
+        # 2) Sincroniza SystemRoles (global / superuser)
+        # ---------------------------------------------------------
+        if not skip_roles:
+            self.stdout.write("")
+            self.stdout.write(self.style.MIGRATE_HEADING(
+                "→ Sincronizando SystemRoles (global / superuser)..."
+            ))
+            role_stats = sync_system_roles(verbose=True)
+            self._print_stats("SystemRoles", role_stats)
+        else:
+            self.stdout.write(self.style.WARNING(
+                "→ Sincronização de SystemRoles ignorada (--skip-roles)."
+            ))
+
+        # ---------------------------------------------------------
+        # 3) Determina quais orgs receberão bootstrap
         # ---------------------------------------------------------
         orgs = None
 
@@ -83,7 +111,7 @@ class Command(BaseCommand):
                 ))
 
         # ---------------------------------------------------------
-        # 3) Aplica bootstrap nas orgs selecionadas
+        # 4) Aplica bootstrap nas orgs selecionadas
         # ---------------------------------------------------------
         if orgs:
             self.stdout.write("")

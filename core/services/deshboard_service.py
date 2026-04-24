@@ -1,5 +1,8 @@
 # core/services/dashboard.py
-from account.models import OrganizationClient
+from django.urls import reverse
+
+from account.models import OrganizationClient, OrganizationMember
+
 
 class DashboardService:
     """
@@ -34,9 +37,44 @@ class DashboardService:
         return {
             'metrics': {
                 'total_clients': total_clients,
-                'total_team': 0,          
+                'total_team': 0,
                 'today_appointments': 0,
                 'monthly_revenue': 0.0,
             },
             'recent_clients': recent_clients
         }
+
+    @staticmethod
+    def get_redirect_url(request) -> str | None:
+        """
+        Retorna:
+          - URL (str) → a view deve redirecionar
+          - None      → a view segue o fluxo normal
+        """
+        # Se a URL já tem slug, não precisa redirecionar
+        if 'org_slug' in request.resolver_match.kwargs:
+            return None
+
+        # Usuário não autenticado → não é nossa responsabilidade
+        if not request.user.is_authenticated:
+            return None
+
+        # Busca organização ativa
+        slug = DashboardService._get_user_org_slug(request.user)
+
+        # Tem org → manda pra rota com slug
+        if slug:
+            return reverse('tenant:dashboard', kwargs={'org_slug': slug})
+
+        # Não tem org → segue o fluxo (renderiza sem slug)
+        return None
+
+    @staticmethod
+    def _get_user_org_slug(user) -> str | None:
+        membership = (
+            OrganizationMember.objects
+            .filter(user=user, is_active=True, organization__is_active=True)
+            .select_related('organization')
+            .first()
+        )
+        return membership.organization.slug if membership else None

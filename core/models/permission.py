@@ -19,7 +19,7 @@ class Permission(BaseModel):
     )
     action = models.CharField("ação", max_length=20, choices=Action.choices)
     name = models.CharField("nome", max_length=150, blank=True)
-    codename = models.CharField("codename", max_length=150, unique=True, blank=True)
+    codename = models.CharField("codename", max_length=200, unique=True, blank=True)
     description = models.TextField("descrição", blank=True, default="")
     is_active = models.BooleanField("ativo", default=True)
 
@@ -39,11 +39,11 @@ class Permission(BaseModel):
         return self.name or f"{self.get_action_display()} {self.item.name}"
 
     def save(self, *args, **kwargs):
+        # Sempre regenera o codename a partir do item (fonte única de verdade)
+        self.codename = self.item.permission_codename(self.action)
+
         if not self.name:
             self.name = f"{self.get_action_display()} {self.item.name}"
-
-        if not self.codename:
-            self.codename = self.item.permission_codename(self.action)
 
         super().save(*args, **kwargs)
 

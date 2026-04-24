@@ -6,5 +6,5 @@ def menu_context(request):
         return {"sidebar_menu": []}
 
     return {
-        "sidebar_menu": menu_registry.get_menu(request), # <-- Aqui
+        "sidebar_menu": menu_registry.get_menu(request),
     }

@@ -47,7 +47,6 @@ class BaseAuthMixin(LoginRequiredMixin):
     def _check_tenant_access(self, request):
         """Retorna um redirect se negado, ou None se OK."""
         ctx = getattr(request, 'context', None)
-        member_ctx = getattr(ctx, 'member_ctx', None)
 
         # Superuser: só precisa de org na URL
         if request.user.is_superuser:
@@ -55,36 +54,36 @@ class BaseAuthMixin(LoginRequiredMixin):
                 return self._deny("Organização não encontrada na URL.")
             return None
 
-        # Usuário comum: exige contexto completo
-        if not member_ctx:
+        # Usuário comum: exige contexto com membership
+        if not ctx or not getattr(ctx, 'membership', None):
             return self._deny(
                 "Contexto de organização não encontrado. Faça login novamente."
             )
 
         # RBAC
-        if not self._has_required_permission(member_ctx):
+        if not self._has_required_permission(ctx):
             return self._deny(
                 "Você não tem permissão para acessar esta funcionalidade."
             )
 
         return None
 
-    def _has_required_permission(self, member_ctx) -> bool:
+    def _has_required_permission(self, ctx) -> bool:
         """Delega a decisão pro MemberContext."""
         if self.permission_required:
             required = self.permission_required
             if isinstance(required, str):
-                return member_ctx.has_permission(required)
-            return member_ctx.has_all_permissions(*required)
+                return ctx.has_permission(required)
+            return ctx.has_all_permissions(*required)
 
         if self.permission_required_any:
-            return member_ctx.has_any_permission(*self.permission_required_any)
+            return ctx.has_any_permission(*self.permission_required_any)
 
-        return True  # nenhuma perm exigida
+        return True
 
     def _deny(self, message):
         messages.error(self.request, message)
-        return redirect("core:dashboard")
+        return redirect("master:dashboard")
 
 # ─── CONTEXTO MULTI-TENANT ───────────────────────────────────
 

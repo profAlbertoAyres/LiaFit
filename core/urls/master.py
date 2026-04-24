@@ -8,7 +8,7 @@ from core.views.master import (
     RoleListView, RoleCreateView
 )
 
-app_name = 'core'
+app_name = 'master'
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),

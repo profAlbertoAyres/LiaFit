@@ -21,7 +21,7 @@ class RoleListView(BaseListView):
     model = Role
     template_name = 'core/role/list.html'
     context_object_name = 'roles'
-    permission_required = 'view_configuracoes_role'
+    permission_required = 'account.view_role'
     filterset_class = RoleFilter
     paginate_by = 10
     ordering = 'level'
@@ -37,7 +37,7 @@ class RoleDetailView(BaseDetailView):
     model = Role
     template_name = 'core/role/detail.html'
     context_object_name = 'role'
-    permission_required = 'view_configuracoes_role'
+    permission_required = 'account.view_role'
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
@@ -82,7 +82,7 @@ class RoleCreateView(BaseCreateView):
     model = Role
     form_class = RoleForm
     template_name = 'core/role/create.html'
-    permission_required = 'add_configuracoes_role'
+    permission_required = 'account.add_role'
 
     def get_success_url(self):
         tenant = self.get_tenant()

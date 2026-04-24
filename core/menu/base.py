@@ -2,19 +2,56 @@
 from django.urls import reverse, NoReverseMatch
 
 
-class MenuItem:
-    def __init__(self, label, url_name, icon="circle", permission=None):
+class MenuNode:
+    def _check_scope(self, request):
+        if self.scope == "superuser":
+            return request.user.is_superuser
+        if self.scope == "tenant":
+            return bool(getattr(request, "context", None))
+        # scope == "public" ou None
+        return True
+
+    def _check_module(self, request):
+        if self.is_core or not self.module:
+            return True
+        ctx = getattr(request, "context", None)
+        return bool(ctx and self.module in ctx.modules)
+
+    def _check_permission(self, request):
+        if not self.permission:
+            return True
+        ctx = getattr(request, "context", None)
+        if ctx and self.permission in ctx.permissions:
+            return True
+        return request.user.has_perm(self.permission)
+
+
+class MenuItem(MenuNode):
+    def __init__(
+        self,
+        label,
+        url_name,
+        icon="circle",
+        permission=None,
+        module=None,
+        is_core=False,
+        scope="tenant",
+    ):
         self.label = label
         self.url_name = url_name
         self.icon = icon
         self.permission = permission
+        self.module = module
+        self.is_core = is_core
+        self.scope = scope
 
     def get_url(self, request):
         try:
-            ctx = getattr(request, 'context', None)
-            if ctx and ctx.organization:
+            ctx = getattr(request, "context", None)
+            org = getattr(ctx, "organization", None) if ctx else None
+            if org:
                 try:
-                    return reverse(self.url_name, kwargs={'org_slug': ctx.organization.slug})
+                    return reverse(self.url_name, kwargs={"org_slug": org.slug})
                 except NoReverseMatch:
                     pass
             return reverse(self.url_name)
@@ -22,36 +59,31 @@ class MenuItem:
             return "#"
 
     def is_visible(self, request):
-        # 🔥 MODO DESENVOLVIMENTO: Ignora permissões e mostra todos os itens!
-        # Para ativar a segurança novamente no futuro, apague este "return True"
-        # e descomente o bloco de código abaixo.
-        return True
-
-        """
-        if not self.permission:
-            return True
-
-        if request.user.is_superuser:
-            return True
-
-        ctx = getattr(request, 'context', None)
-        if ctx and hasattr(ctx, 'permissions'):
-            perm_list = [p.codename if hasattr(p, 'codename') else p for p in ctx.permissions]
-            permission_codename = self.permission.split('.')[-1] if '.' in self.permission else self.permission
-
-            if self.permission in perm_list or permission_codename in perm_list:
-                return True
-
-        return request.user.has_perm(self.permission)
-        """
+        return (
+            self._check_scope(request)
+            and self._check_module(request)
+            and self._check_permission(request)
+        )
 
 
-class MenuGroup:
-    def __init__(self, label, items, icon="folder", permission=None, order=0, scope="tenant"):
+class MenuGroup(MenuNode):
+    def __init__(
+        self,
+        label,
+        items,
+        icon="folder",
+        permission=None,
+        module=None,
+        is_core=False,
+        order=0,
+        scope="tenant",
+    ):
         self.label = label
         self.items = items
         self.icon = icon
         self.permission = permission
+        self.module = module
+        self.is_core = is_core
         self.order = order
         self.scope = scope
 
@@ -59,31 +91,10 @@ class MenuGroup:
         return [item for item in self.items if item.is_visible(request)]
 
     def is_visible(self, request):
-        if self.scope == 'superuser' and not request.user.is_superuser:
+        if not self._check_scope(request):
             return False
-
-        if self.scope == 'tenant':
-            if not request.user.is_superuser:
-                ctx = getattr(request, 'context', None)
-                if not ctx or not getattr(ctx, 'membership', None):
-                    return False
-
-        # 🔥 MODO DESENVOLVIMENTO: Ignora permissão de grupo
-        # Descomente no futuro para reativar
-        """
-        if self.permission:
-            if not request.user.is_superuser:
-                ctx = getattr(request, 'context', None)
-                has_tenant_perm = False
-                if ctx and hasattr(ctx, 'permissions'):
-                    perm_list = [p.codename if hasattr(p, 'codename') else p for p in ctx.permissions]
-                    has_tenant_perm = self.permission in perm_list
-
-                has_global_perm = request.user.has_perm(self.permission)
-
-                if not (has_tenant_perm or has_global_perm):
-                    return False
-        """
-
-        # Só mostra o grupo se tiver pelo menos 1 item visível dentro dele
-        return len(self.get_visible_items(request)) > 0
+        if not self._check_module(request):
+            return False
+        if not self._check_permission(request):
+            return False
+        return bool(self.get_visible_items(request))

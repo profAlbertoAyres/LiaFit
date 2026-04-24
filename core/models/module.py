@@ -5,11 +5,24 @@ from core.models.base import BaseModel
 
 
 class Module(BaseModel):
+    class Scope(models.TextChoices):
+        SUPERUSER = "superuser", "Superusuário"
+        GLOBAL = "global", "Global (Cliente)"
+        TENANT = "tenant", "Organização"
+
     name = models.CharField("nome", max_length=100, unique=True)
     slug = models.SlugField("slug", max_length=120, unique=True, blank=True)
     description = models.TextField("descrição", blank=True, default="")
     icon = models.CharField("ícone", max_length=50, blank=True, default="")
     order = models.PositiveIntegerField("ordem", default=0)
+    scope = models.CharField(
+        "escopo",
+        max_length=20,
+        choices=Scope.choices,
+        default=Scope.TENANT,
+        help_text="Define em qual contexto o módulo aparece: área admin (superuser), "
+                  "área do cliente (global) ou dentro de uma organização (tenant).",
+    )
     is_active = models.BooleanField("ativo", default=True)
     is_core = models.BooleanField(
         "módulo essencial",

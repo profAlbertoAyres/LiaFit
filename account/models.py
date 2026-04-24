@@ -45,6 +45,32 @@ class User(AbstractUser):
     def get_short_name(self):
         return self.fullname.split(' ')[0] if self.fullname else self.email
 
+    def get_permission_codenames(self, organization) -> set[str]:
+        """
+        Retorna o set de permission codenames que o usuário tem na organização,
+        via roles ativas de seu OrganizationMember.
+        """
+        if self.is_superuser:
+            from core.models import Permission
+            return set(Permission.objects.values_list('codename', flat=True))
+
+        if not organization:
+            return set()
+
+        from core.models import RolePermission
+        return set(
+            RolePermission.objects
+            .filter(
+                organization=organization,
+                role__members__user=self,
+                role__members__organization=organization,
+                role__members__is_active=True,
+                role__is_active=True,
+            )
+            .values_list('permission__codename', flat=True)
+            .distinct()
+        )
+
     @property
     def is_email_verified(self) -> bool:
         return self.email_verified_at is not None

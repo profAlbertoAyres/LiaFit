@@ -1,8 +1,6 @@
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
-# Suas importações existentes
-from core.services.post_login import resolve_post_login_redirect
 from core.services.deshboard_service import DashboardService
 from core.views.base import BaseAuthMixin, ContextMixin
 
@@ -10,39 +8,35 @@ from core.views.base import BaseAuthMixin, ContextMixin
 class DashboardView(ContextMixin, BaseAuthMixin, TemplateView):
     template_name = 'core/dashboard/dashboard.html'
     permission_required = None
+    require_tenant = False
 
     def dispatch(self, request, *args, **kwargs):
-        # Se NÃO tem org_slug na URL (ou seja, ele digitou lialinda.com.br/dashboard)
-        if 'org_slug' not in kwargs:
-            last_org_slug = request.session.get('last_org_slug')
+        # Pergunta pro service: preciso redirecionar?
+        redirect_url = DashboardService.get_redirect_url(request)
+        if redirect_url:
+            return redirect(redirect_url)
 
-            # Usamos o SEU service para descobrir para onde ele deveria ir
-            redirect_url, _ = resolve_post_login_redirect(request.user, last_org_slug)
-
-            # Evita loop infinito: só redireciona se a URL destino for diferente da atual
-            if redirect_url != request.path:
-                return redirect(redirect_url)
-
+        # Service disse que não → segue o fluxo normal
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ctx = self.request.context  # Preenchido pelo seu ContextMixin
+        ctx = getattr(self.request, 'context', None)
 
-        # O ctx.organization virá preenchido pelo BaseAuthMixin/ContextMixin
-        # se tiver na URL, ou None se for cliente global
+        organization = getattr(ctx, 'organization', None) if ctx else None
+        membership = getattr(ctx, 'membership', None) if ctx else None
+
         dashboard_data = DashboardService.get_dashboard_data(
-            organization=ctx.organization,
-            membership=ctx.membership
+            organization=organization,
+            membership=membership,
         )
 
         context.update({
-            'organization': ctx.organization,
-            'membership': ctx.membership,
-            'roles': getattr(ctx, 'roles', []),
-            'modules': getattr(ctx, 'modules', []),
+            'organization': organization,
+            'membership': membership,
+            'roles': getattr(ctx, 'roles', []) if ctx else [],
+            'modules': getattr(ctx, 'modules', []) if ctx else [],
             'metrics': dashboard_data.get('metrics'),
             'recent_clients': dashboard_data.get('recent_clients'),
         })
-
         return context

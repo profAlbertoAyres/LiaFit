@@ -50,7 +50,7 @@ class MenuRegistry:
                             label=item.name,
                             url_name=item.menu_url_name,
                             icon=getattr(item, 'icon', ''),
-                            permission=item.view_permission_codename
+                            permission=item.permission_codename()
                         )
                     )
 

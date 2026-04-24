@@ -10,8 +10,6 @@ from account.models import OnboardingToken
 from account.services.organization_service import OrganizationService
 from account.services.token_service import TokenService
 from account.services.user_service import UserService
-from core.constants import ROLES
-from core.models import Role
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -27,33 +25,23 @@ class OnboardingService:
             raise ValidationError("E-mail não informado.")
 
         fullname = user_data.get("fullname")
+
+        # 1. Pega ou cria o usuário base
         user = UserService.get_or_create_user(email, fullname=fullname)
 
-        organization_data["owner_email"] = email
-        organization = OrganizationService.create_organization(organization_data)
-        owner_def = next((r for r in ROLES if r["slug"] == "owner"), None)
-        if not owner_def:
-            raise ValueError("Role 'owner' não encontrada em core.constants.ROLES")
+        # 2. Cria a organização JÁ PASSANDO O OWNER!
+        # A mágica acontece aqui: O OrganizationService já cria a empresa,
+        # roda o bootstrap (criando as roles) e já vincula o usuário como dono.
+        organization = OrganizationService.create_organization(organization_data, owner=user)
 
-        # Cria apenas o registro base da Role para podermos vincular o usuário
-        Role.objects.create(
-            organization=organization,
-            slug=owner_def["slug"],
-            name=owner_def["name"],
-            description=owner_def.get("description", ""),
-            level=owner_def.get("level", 0)
-        )
-        OrganizationService.add_member(user, organization, role_codename="owner")
-
-        organization.owner = user
-        organization.save(update_fields=["owner"])
-
+        # 3. Cria o token de onboarding para o usuário criar a senha
         token = TokenService.create_token(
             user=user,
             organization=organization,
             purpose=OnboardingToken.Purpose.ONBOARDING,
         )
 
+        # 4. Envia o e-mail apenas se tudo deu certo no banco de dados
         transaction.on_commit(
             lambda: OnboardingService._send_activation_email(
                 user, organization, token, request
@@ -143,8 +131,8 @@ class OnboardingService:
             return None, None
 
         ip = (
-            request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
-            or request.META.get("REMOTE_ADDR")
+                request.META.get("HTTP_X_FORWARDED_FOR", "").split(",")[0].strip()
+                or request.META.get("REMOTE_ADDR")
         )
         ua = request.META.get("HTTP_USER_AGENT", "")[:500]
         return ip or None, ua or None

@@ -823,8 +823,8 @@ view de listar permissões de um papel usando seu RolePermissionFilter (se já e
 ### 4. Fluxo de Login Dinâmico (Frictionless Login)
 * Local: `core.services.post_login.resolve_post_login_redirect`
 * **Regras de Redirecionamento Pós-Login:**
-  1. **Superusuário**: Vai para o `core:dashboard` ("painel pessoal").
-  2. **Usuário sem organização**: Vai para o `core:dashboard`.
+  1. **Superusuário**: Vai para o `master:dashboard` ("painel pessoal").
+  2. **Usuário sem organização**: Vai para o `master:dashboard`.
   3. **Usuário com 1 organização**: Vai direto para o `tenant:dashboard` da clínica.
   4. **Usuário com múltiplas organizações**: 
      * Tenta direcionar para a última acessada (`last_org_slug` salvo na sessão pelo Middleware).
