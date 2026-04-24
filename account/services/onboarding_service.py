@@ -29,9 +29,7 @@ class OnboardingService:
         # 1. Pega ou cria o usuário base
         user = UserService.get_or_create_user(email, fullname=fullname)
 
-        # 2. Cria a organização JÁ PASSANDO O OWNER!
-        # A mágica acontece aqui: O OrganizationService já cria a empresa,
-        # roda o bootstrap (criando as roles) e já vincula o usuário como dono.
+
         organization = OrganizationService.create_organization(organization_data, owner=user)
 
         # 3. Cria o token de onboarding para o usuário criar a senha

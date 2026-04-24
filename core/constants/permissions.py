@@ -14,7 +14,7 @@ from django.db import models
 
 class ModuleSlug(models.TextChoices):
     """Todos os módulos do sistema."""
-    ACCOUNT    = "account",    "Configurações"
+    ACCOUNT    = "account",    "Contas"
     SETTINGS   = "settings",   "Cadastros"
     MY_AREA    = "my-area",    "Minha Área"
     SAAS_ADMIN = "saas-admin", "Admin SaaS"
@@ -72,16 +72,16 @@ class PermSet:
 
 class AccountModule:
     SLUG = ModuleSlug.ACCOUNT
-    Role         = PermSet(SLUG, ItemSlug.ROLE)
-    Member       = PermSet(SLUG, ItemSlug.MEMBER)
-    Organization = PermSet(SLUG, ItemSlug.ORGANIZATION,
-                           actions=(ActionSlug.VIEW, ActionSlug.CHANGE))
+    Client       = PermSet(SLUG, ItemSlug.CLIENT)
+    Collaborator = PermSet(SLUG, ItemSlug.COLLABORATOR)
 
 
 class SettingsModule:
     SLUG = ModuleSlug.SETTINGS
-    Client       = PermSet(SLUG, ItemSlug.CLIENT)
-    Collaborator = PermSet(SLUG, ItemSlug.COLLABORATOR)
+    Role         = PermSet(SLUG, ItemSlug.ROLE)
+    Member       = PermSet(SLUG, ItemSlug.MEMBER)
+    Organization = PermSet(SLUG, ItemSlug.ORGANIZATION,
+                           actions=(ActionSlug.VIEW, ActionSlug.CHANGE))
 
 
 class MyAreaModule:

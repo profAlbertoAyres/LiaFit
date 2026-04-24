@@ -5,19 +5,21 @@ Os slugs vêm de core.permissions (fonte única da verdade).
 """
 from core.constants.permissions import ModuleSlug, ItemSlug, ActionSlug
 
-# Ações padrão CRUD
+# Presets de ações
 CRUD = [ActionSlug.VIEW, ActionSlug.ADD, ActionSlug.CHANGE, ActionSlug.DELETE]
 RO   = [ActionSlug.VIEW]
 RW   = [ActionSlug.VIEW, ActionSlug.CHANGE]
 
+# Alias canônico esperado pelo bootstrap
+DEFAULT_ACTIONS = CRUD
 
 SYSTEM_CATALOG = [
-    # ─────────────── ACCOUNT ───────────────
+    # ─────────────── SETTINGS ───────────────
     {
-        "slug": ModuleSlug.ACCOUNT,
+        "slug": ModuleSlug.SETTINGS,
         "name": "Configurações",
         "icon": "settings",
-        "order": 10,
+        "order": 20,
         "scope": "tenant",
         "is_core": True,
         "show_in_menu": True,
@@ -27,7 +29,7 @@ SYSTEM_CATALOG = [
                 "name": "Papéis",
                 "icon": "shield",
                 "order": 10,
-                "route": "account:role_list",
+                "route": "setting:role_list",
                 "actions": CRUD,
             },
             {
@@ -35,7 +37,7 @@ SYSTEM_CATALOG = [
                 "name": "Membros",
                 "icon": "users",
                 "order": 20,
-                "route": "account:member_list",
+                "route": "setting:member_list",
                 "actions": CRUD,
             },
             {
@@ -51,10 +53,10 @@ SYSTEM_CATALOG = [
 
     # ─────────────── SETTINGS ───────────────
     {
-        "slug": ModuleSlug.SETTINGS,
+        "slug": ModuleSlug.ACCOUNT,
         "name": "Cadastros",
         "icon": "database",
-        "order": 20,
+        "order": 10,
         "scope": "tenant",
         "is_core": True,
         "show_in_menu": True,
@@ -64,7 +66,7 @@ SYSTEM_CATALOG = [
                 "name": "Clientes",
                 "icon": "user",
                 "order": 10,
-                "route": "settings:client_list",
+                "route": "account:client_list",
                 "actions": CRUD,
             },
             {
@@ -72,7 +74,7 @@ SYSTEM_CATALOG = [
                 "name": "Colaboradores",
                 "icon": "briefcase",
                 "order": 20,
-                "route": "settings:collaborator_list",
+                "route": "account:collaborator_list",
                 "actions": CRUD,
             },
         ],
@@ -128,3 +130,5 @@ SYSTEM_CATALOG = [
         ],
     },
 ]
+
+MODULES = SYSTEM_CATALOG

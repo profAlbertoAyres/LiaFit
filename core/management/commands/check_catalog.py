@@ -11,7 +11,7 @@ import sys
 from django.core.management.base import BaseCommand
 
 from core.constants.catalog import SYSTEM_CATALOG
-from core.permissions import ModuleSlug, ItemSlug
+from core.constants.permissions import ModuleSlug, ItemSlug
 from core.models import Module, ModuleItem, Permission
 
 
