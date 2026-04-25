@@ -1,7 +1,6 @@
 {% extends 'base_app.html' %}
 
-{% block title %}{{ object.name }} - Detalhes |
-    {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+{% block title %}{{ object.name }} - Detalhes | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
 
 {% block page_content %}
     <div class="lia-page-header">
@@ -14,9 +13,9 @@
                 <h2 class="lia-page-header__title lia-flex lia-items-center lia-gap-3">
                     {{ object.name }}
                     {% if object.is_active %}
-                        <span style="background-color: var(--color-success-light); color: var(--color-success); padding: 4px 10px; border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: 1;">Ativo</span>
+                        <span class="lia-badge lia-badge--success">Ativo</span>
                     {% else %}
-                        <span style="background-color: var(--color-danger-light); color: var(--color-danger); padding: 4px 10px; border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); line-height: 1;">Inativo</span>
+                        <span class="lia-badge lia-badge--danger">Inativo</span>
                     {% endif %}
                 </h2>
                 <p class="lia-page-header__subtitle">Configure as informações e permissões deste papel.</p>
@@ -31,7 +30,8 @@
                     <span>Editar Dados do Papel</span>
                 </a>
             {% else %}
-                <button class="lia-btn lia-btn--outline" disabled style="opacity: 0.6; cursor: not-allowed;"
+                <!-- Removido os estilos inline, utilizando o lia-btn--disabled do buttons.css -->
+                <button class="lia-btn lia-btn--outline lia-btn--disabled" disabled
                         title="Nível hierárquico igual ou superior ao seu.">
                     <i data-lucide="lock" class="lucide-sm"></i>
                     <span>Edição Bloqueada</span>
@@ -44,29 +44,22 @@
         <div class="lia-card__header">
             <h3 class="lia-card__title">Informações do Papel</h3>
         </div>
-        <div class="lia-card__body"
-             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-6);">
-            <!-- Meta 1: Nome -->
+        <!-- Removido estilo inline de grid e substituído pela nova classe utilitária -->
+        <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs lia-text-muted lia-font-semibold"
-                      style="text-transform: uppercase; letter-spacing: 0.05em;">Nome do Papel</span>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Nome do Papel</span>
                 <p class="lia-font-medium lia-text-lg lia-mt-1">{{ object.name }}</p>
             </div>
-
-            <!-- Meta 2: Nível -->
             <div>
-                <span class="lia-text-xs lia-text-muted lia-font-semibold"
-                      style="text-transform: uppercase; letter-spacing: 0.05em;">Nível de Hierarquia</span>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Nível de Hierarquia</span>
                 <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
                     <i data-lucide="bar-chart-2" class="lucide-sm lia-text-primary"></i>
                     {{ object.level }}
                 </p>
             </div>
-
-            <!-- Meta 3: Descrição -->
-            <div style="grid-column: 1 / -1;">
-                <span class="lia-text-xs lia-text-muted lia-font-semibold"
-                      style="text-transform: uppercase; letter-spacing: 0.05em;">Descrição</span>
+            <!-- Removido inline do column span -->
+            <div class="lia-col-span-full">
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Descrição</span>
                 <p class="lia-text-sm lia-text-secondary lia-mt-1">
                     {{ object.description|default:"Nenhuma descrição informada." }}
                 </p>
@@ -74,14 +67,13 @@
         </div>
     </div>
 
-    <!-- ÁREA DE PERMISSÕES: Layout em Grade de Módulos -->
+    <!-- ÁREA DE PERMISSÕES -->
     <div class="lia-mt-6">
         <div class="lia-flex lia-items-center lia-justify-between lia-mb-4">
             <div>
-                <h3 class="lia-font-bold" style="font-size: var(--font-size-xl); color: var(--color-text-primary);">
-                    Permissões de Acesso</h3>
-                <p class="lia-text-sm lia-text-muted lia-mt-1">Visualize ou modifique o que este perfil pode acessar no
-                    sistema.</p>
+                <!-- A classe h3 no typography.css já possui a cor var(--color-text-primary) e o tamanho correto, então não precisamos de style -->
+                <h3 class="lia-font-bold">Permissões de Acesso</h3>
+                <p class="lia-text-sm lia-text-muted lia-mt-1">Visualize ou modifique o que este perfil pode acessar no sistema.</p>
             </div>
 
             {% if can_change_permissions and object.level < request.context.membership.highest_role_level %}
@@ -92,12 +84,22 @@
             {% endif %}
         </div>
 
+        {# 🆕 Aviso global sobre permissões universais - Reconstruído usando o padrão de alertas flutuantes (inline) #}
+        <div class="lia-alert lia-alert--info lia-alert--inline lia-mb-4">
+            <i data-lucide="info" class="lucide-sm lia-alert__icon"></i>
+            <div class="lia-alert__content">
+                <strong class="lia-alert__title">Permissões Universais 🌐</strong>
+                <p class="lia-text-sm lia-mb-0 lia-alert__message">
+                    Permissões marcadas com <strong>🌐</strong> são <strong>inalienáveis</strong> — concedidas automaticamente a todos os papéis e não podem ser removidas. Garantem o acesso mínimo de qualquer membro à organização.
+                </p>
+            </div>
+        </div>
+
         <form id="form-permissions" method="post" action="">
             {% csrf_token %}
 
             <div class="accordion" id="accordionPermissoes">
 
-                <!-- NÍVEL 1: LOOP DOS MÓDULOS PAI (ACCORDIONS) -->
                 {% for modulo in modules_with_permissions %}
                     <div class="accordion-item lia-accordion-item">
 
@@ -117,34 +119,49 @@
 
                             <div class="accordion-body lia-accordion-body">
 
-                                <!-- WRAPPER DO GRID: Lado a lado responsivo -->
                                 <div class="lia-card-grid">
 
-                                    <!-- NÍVEL 2: LOOP DAS TELAS (CARDS) -->
                                     {% for tela in modulo.items %}
 
                                         <div class="lia-card">
                                             <div class="lia-card__header">
                                                 <h5 class="lia-card__title">{{ tela.name }}</h5>
-
                                             </div>
                                             <div class="lia-card__body">
 
-                                                <!-- NÍVEL 3: CHAVINHAS DE PERMISSÕES -->
                                                 <div class="lia-flex lia-flex-col lia-gap-3">
 
                                                     {% for perm in tela.permissions %}
-                                                        <div class="form-check form-switch lia-flex lia-items-center lia-gap-2 lia-mb-0">
+                                                        <div class="form-check form-switch lia-flex lia-items-center lia-gap-2 lia-mb-0 
+                                                                    {% if perm.is_universal %}lia-perm-universal{% elif not perm.is_editable %}lia-perm-locked{% endif %}">
+
                                                             <input type="checkbox"
                                                                    name="permissions"
                                                                    value="{{ perm.id }}"
                                                                    id="perm_{{ perm.id }}"
-                                                                   class="form-check-input cursor-pointer"
-                                                                   {% if perm.id in permissoes_atuais_ids %}checked{% endif %}>
+                                                                   class="form-check-input lia-cursor-pointer"
+                                                                   {% if perm.is_universal or perm.id in permissoes_atuais_ids %}checked{% endif %}
+                                                                   {% if perm.is_universal or not perm.is_editable %}disabled{% endif %}>
 
+                                                            <!-- Removida a classe 'lia-form-label' que causava o desalinhamento -->
                                                             <label for="perm_{{ perm.id }}"
-                                                                   class="form-check-label lia-form-label lia-switch-label cursor-pointer">
+                                                                   class="form-check-label lia-switch-label {% if perm.is_editable %}lia-cursor-pointer{% endif %} lia-flex lia-items-center lia-gap-2 lia-mb-0">
                                                                 {{ perm.display_name }}
+
+                                                                {# 🌐 Universal — sempre presente, jamais removível #}
+                                                                {% if perm.is_universal %}
+                                                                    <!-- Usando o badge criado em layout.css -->
+                                                                    <span title="Permissão universal: concedida automaticamente a todos os papéis e não pode ser removida."
+                                                                          class="lia-badge lia-badge--info">
+                                                                        🌐 Universal
+                                                                    </span>
+
+                                                                {# 🔒 Filosofia C — você não tem essa permissão #}
+                                                                {% elif not perm.is_editable %}
+                                                                    <i data-lucide="lock"
+                                                                       class="lucide-xs lia-text-muted"
+                                                                       title="Você não possui esta permissão, então não pode concedê-la."></i>
+                                                                {% endif %}
                                                             </label>
                                                         </div>
                                                     {% endfor %}

@@ -105,3 +105,21 @@ small,
     height: 3rem;
 }
 
+/* ==========================================================================
+   UTILITÁRIOS DE TEXTO E CORES
+   ========================================================================== */
+
+/* Texto em estilo de rótulo (maiúsculo e espaçado) */
+.lia-text-overline {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Cores de texto utilitárias adicionais */
+.lia-text-primary { color: var(--color-primary); }
+.lia-text-info { color: var(--color-info); }
+.lia-text-success { color: var(--color-success); }
+.lia-text-danger { color: var(--color-danger); }
+
+/* Tamanho extra de texto, caso precise forçar um tamanho em elementos normais */
+.lia-text-xl { font-size: var(--font-size-xl); }

@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import List
 
 
-
-
 # ============================================================
 # 1) CATÁLOGO DO SISTEMA
 # ============================================================
@@ -40,12 +38,19 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
                 "order": mod_def.get("order", 0),
                 "scope": mod_def.get("scope", Module.Scope.TENANT),
                 "is_core": mod_def.get("is_core", False),
+                "is_universal": mod_def.get("is_universal", False),  # 🆕
                 "show_in_menu": mod_def.get("show_in_menu", True),
             },
         )
         stats["modules_created" if created else "modules_updated"] += 1
         if verbose:
-            print(f"  [{'+' if created else '~'}] module {module.slug} ({module.scope})")
+            flags = []
+            if module.is_core:
+                flags.append("core")
+            if module.is_universal:
+                flags.append("🌐universal")
+            flag_str = f" [{', '.join(flags)}]" if flags else ""
+            print(f"  [{'+' if created else '~'}] module {module.slug} ({module.scope}){flag_str}")
 
         for item_def in mod_def.get("items", []):
             item, item_created = ModuleItem.objects.update_or_create(

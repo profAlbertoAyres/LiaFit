@@ -1,11 +1,12 @@
 import re
 
-from django.contrib import messages          # ← DESCOMENTADO
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 
 from core.models import OrganizationModule, Permission
 from core.services.context_service import ContextService, MemberContext
+from core.services.permission_service import is_saas_staff  # 🆕
 from account.models import Organization, OrganizationMember
 
 ORG_SLUG_PATTERN = re.compile(r'^/org/(?P<org_slug>[\w-]+)/')
@@ -53,12 +54,14 @@ class SaaSContextMiddleware:
         return match.group('org_slug') if match else None
 
     def _build_context(self, user, org):
-        if user.is_superuser:
+        # 🆕 SaaS staff (você + equipe interna) entra em qualquer org
+        # para dar suporte técnico, com TODAS as permissões.
+        if is_saas_staff(user):
             return MemberContext(
                 user=user,
                 organization=org,
                 membership=None,
-                roles={'superuser'},
+                roles={'saas_staff'},
                 modules=set(
                     OrganizationModule.objects
                     .filter(organization=org, is_active=True)
@@ -66,6 +69,11 @@ class SaaSContextMiddleware:
                 ),
                 permissions=set(
                     Permission.objects.values_list('codename', flat=True)
+                ),
+                system_roles=set(
+                    user.system_roles
+                    .filter(is_active=True, system_role__is_active=True)
+                    .values_list('system_role__slug', flat=True)
                 ),
             )
 

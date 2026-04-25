@@ -13,23 +13,34 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
     """
     Prepara uma organização nova:
       1. Ativa módulos core (scope=tenant, is_core=True)
-      2. Cria Roles tenant padrão com suas permissões
-      3. Garante que o owner tenha OrganizationMember com role 'owner'
+      2. Cria/atualiza Roles tenant padrão com suas permissões
+      3. Concede permissões UNIVERSAIS a TODOS os roles
+      4. Garante que o owner tenha OrganizationMember com role 'owner'
     """
     stats = {
         "modules_enabled": 0,
         "roles_created": 0,
         "roles_updated": 0,
         "role_permissions_created": 0,
+        "universal_permissions_granted": 0,
         "owner_role_assigned": False,
     }
 
     # --- 1) Ativar módulos core do tenant ---
+    # 🛡️ Filtro DUPLO: is_core=True E scope=TENANT
+    # Nunca deve ativar módulos de scope=SUPERUSER em tenants!
     core_modules = Module.objects.filter(
         is_core=True,
         scope=Module.Scope.TENANT,
-    )
+    ).exclude(scope=Module.Scope.SUPERUSER)  # 🛡️ defesa extra
+
     for module in core_modules:
+        # 🛡️ Sanity check: nunca deveria passar daqui se não for tenant
+        if module.scope != Module.Scope.TENANT:
+            if verbose:
+                print(f"  [⚠️] PULANDO módulo {module.slug} (scope={module.scope})")
+            continue
+
         _, created = OrganizationModule.objects.get_or_create(
             organization=organization,
             module=module,
@@ -58,7 +69,6 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
         if verbose:
             print(f"  [{'+' if created else '~'}] role {role.slug}")
 
-        # Resolver permissões (só de módulos tenant)
         permissions = resolve_permissions(
             role_def.get("permissions", []),
             scope_filter="tenant",
@@ -75,7 +85,27 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
         if verbose:
             print(f"      → {len(permissions)} permissões vinculadas")
 
-    # --- 3) Garantir owner como OrganizationMember com role 'owner' ---
+    # --- 3) 🌐 Permissões UNIVERSAIS a TODOS os roles ---
+    universal_perms = Permission.objects.filter(
+        item__module__is_universal=True,
+        item__module__scope=Module.Scope.TENANT,
+        is_active=True,
+    )
+    all_roles = Role.objects.filter(organization=organization)
+
+    for role in all_roles:
+        for perm in universal_perms:
+            _, created = RolePermission.objects.get_or_create(
+                organization=organization,
+                role=role,
+                permission=perm,
+            )
+            if created:
+                stats["universal_permissions_granted"] += 1
+                if verbose:
+                    print(f"  [🌐] {role.slug} ← {perm.codename}")
+
+    # --- 4) Garantir owner ---
     if organization.owner_id:
         from account.models import OrganizationMember
 
@@ -93,6 +123,7 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
 
     return stats
 
+
 # ============================================================
 # 4) PROPAGAÇÃO DE MÓDULOS CORE (para orgs já existentes)
 # ============================================================
@@ -100,22 +131,38 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
 @transaction.atomic
 def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
     """
-    Propaga módulos core para TODAS as organizações já existentes.
+    Propaga módulos core E permissões universais para TODAS as orgs.
 
-    Útil quando você adiciona um novo Module(is_core=True) no catálogo
-    e precisa ativá-lo automaticamente em organizações já cadastradas,
-    além de conceder suas permissions ao role 'owner' de cada uma.
+    🛡️ AUTO-LIMPEZA: remove OrganizationModule de scope=superuser
+    que possam ter sido criados por engano em versões antigas.
 
-    Idempotente — pode rodar quantas vezes quiser.
+    Idempotente.
     """
     from account.models import Organization
 
     stats = {
         "organizations_processed": 0,
         "modules_activated": 0,
+        "modules_cleaned": 0,  # 🆕
         "owner_permissions_granted": 0,
+        "universal_permissions_granted": 0,
     }
 
+    # 🧹 ETAPA 0 — Auto-limpeza de "sujeira" antiga
+    # OrganizationModule com módulos superuser são INVÁLIDOS em tenants
+    invalid_oms = OrganizationModule.objects.filter(
+        module__scope=Module.Scope.SUPERUSER,
+    )
+    invalid_count = invalid_oms.count()
+    if invalid_count > 0:
+        if verbose:
+            print(f"  [🧹] Limpando {invalid_count} módulo(s) superuser ativados em tenants...")
+            for om in invalid_oms:
+                print(f"      ❌ {om.organization} → {om.module.slug}")
+        invalid_oms.delete()
+        stats["modules_cleaned"] = invalid_count
+
+    # 🛡️ Filtros explícitos com scope=TENANT
     core_modules = Module.objects.filter(
         is_core=True,
         scope=Module.Scope.TENANT,
@@ -125,12 +172,21 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
         item__module__scope=Module.Scope.TENANT,
         is_active=True,
     )
+    universal_perms = Permission.objects.filter(
+        item__module__is_universal=True,
+        item__module__scope=Module.Scope.TENANT,
+        is_active=True,
+    )
 
     for org in Organization.objects.all():
         stats["organizations_processed"] += 1
 
-        # 1) Ativar módulos core que ainda não estão ativos na org
+        # 1) Ativar módulos core
         for module in core_modules:
+            # 🛡️ Sanity check (defesa em profundidade)
+            if module.scope != Module.Scope.TENANT:
+                continue
+
             _, created = OrganizationModule.objects.get_or_create(
                 organization=org,
                 module=module,
@@ -141,7 +197,7 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
                 if verbose:
                     print(f"  [+] {org} → módulo {module.slug} ativado")
 
-        # 2) Garantir que owner role tenha as permissions core
+        # 2) Owner role com permissions core
         owner_role = Role.objects.filter(
             organization=org,
             slug="owner",
@@ -159,5 +215,19 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
             )
             if created:
                 stats["owner_permissions_granted"] += 1
+
+        # 3) 🌐 Universais a TODOS os roles
+        all_roles = Role.objects.filter(organization=org)
+        for role in all_roles:
+            for perm in universal_perms:
+                _, created = RolePermission.objects.get_or_create(
+                    organization=org,
+                    role=role,
+                    permission=perm,
+                )
+                if created:
+                    stats["universal_permissions_granted"] += 1
+                    if verbose:
+                        print(f"  [🌐] {org} → {role.slug} ← {perm.codename}")
 
     return stats

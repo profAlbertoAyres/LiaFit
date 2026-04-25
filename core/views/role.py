@@ -86,7 +86,7 @@ class RoleCreateView(BaseCreateView):
 
     def get_success_url(self):
         tenant = self.get_tenant()
-        return reverse('tenant:role_list', kwargs={'org_slug': tenant.slug})
+        return reverse('tenant:role_detail', kwargs={'org_slug': tenant.slug})
 
 
 class RoleUpdateView(BaseUpdateView):

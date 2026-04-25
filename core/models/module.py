@@ -25,6 +25,15 @@ class Module(BaseModel):
                   "área do cliente (global) ou dentro de uma organização (tenant).",
     )
     is_active = models.BooleanField("ativo", default=True)
+    is_universal = models.BooleanField(
+        "módulo universal",
+        default=False,
+        help_text=(
+            "Permissões deste módulo são INALIENÁVEIS — concedidas "
+            "automaticamente a todos os roles e não podem ser revogadas. "
+            "Ex: Minha Área (perfil pessoal, dashboard do usuário)."
+        ),
+    )
     is_core = models.BooleanField(
         "módulo essencial",
         default=False,

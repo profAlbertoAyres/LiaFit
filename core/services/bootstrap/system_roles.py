@@ -16,8 +16,6 @@ from core.constants import ROLES, CATALOG, CRUD
 from core.models import (
     Module,
     OrganizationModule,
-    Role,
-    RolePermission,
     SystemRole,
 )
 from core.services.bootstrap.catalog import resolve_permissions

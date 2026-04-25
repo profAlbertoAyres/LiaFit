@@ -19,6 +19,7 @@ CATALOG = [
         "order": 1,
         "scope": "tenant",
         "is_core": True,
+        "is_universal": True,
         "show_in_menu": True,
         "items": [
             {
