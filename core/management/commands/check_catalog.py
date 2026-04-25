@@ -59,7 +59,7 @@ class Command(BaseCommand):
         # módulos no catálogo mas não no banco → precisa sync
         missing_modules = catalog_modules - db_modules
         for s in missing_modules:
-            warnings.append(f"[banco] Módulo '{s}' no catálogo mas ausente no banco. Rode sync_catalog.")
+            warnings.append(f"[banco] Módulo '{s}' no catálogo mas ausente no banco. Rode bootstrap_core.")
 
         # módulos no banco mas não no catálogo → órfão
         orphan_modules = db_modules - catalog_modules

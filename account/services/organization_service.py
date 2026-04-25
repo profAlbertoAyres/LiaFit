@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from account.models import Organization, OrganizationMember
-from core.bootstrap import bootstrap_organization
+from core.services.bootstrap import bootstrap_organization
 from core.models.role import Role
 
 logger = logging.getLogger(__name__)

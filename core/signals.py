@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from account.models import Organization
-from core.services.bootstrap import bootstrap_organization_core
+from core.services.bootstrap import bootstrap_organization
 
 
 @receiver(post_save, sender=Organization)
@@ -17,4 +17,4 @@ def bootstrap_org_core_modules(sender, instance, created, **kwargs):
     """
     if not created:
         return
-    bootstrap_organization_core(instance)
+    bootstrap_organization(instance)
