@@ -4,7 +4,8 @@
 from django.db import transaction
 
 from core.constants import ROLES
-from core.models import Role, RolePermission, Module, OrganizationModule
+from core.models import Role, RolePermission, Module, OrganizationModule, Permission
+from core.services.bootstrap.catalog import resolve_permissions
 
 
 @transaction.atomic
@@ -58,7 +59,7 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
             print(f"  [{'+' if created else '~'}] role {role.slug}")
 
         # Resolver permissões (só de módulos tenant)
-        permissions = _resolve_permissions(
+        permissions = resolve_permissions(
             role_def.get("permissions", []),
             scope_filter="tenant",
         )

@@ -113,7 +113,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
 # RESOLUÇÃO DE PERMISSÕES (compartilhado)
 # ============================================================
 
-def _resolve_permissions(spec, *, scope_filter: str | None = None) -> List[Permission]:
+def resolve_permissions(spec, *, scope_filter: str | None = None) -> List[Permission]:
     """
     Resolve specs de permissão em lista de Permission.
 
