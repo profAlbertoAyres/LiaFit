@@ -1,66 +1,72 @@
 # core/constants/roles.py
 """
-Definição dos Roles do sistema (tenant + system).
+Catálogo declarativo de Roles (papéis).
 
-Scopes:
-  - tenant      → Role por organização (Role model)
-  - global      → SystemRole multi-tenant (ex: auditor interno)
-  - superuser   → SystemRole com acesso total (equipe LiaFit)
-
-Specs de permissions:
-  - "*"                     → todas as perms do scope
-  - "module:<slug>"         → todas as perms do módulo
-  - "item:<mod>.<item>"     → todas as perms do item
-  - "<codename_direto>"     → ex: "account.view_client"
+Estrutura de cada role:
+    - slug:        identificador único (string lowercase)
+    - name:        nome amigável (exibição)
+    - description: descrição curta
+    - scope:       "tenant" | "global" | "superuser"
+    - level:       inteiro pra hierarquia (maior = mais poder)
+    - permissions: "*" (tudo do scope) ou lista de specs:
+        • {"module": <slug>}                       → todas actions do módulo
+        • {"module": <slug>, "actions": [<act>]}   → actions específicas
+        • {"item": (<mod_slug>, <item_slug>)}      → todas actions do item
+        • {"item": (<mod>, <item>), "actions": []} → actions específicas do item
+        • "<codename>"                             → permission direta por codename
 """
-from core.constants.permissions import ModuleSlug, ItemSlug
+from core.constants.catalog import CRUD, RO, RW
+from core.constants.permissions import ModuleSlug
 
 
 ROLES = [
-    # ════════════════════════════════════════════════════
-    # TENANT ROLES — criados em cada Organization
-    # ════════════════════════════════════════════════════
+    # ─────────────── TENANT ───────────────
     {
         "slug": "owner",
         "name": "Proprietário",
-        "description": "Dono da organização. Acesso total aos módulos tenant.",
+        "description": "Dono da organização. Acesso total ao tenant.",
         "scope": "tenant",
         "level": 100,
-        "permissions": ["*"],  # todas as perms de módulos scope=tenant
+        "permissions": "*",
     },
     {
         "slug": "admin",
         "name": "Administrador",
-        "description": "Gerencia membros, papéis, cadastros e configurações.",
+        "description": "Administrador da organização. Acesso total ao tenant (limitado por hierarquia).",
         "scope": "tenant",
         "level": 80,
+        "permissions": "*",
+    },
+    {
+        "slug": "manager",
+        "name": "Gestor",
+        "description": "Gerencia cadastros; visualiza configurações.",
+        "scope": "tenant",
+        "level": 50,
         "permissions": [
-            f"module:{ModuleSlug.ACCOUNT}",
-            f"module:{ModuleSlug.SETTINGS}",
-            f"module:{ModuleSlug.MY_AREA}",
+            {"module": ModuleSlug.MY_AREA},
+            {"module": ModuleSlug.ACCOUNT,  "actions": CRUD},
+            {"module": ModuleSlug.SETTINGS, "actions": RO},
         ],
     },
     {
-        "slug": "collaborator",
-        "name": "Colaborador",
-        "description": "Profissional/assistente da organização.",
+        "slug": "member",
+        "name": "Membro",
+        "description": "Acesso básico ao tenant (apenas Minha Área).",
         "scope": "tenant",
-        "level": 40,
+        "level": 10,
         "permissions": [
-            f"module:{ModuleSlug.MY_AREA}",
-            f"item:{ModuleSlug.ACCOUNT}.{ItemSlug.CLIENT}",
+            {"module": ModuleSlug.MY_AREA, "actions": RO},
         ],
     },
 
-    # ════════════════════════════════════════════════════
-    # SUPERUSER ROLES — equipe interna LiaFit
-    # ════════════════════════════════════════════════════
+    # ─────────────── SUPERUSER ───────────────
     {
-        "slug": "saas-admin",
-        "name": "Admin SaaS",
-        "description": "Equipe interna com acesso total à administração do SaaS.",
+        "slug": "superadmin",
+        "name": "Super Administrador",
+        "description": "Administrador da plataforma SaaS. Acesso total ao admin.",
         "scope": "superuser",
         "level": 999,
-        "permissions": ["*"],  # todas as perms scope=superuser
+        "permissions": "*",
     },
 ]

@@ -10,7 +10,7 @@ Sai com código 0 se tudo OK, 1 se houver divergências.
 import sys
 from django.core.management.base import BaseCommand
 
-from core.constants.catalog import SYSTEM_CATALOG
+from core.constants.catalog import CATALOG
 from core.constants.permissions import ModuleSlug, ItemSlug
 from core.models import Module, ModuleItem, Permission
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
         catalog_modules, catalog_items, catalog_perms = set(), set(), set()
 
-        for m in SYSTEM_CATALOG:
+        for m in CATALOG:
             m_slug = str(m["slug"])
             catalog_modules.add(m_slug)
 

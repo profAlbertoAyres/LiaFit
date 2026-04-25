@@ -6,13 +6,20 @@ class MenuNode:
     def _check_scope(self, request):
         if request.user.is_superuser:
             return True
+
+        ctx = getattr(request, "context", None)
+        system_roles = getattr(ctx, "system_roles", set()) if ctx else set()
+
         if self.scope == "superuser":
-            return False  # já filtrado acima, mas por segurança
+            # Só superuser Django ou platform_admin
+            return "platform_admin" in system_roles
+
         if self.scope == "tenant":
-            ctx = getattr(request, "context", None)
             return bool(ctx and getattr(ctx, "organization", None))
+
         if self.scope == "global":
             return request.user.is_authenticated
+
         return True
 
     def _check_module(self, request):

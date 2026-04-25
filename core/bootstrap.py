@@ -14,7 +14,7 @@ from typing import Iterable, List, Set, Tuple
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 
-from core.constants import ROLES
+from core.constants import ROLES, CATALOG, CRUD
 from core.models import (
     Module,
     ModuleItem,
@@ -46,7 +46,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
     }
 
     # ---- 1ª passada: modules + items + permissions ----
-    for mod_def in MODULES:
+    for mod_def in CATALOG:
         module, created = Module.objects.update_or_create(
             slug=mod_def["slug"],
             defaults={
@@ -77,7 +77,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
             if verbose:
                 print(f"      [{'+' if item_created else '~'}] item {item.slug}")
 
-            actions = item_def.get("actions") or DEFAULT_ACTIONS
+            actions = item_def.get("actions") or CRUD
             actions = list(dict.fromkeys(actions))  # dedup mantendo ordem
 
             for action in actions:
@@ -98,7 +98,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
                         print(f"          [+] perm {perm.codename}")
 
     # ---- 2ª passada: resolver owners (item_def["owner_slug"]) ----
-    for mod_def in MODULES:
+    for mod_def in CATALOG:
         for item_def in mod_def.get("items", []):
             owner_slug = item_def.get("owner_slug")
             if not owner_slug:
@@ -128,50 +128,70 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
 # RESOLUÇÃO DE PERMISSÕES (compartilhado)
 # ============================================================
 
-def _resolve_permissions(spec: Iterable[str], *, scope_filter: str | None = None) -> List[Permission]:
+def _resolve_permissions(spec, *, scope_filter: str | None = None) -> List[Permission]:
     """
-    Resolve specs de permissão em QuerySet de Permission.
+    Resolve specs de permissão em lista de Permission.
+
+    Formatos aceitos em `spec`:
+      • "*"                                          → todas as permissões do scope
+      • [ ... lista de entradas ... ]
+            "<codename>"                             → permission por codename
+            {"module": <slug>}                       → todas actions do módulo
+            {"module": <slug>, "actions": [<act>]}   → actions específicas do módulo
+            {"item":   (<mod>, <item>)}              → todas actions do item
+            {"item":   (<mod>, <item>), "actions": [<act>]}
 
     Se `scope_filter` for informado, restringe a permissions cujo
-    item.module.scope == scope_filter. Útil pra evitar que um role
-    'tenant' receba permissões de módulos 'global'.
+    item.module.scope == scope_filter. Evita que um role 'tenant'
+    receba permissões de módulos 'global'/'superuser'.
     """
-    spec = list(spec)
     base_qs = Permission.objects.filter(is_active=True)
     if scope_filter:
         base_qs = base_qs.filter(item__module__scope=scope_filter)
 
-    if "*" in spec:
+    # Atalho: "*" sozinho ou dentro de lista significa "tudo do scope"
+    if spec == "*" or (isinstance(spec, (list, tuple)) and "*" in spec):
         return list(base_qs)
 
-    codenames: Set[str] = set()
-    module_slugs: Set[str] = set()
-    item_keys: Set[Tuple[str, str]] = set()
-
-    for entry in spec:
-        if entry.startswith("module:"):
-            module_slugs.add(entry.split(":", 1)[1])
-        elif entry.startswith("item:"):
-            mod_slug, item_slug = entry.split(":", 1)[1].split(".", 1)
-            item_keys.add((mod_slug, item_slug))
-        else:
-            codenames.add(entry)  # codename direto
+    if not isinstance(spec, (list, tuple)):
+        return []
 
     filters = Q()
     matched = False
 
-    if codenames:
-        filters |= Q(codename__in=codenames)
-        matched = True
-    if module_slugs:
-        filters |= Q(item__module__slug__in=module_slugs)
-        matched = True
-    if item_keys:
-        item_q = Q()
-        for mod_slug, item_slug in item_keys:
-            item_q |= Q(item__module__slug=mod_slug, item__slug=item_slug)
-        filters |= item_q
-        matched = True
+    for entry in spec:
+        # ─── 1) String → codename direto ───
+        if isinstance(entry, str):
+            filters |= Q(codename=entry)
+            matched = True
+            continue
+
+        # ─── 2) Dict → module/item + actions opcionais ───
+        if isinstance(entry, dict):
+            actions = entry.get("actions")  # None = todas
+
+            # 2a) Por módulo
+            if "module" in entry:
+                mod_slug = str(entry["module"])  # aceita TextChoices ou str
+                q = Q(item__module__slug=mod_slug)
+                if actions:
+                    q &= Q(action__in=[str(a) for a in actions])
+                filters |= q
+                matched = True
+                continue
+
+            # 2b) Por item (tupla mod_slug, item_slug)
+            if "item" in entry:
+                mod_slug, item_slug = entry["item"]
+                q = Q(
+                    item__module__slug=str(mod_slug),
+                    item__slug=str(item_slug),
+                )
+                if actions:
+                    q &= Q(action__in=[str(a) for a in actions])
+                filters |= q
+                matched = True
+                continue
 
     if not matched:
         return []

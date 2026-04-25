@@ -41,12 +41,9 @@ class RoleService:
     @staticmethod
     def get_role_context_flags(request, role):
         user = request.user
-        user_permissions = getattr(request.context, 'permissions', [])
         active_modules = getattr(request.context, 'modules', [])
 
         is_superuser = user.is_superuser
-        can_view = is_superuser or 'view_configuracoes_role_permission' in user_permissions
-        can_change = is_superuser or 'change_configuracoes_role_permission' in user_permissions
 
         permissoes_qs = Permission.objects.select_related('item').all()
 
@@ -65,7 +62,7 @@ class RoleService:
 
         permissoes_banco = list(permissoes_qs)
 
-        permissoes_atuais = list(role.role_permissions.values_list('permission_id', flat=True)) if can_view else []
+        permissoes_atuais = list(role.role_permissions.values_list('permission_id', flat=True))
 
         # 3. AGRUPANDO
         modulos_dict = defaultdict(lambda: defaultdict(list))
@@ -109,8 +106,6 @@ class RoleService:
         modules_with_permissions.sort(key=lambda x: x['name'])
 
         return {
-            'can_view_permissions': can_view,
-            'can_change_permissions': can_change,
             'permissoes_atuais_ids': permissoes_atuais,
             'modules_with_permissions': modules_with_permissions,
         }

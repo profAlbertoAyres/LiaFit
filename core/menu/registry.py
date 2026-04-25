@@ -23,6 +23,7 @@ class MenuRegistry:
 
         ctx = getattr(request, "context", None)
         organization = getattr(ctx, "organization", None) if ctx else None
+        system_roles = getattr(ctx, "system_roles", set()) if ctx else set()
 
         active_items_prefetch = Prefetch(
             "items",
@@ -33,17 +34,24 @@ class MenuRegistry:
             is_active=True, show_in_menu=True
         ).prefetch_related(active_items_prefetch)
 
-        scope_filter = Q(scope="global")
+        # ── Filtros de scope ──
+        scope_filter = Q(scope="global")  # global é sempre visível p/ autenticados
 
         if request.user.is_superuser:
+            # Superuser vê tudo
             scope_filter |= Q(scope="superuser") | Q(scope="tenant")
+        else:
+            # platform_admin vê superuser-scope
+            if "platform_admin" in system_roles:
+                scope_filter |= Q(scope="superuser")
 
-        if organization:
-            scope_filter |= Q(
-                scope="tenant",
-                organization_modules__organization=organization,
-                organization_modules__is_active=True,
-            )
+            # Usuário em uma org → vê módulos tenant ativos da org
+            if organization:
+                scope_filter |= Q(
+                    scope="tenant",
+                    organization_modules__organization=organization,
+                    organization_modules__is_active=True,
+                )
 
         modules = base_qs.filter(scope_filter).distinct()
 
@@ -71,7 +79,7 @@ class MenuRegistry:
                     label=module.name,
                     icon=module.icon or "folder",
                     order=module.order,
-                    scope=module.scope,      # ⬅️ FIX: era hardcoded "tenant"
+                    scope=module.scope,
                     is_core=module.is_core,
                     module=module.slug,
                     items=menu_items,
