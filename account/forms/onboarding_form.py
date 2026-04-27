@@ -10,16 +10,6 @@ User = get_user_model()
 
 
 class OrganizationRegistrationForm(BaseForm):
-    """
-    Formulário de auto-cadastro do dono da organização.
-
-    Suporta fluxo de 2 passos para multi-empresa:
-      1ª submissão: se o e-mail já existir, NÃO bloqueia. Marca a flag
-                    `email_already_exists=True` para o template abrir o modal.
-      2ª submissão: vem com `confirm_existing=True` (hidden). O save() roteia
-                    para `register_organization_for_existing_user`.
-    """
-
     company_name = forms.CharField(
         label=_("Nome da Empresa (Clínica/Estúdio/Academia)"),
         max_length=255,
@@ -88,7 +78,6 @@ class OrganizationRegistrationForm(BaseForm):
 
 
 class SetupPasswordForm(BaseForm):
-    """Define a senha inicial do dono ao clicar no link de ativação."""
 
     password1 = forms.CharField(
         label=_("Nova senha"),

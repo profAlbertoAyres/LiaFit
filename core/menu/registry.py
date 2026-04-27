@@ -41,11 +41,9 @@ class MenuRegistry:
             # Superuser vê tudo
             scope_filter |= Q(scope="superuser") | Q(scope="tenant")
         else:
-            # platform_admin vê superuser-scope
             if "platform_admin" in system_roles:
                 scope_filter |= Q(scope="superuser")
 
-            # Usuário em uma org → vê módulos tenant ativos da org
             if organization:
                 scope_filter |= Q(
                     scope="tenant",

@@ -1,14 +1,7 @@
 # core/management/commands/check_catalog.py
-"""
-Valida a coerência entre o catálogo declarativo e o banco de dados.
-
-Uso:
-    python manage.py check_catalog
-
-Sai com código 0 se tudo OK, 1 se houver divergências.
-"""
 import sys
 from django.core.management.base import BaseCommand
+from django.urls import reverse, NoReverseMatch
 
 from core.constants.catalog import CATALOG
 from core.constants.permissions import ModuleSlug, ItemSlug
@@ -21,11 +14,11 @@ class Command(BaseCommand):
     def handle(self, *args, **opts):
         errors, warnings = [], []
 
-        # ══════ 1. Catálogo x permissions.py (slugs declarados?) ══════
         valid_modules = {str(v) for v in ModuleSlug.values}
         valid_items = {str(v) for v in ItemSlug.values}
 
         catalog_modules, catalog_items, catalog_perms = set(), set(), set()
+        catalog_routes = []
 
         for m in CATALOG:
             m_slug = str(m["slug"])
@@ -44,6 +37,9 @@ class Command(BaseCommand):
                     errors.append(
                         f"[catalog→permissions] Item '{i_slug}' não está em ItemSlug."
                     )
+                route = i.get("route", "")
+                if route:
+                    catalog_routes.append((m_slug, i_slug, route))
 
                 for action in i.get("actions", []):
                     codename = f"{m_slug}.{action}_{i_slug}"
@@ -56,12 +52,19 @@ class Command(BaseCommand):
         ))
         db_perms = set(Permission.objects.values_list("codename", flat=True))
 
-        # módulos no catálogo mas não no banco → precisa sync
         missing_modules = catalog_modules - db_modules
         for s in missing_modules:
             warnings.append(f"[banco] Módulo '{s}' no catálogo mas ausente no banco. Rode bootstrap_core.")
 
-        # módulos no banco mas não no catálogo → órfão
+        unresolved_routes = []
+        for m_slug, i_slug, route in catalog_routes:
+            if not _route_resolves(route):
+                unresolved_routes.append((m_slug, i_slug, route))
+                errors.append(
+                    f"[urls] Rota '{route}' (item={m_slug}.{i_slug}) "
+                    f"não resolve via reverse()."
+                )
+
         orphan_modules = db_modules - catalog_modules
         for s in orphan_modules:
             warnings.append(f"[banco] Módulo '{s}' no banco mas ausente no catálogo (órfão).")
@@ -95,6 +98,10 @@ class Command(BaseCommand):
             f"  Banco:    {len(db_modules)} módulos, "
             f"{len(db_items)} itens, {len(db_perms)} permissions\n"
         )
+        self.stdout.write(
+            f"  URLs:     {len(catalog_routes) - len(unresolved_routes)}/"
+            f"{len(catalog_routes)} resolvem\n"
+        )
 
         if errors:
             self.stdout.write(self.style.ERROR(f"\n✗ {len(errors)} erro(s):"))
@@ -114,3 +121,17 @@ class Command(BaseCommand):
             sys.exit(1)
 
         sys.exit(0)
+
+def _route_resolves(url_name: str) -> bool:
+    """
+    Tenta resolver `url_name` via reverse() com e sem `org_slug`.
+    Retorna True se qualquer tentativa der certo.
+    """
+    kwargs_attempts = [{}, {"org_slug": "_probe_"}]
+    for kwargs in kwargs_attempts:
+        try:
+            reverse(url_name, kwargs=kwargs)
+            return True
+        except NoReverseMatch:
+            continue
+    return False

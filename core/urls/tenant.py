@@ -22,8 +22,8 @@ urlpatterns = [
 
     #
     # # ── ORGANIZAÇÃO (detalhe único - a própria org do contexto) ──
-    path('organization/<int:pk>', OrganizationDetailView.as_view(), name='organization_detail'),
-    # path('organization/update/', OrganizationUpdateView.as_view(), name='organization_update'),
+    path('organization/detail', OrganizationDetailView.as_view(), name='organization_detail'),
+    path('organization/update/', OrganizationDetailView.as_view(), name='organization_update'),
     #
     # # ── ROLE PERMISSIONS ──
     # path('role-permissions/', RolePermissionListView.as_view(), name='role_permission_list'),

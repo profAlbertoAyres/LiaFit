@@ -1,8 +1,21 @@
-from django.db import models
+import logging
 
+from django.db import models
+from django.urls import reverse, NoReverseMatch
+
+from config import settings
 from core.constants.permissions import ItemSlug
 from core.models.base import BaseModel
 from core.models.module import Module
+
+logger = logging.getLogger(__name__)
+
+_SCOPE_NAMESPACE_MAP = {
+    Module.Scope.TENANT: "tenant",
+    Module.Scope.GLOBAL: "master",
+    Module.Scope.SUPERUSER: "saas_admin",
+}
+
 
 
 class ModuleItem(BaseModel):
@@ -58,8 +71,7 @@ class ModuleItem(BaseModel):
         return self.owner or self.module
 
     def url_name(self, action: str = "list") -> str:
-        """Fallback: gera url_name convencional a partir do slug."""
-        namespace = "tenant" if self.module.scope == Module.Scope.TENANT else "master"
+        namespace = _SCOPE_NAMESPACE_MAP.get(self.module.scope, "master")
         return f"{namespace}:{self.route_base}_{action}"
 
     def permission_codename(self, action: str = "view") -> str:
@@ -69,3 +81,25 @@ class ModuleItem(BaseModel):
     def menu_url_name(self) -> str:
         """URL usada no menu. Prioriza self.route, cai no convencional."""
         return self.route or self.url_name("list")
+
+    def get_url(self, *, org_slug: str | None = None) -> str | None:
+
+        url_name = self.menu_url_name
+        kwargs_attempts = []
+
+        if org_slug:
+            kwargs_attempts.append({"org_slug": org_slug})
+        kwargs_attempts.append({})
+
+        for kwargs in kwargs_attempts:
+            try:
+                return reverse(url_name, kwargs=kwargs)
+            except NoReverseMatch:
+                continue
+
+        logger.warning(
+            "[ModuleItem.get_url] URL '%s' não resolve para item '%s.%s' "
+            "(org_slug=%r)",
+            url_name, self.module.slug, self.slug, org_slug,
+        )
+        return "#" if settings.DEBUG else None

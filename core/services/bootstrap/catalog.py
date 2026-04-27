@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import logging
 from typing import List
+
+from django.urls import reverse, NoReverseMatch
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================
@@ -26,6 +31,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
         "items_updated": 0,
         "permissions_created": 0,
         "owners_linked": 0,
+        "routes_unresolved": 0,
     }
 
     # ---- 1ª passada: modules + items + permissions ----
@@ -38,7 +44,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
                 "order": mod_def.get("order", 0),
                 "scope": mod_def.get("scope", Module.Scope.TENANT),
                 "is_core": mod_def.get("is_core", False),
-                "is_universal": mod_def.get("is_universal", False),  # 🆕
+                "is_universal": mod_def.get("is_universal", False),
                 "show_in_menu": mod_def.get("show_in_menu", True),
             },
         )
@@ -61,23 +67,33 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
                     "icon": item_def.get("icon", ""),
                     "order": item_def.get("order", 0),
                     "show_in_menu": item_def.get("show_in_menu", True),
+                    "route": item_def.get("route", ""),
                 },
             )
             stats["items_created" if item_created else "items_updated"] += 1
             if verbose:
                 print(f"      [{'+' if item_created else '~'}] item {item.slug}")
+                if item.route:
+                    if not _route_resolves(item.route, module.scope):
+                        stats["routes_unresolved"] += 1
+                        msg = (
+                            f"[catalog] URL não resolve: '{item.route}' "
+                            f"(item={module.slug}.{item.slug})"
+                        )
+                        logger.warning(msg)
+                        if verbose:
+                            print(f"          [⚠️] {msg}")
 
             actions = item_def.get("actions") or CRUD
-            actions = list(dict.fromkeys(actions))  # dedup mantendo ordem
+            actions = list(dict.fromkeys(actions))
 
             for action in actions:
-                codename = item.permission_codename(action)  # ← usa o model (fonte única)
+                codename = item.permission_codename(action)
                 perm, perm_created = Permission.objects.get_or_create(
                     item=item,
                     action=action,
                     defaults={"codename": codename},
                 )
-                # garante codename correto mesmo em registros antigos
                 if not perm_created and perm.codename != codename:
                     perm.codename = codename
                     perm.save(update_fields=["codename"])
@@ -87,7 +103,6 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
                     if verbose:
                         print(f"          [+] perm {perm.codename}")
 
-    # ---- 2ª passada: resolver owners (item_def["owner_slug"]) ----
     for mod_def in CATALOG:
         for item_def in mod_def.get("items", []):
             owner_slug = item_def.get("owner_slug")
@@ -113,33 +128,31 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
 
     return stats
 
+def _route_resolves(url_name: str, scope: str) -> bool:
+    kwargs_attempts = [
+        {},
+        {"org_slug": "_probe_"},
+    ]
+    for kwargs in kwargs_attempts:
+        try:
+            reverse(url_name, kwargs=kwargs)
+            return True
+        except NoReverseMatch:
+            continue
+    return False
+
+
 
 # ============================================================
 # RESOLUÇÃO DE PERMISSÕES (compartilhado)
 # ============================================================
 
 def resolve_permissions(spec, *, scope_filter: str | None = None) -> List[Permission]:
-    """
-    Resolve specs de permissão em lista de Permission.
 
-    Formatos aceitos em `spec`:
-      • "*"                                          → todas as permissões do scope
-      • [ ... lista de entradas ... ]
-            "<codename>"                             → permission por codename
-            {"module": <slug>}                       → todas actions do módulo
-            {"module": <slug>, "actions": [<act>]}   → actions específicas do módulo
-            {"item":   (<mod>, <item>)}              → todas actions do item
-            {"item":   (<mod>, <item>), "actions": [<act>]}
-
-    Se `scope_filter` for informado, restringe a permissions cujo
-    item.module.scope == scope_filter. Evita que um role 'tenant'
-    receba permissões de módulos 'global'/'superuser'.
-    """
     base_qs = Permission.objects.filter(is_active=True)
     if scope_filter:
         base_qs = base_qs.filter(item__module__scope=scope_filter)
 
-    # Atalho: "*" sozinho ou dentro de lista significa "tudo do scope"
     if spec == "*" or (isinstance(spec, (list, tuple)) and "*" in spec):
         return list(base_qs)
 
@@ -150,17 +163,14 @@ def resolve_permissions(spec, *, scope_filter: str | None = None) -> List[Permis
     matched = False
 
     for entry in spec:
-        # ─── 1) String → codename direto ───
         if isinstance(entry, str):
             filters |= Q(codename=entry)
             matched = True
             continue
 
-        # ─── 2) Dict → module/item + actions opcionais ───
         if isinstance(entry, dict):
             actions = entry.get("actions")  # None = todas
 
-            # 2a) Por módulo
             if "module" in entry:
                 mod_slug = str(entry["module"])  # aceita TextChoices ou str
                 q = Q(item__module__slug=mod_slug)
@@ -170,7 +180,6 @@ def resolve_permissions(spec, *, scope_filter: str | None = None) -> List[Permis
                 matched = True
                 continue
 
-            # 2b) Por item (tupla mod_slug, item_slug)
             if "item" in entry:
                 mod_slug, item_slug = entry["item"]
                 q = Q(

@@ -158,3 +158,6 @@ class OrganizationDetailView(BaseDetailView):
 
     require_tenant = True
     permission_required = "settings.view_organization"
+
+    def get_object(self, queryset=None):
+        return self.request.context.organization
