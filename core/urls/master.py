@@ -1,8 +1,8 @@
-# core/urls/master.py
+# core/urls/master_view.py
 from django.urls import path
 
 from core.views import DashboardView
-from core.views.master import (
+from core.views.master_view import (
     ModuleListView, ModuleCreateView,
     PermissionListView, PermissionCreateView,
     RoleListView, RoleCreateView

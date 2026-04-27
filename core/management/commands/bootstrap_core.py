@@ -16,7 +16,6 @@ Uso:
 """
 
 from django.core.management.base import BaseCommand, CommandError
-z
 from account.models import Organization
 from core.services.bootstrap import bootstrap_organization, sync_system_catalog
 

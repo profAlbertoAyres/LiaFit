@@ -1,4 +1,4 @@
-from .base import (
+from .base_view import (
     BaseAuthMixin,
     ContextMixin,
     BaseListView,
@@ -7,4 +7,4 @@ from .base import (
     BaseDetailView,
     BaseDeleteView,
 )
-from .dashboard import DashboardView
+from .dashboard_view import DashboardView

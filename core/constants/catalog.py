@@ -8,6 +8,7 @@ from core.constants.permissions import ModuleSlug, ItemSlug, ActionSlug
 CRUD = [ActionSlug.VIEW, ActionSlug.ADD, ActionSlug.CHANGE, ActionSlug.DELETE]
 RO   = [ActionSlug.VIEW]
 RW   = [ActionSlug.VIEW, ActionSlug.CHANGE]
+A    = [ActionSlug.ADD]
 
 
 CATALOG = [
@@ -62,15 +63,6 @@ CATALOG = [
                 "show_in_menu": True,
                 "actions": CRUD,
             },
-            {
-                "slug": ItemSlug.COLLABORATOR,
-                "name": "Colaboradores",
-                "icon": "briefcase",
-                "order": 20,
-                "route": "tenant:collaborator_list",
-                "show_in_menu": True,
-                "actions": CRUD,
-            },
         ],
     },
 
@@ -100,7 +92,7 @@ CATALOG = [
                 "order": 20,
                 "route": "tenant:member_list",
                 "show_in_menu": True,
-                "actions": CRUD,
+                "actions": CRUD + [ActionSlug.INVITE],
             },
             {
                 "slug": ItemSlug.ORGANIZATION,

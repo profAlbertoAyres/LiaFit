@@ -1,139 +1,170 @@
 {% extends 'base_app.html' %}
 
-{% block title %}{{ organization.company_name }} | {{ APP_NAME }} Master{% endblock %}
+{% block title %}Detalhes da Organização | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
 
 {% block page_content %}
-<!-- NAVEGAÇÃO E AÇÕES -->
-<div class="lia-flex lia-justify-between lia-items-center lia-mb-6">
-    <a href="{% url 'master:organization_list' %}" class="lia-flex lia-items-center lia-gap-2 lia-text-muted lia-text-sm">
-        <i data-lucide="arrow-left" class="lucide-sm"></i> Voltar para Lista
-    </a>
-
-    <div class="lia-flex lia-gap-2">
-        <a href="{% url 'master:organization_update' organization.pk %}" class="lia-btn lia-btn--outline lia-btn--sm">
-            <i data-lucide="settings" class="lucide-sm"></i> Configurações
-        </a>
-        <a href="#" class="lia-btn lia-btn--primary lia-btn--sm" title="Entrar como esta organização">
-            <i data-lucide="log-in" class="lucide-sm"></i> Acessar Painel
-        </a>
-    </div>
-</div>
-
-<!-- ALERTA NATIVO DO SISTEMA (Se Inativa) -->
-{% if not organization.is_active %}
-<div class="lia-alert lia-alert--danger lia-alert--inline lia-mb-6">
-    <i data-lucide="alert-octagon" class="lia-alert__icon"></i>
-    <div class="lia-alert__content">
-        <div class="lia-alert__title">Organização Suspensa</div>
-        <div class="lia-alert__message">O acesso de todos os usuários vinculados a esta empresa está bloqueado no momento.</div>
-    </div>
-    <a href="{% url 'master:organization_toggle_status' organization.pk %}" class="lia-btn lia-btn--danger lia-btn--sm" data-confirm-title="Reativar Organização?">
-        Reativar Acesso
-    </a>
-</div>
-{% endif %}
-
-<!-- CABEÇALHO DA ORGANIZAÇÃO (Usando o lia-card nativo) -->
-<div class="lia-card lia-mb-6">
-    <div class="lia-card__body lia-flex lia-items-center lia-justify-between lia-flex-wrap lia-gap-4">
-
+    <!-- HEADER DA PÁGINA -->
+    <div class="lia-page-header">
         <div class="lia-flex lia-items-center lia-gap-4">
-            <!-- Ícone/Avatar -->
-            <div class="lia-flex lia-items-center lia-justify-center"
-                 style="width: 64px; height: 64px; background-color: var(--color-primary-light); border-radius: var(--radius-lg);">
-                <i data-lucide="building-2" style="color: var(--color-primary); width: 32px; height: 32px;"></i>
+            <!-- Botão Voltar (você pode ajustar a URL para o seu dashboard ou área de configurações) -->
+            <a href="javascript:history.back()"
+               class="lia-btn lia-btn--icon lia-btn--ghost">
+                <i data-lucide="arrow-left" class="lucide"></i>
+            </a>
+
+            <div>
+                <h2 class="lia-page-header__title lia-flex lia-items-center lia-gap-3">
+                    {{ object.company_name }}
+
+                    {% if object.is_active %}
+                        <span class="lia-badge lia-badge--success">Empresa Ativa</span>
+                    {% else %}
+                        <span class="lia-badge lia-badge--danger">Empresa Inativa</span>
+                    {% endif %}
+                </h2>
+                <p class="lia-page-header__subtitle">Visualize as informações cadastrais e dados da organização.</p>
+            </div>
+        </div>
+
+        <div class="lia-page-header__actions">
+            <!-- Trava de segurança: apenas o dono ou o superuser podem editar os dados globais da Organização -->
+            {% if request.user.is_superuser or request.user == object.owner %}
+                <a href="{% url 'tenant:organization_update' org_slug=object.slug %}"
+                   class="lia-btn lia-btn--outline">
+                    <i data-lucide="edit-2" class="lucide-sm"></i>
+                    <span>Editar Organização</span>
+                </a>
+            {% else %}
+                <button class="lia-btn lia-btn--outline lia-btn--disabled" disabled
+                        title="Apenas o proprietário da conta pode editar a organização.">
+                    <i data-lucide="lock" class="lucide-sm"></i>
+                    <span>Edição Bloqueada</span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CARD 1: DADOS PRINCIPAIS -->
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Dados Cadastrais</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Nome / Razão Social</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="building" class="lucide-sm lia-text-primary"></i>
+                    {{ object.company_name }}
+                </p>
             </div>
 
-            <!-- Dados e Status -->
             <div>
-                <div class="lia-flex lia-items-center lia-gap-3" style="margin-bottom: var(--space-1);">
-                    <h2 class="lia-font-bold" style="font-size: var(--font-size-xl); margin: 0;">{{ organization.company_name }}</h2>
-                    <!-- Badge customizado usando suas variáveis -->
-                    {% if organization.is_active %}
-                        <span style="background-color: var(--color-success-light); color: var(--color-success); padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">Ativa</span>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">CNPJ / CPF</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="file-text" class="lucide-sm lia-text-primary"></i>
+                    {{ object.document|default:"Não informado" }}
+                </p>
+            </div>
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Proprietário (Owner)</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="crown" class="lucide-sm lia-text-warning"></i>
+                    {% if object.owner %}
+                        {{ object.owner.fullname|default:object.owner.email }}
                     {% else %}
-                        <span style="background-color: var(--color-danger-light); color: var(--color-danger); padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">Inativa</span>
+                        Sem proprietário definido
+                    {% endif %}
+                </p>
+            </div>
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Data de Cadastro</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="calendar" class="lucide-sm lia-text-primary"></i>
+                    {{ object.created_at|date:"d/m/Y"|default:"-" }}
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CARD 2: CONTATO E LOCALIZAÇÃO -->
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Contato e Localização</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">E-mail Corporativo</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="mail" class="lucide-sm lia-text-primary"></i>
+                    {{ object.email|default:"Não informado" }}
+                </p>
+            </div>
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Telefone</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="phone" class="lucide-sm lia-text-primary"></i>
+                    {{ object.phone|default:"Não informado" }}
+                </p>
+            </div>
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Cidade</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="map-pin" class="lucide-sm lia-text-primary"></i>
+                    {{ object.city|default:"Não informada" }}
+                </p>
+            </div>
+
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Estado (UF)</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="map" class="lucide-sm lia-text-primary"></i>
+                    {{ object.state|default:"-" }}
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CARD 3: IDENTIDADE VISUAL E SISTEMA -->
+    <div class="lia-card">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Identidade Visual e Sistema</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+
+            <!-- Slug do Workspace -->
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Identificador (Slug / Workspace)</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="link" class="lucide-sm lia-text-muted"></i>
+                    {{ object.slug }}
+                </p>
+            </div>
+
+            <!-- Logo -->
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Logo da Empresa</span>
+                <div class="lia-mt-2">
+                    {% if object.logo %}
+                        <!-- Classe genérica do framework base que você usa, limitando a altura da logo para não quebrar o layout -->
+                        <img src="{{ object.logo.url }}" alt="Logo da Empresa" class="lia-h-12 lia-object-contain" style="max-width: 150px;">
+                    {% else %}
+                        <div class="lia-flex lia-items-center lia-gap-2 lia-text-muted lia-p-2 lia-bg-light lia-rounded" style="width: fit-content;">
+                            <i data-lucide="image-off" class="lucide-sm"></i>
+                            <span class="lia-text-sm">Sem logo cadastrada</span>
+                        </div>
                     {% endif %}
                 </div>
-
-                <div class="lia-flex lia-items-center lia-gap-2 lia-text-muted lia-text-sm">
-                    <i data-lucide="globe" class="lucide-sm"></i>
-                    <span style="user-select: all;">{{ organization.slug }}.liafit.com.br</span>
-                </div>
             </div>
-        </div>
 
-        <div style="text-align: right;">
-            <div class="lia-text-sm lia-text-muted" style="margin-bottom: var(--space-1);">Cliente desde</div>
-            <div class="lia-font-bold">{% now "M Y" %}</div>
-        </div>
-    </div>
-</div>
-
-<!-- GRID DE MÉTRICAS (Usando lia-stat-card) -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);" class="lia-mb-6">
-
-    <div class="lia-card lia-stat-card">
-        <div class="lia-stat-card__label lia-flex lia-items-center lia-gap-2">
-            <i data-lucide="user" class="lucide-sm"></i> Proprietário
-        </div>
-        <div class="lia-stat-card__value lia-text-truncate" style="font-size: var(--font-size-lg);" title="{{ organization.owner.get_full_name }}">
-            {{ organization.owner.get_full_name|default:"Pendente" }}
         </div>
     </div>
 
-    <div class="lia-card lia-stat-card">
-        <div class="lia-stat-card__label lia-flex lia-items-center lia-gap-2">
-            <i data-lucide="file-text" class="lucide-sm"></i> Documento
-        </div>
-        <div class="lia-stat-card__value" style="font-size: var(--font-size-lg);">
-            {{ organization.document|default:"---" }}
-        </div>
-    </div>
-
-    <div class="lia-card lia-stat-card">
-        <div class="lia-stat-card__label lia-flex lia-items-center lia-gap-2" style="color: var(--color-info);">
-            <i data-lucide="users" class="lucide-sm"></i> Equipe Ativa
-        </div>
-        <div class="lia-stat-card__value" style="color: var(--color-info);">--</div>
-    </div>
-
-    <div class="lia-card lia-stat-card">
-        <div class="lia-stat-card__label lia-flex lia-items-center lia-gap-2" style="color: var(--color-success);">
-            <i data-lucide="activity" class="lucide-sm"></i> Clientes
-        </div>
-        <div class="lia-stat-card__value" style="color: var(--color-success);">--</div>
-    </div>
-</div>
-
-<!-- DETALHES GERAIS -->
-<div class="lia-card">
-    <div class="lia-card__header">
-        <h3 class="lia-card__title">Informações de Contato</h3>
-    </div>
-    <div class="lia-card__body">
-        <div class="lia-form-row">
-            <!-- Coluna 1 -->
-            <div>
-                <div class="lia-mb-4">
-                    <span class="lia-text-sm lia-text-muted lia-font-medium" style="display: block; margin-bottom: var(--space-1);">E-mail Corporativo</span>
-                    <span class="lia-font-medium">{{ organization.email|default:"---" }}</span>
-                </div>
-                <div>
-                    <span class="lia-text-sm lia-text-muted lia-font-medium" style="display: block; margin-bottom: var(--space-1);">Telefone</span>
-                    <span class="lia-font-medium">{{ organization.phone|default:"---" }}</span>
-                </div>
-            </div>
-            <!-- Coluna 2 -->
-            <div>
-                <div class="lia-mb-4">
-                    <span class="lia-text-sm lia-text-muted lia-font-medium" style="display: block; margin-bottom: var(--space-1);">Login do Proprietário</span>
-                    <span class="lia-font-medium">
-                        {% if organization.owner %}{{ organization.owner.email }}{% else %}<span class="lia-text-muted">Aguardando Vinculação</span>{% endif %}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

@@ -54,7 +54,7 @@ class OrganizationService:
 
         # 🔗 Se houver owner, já adiciona como membro
         if owner:
-            OrganizationService.add_member(owner, organization, role_codename="owner")
+            OrganizationService.add_member(owner, organization, role_codenames="owner")
 
         return organization
 
@@ -79,38 +79,36 @@ class OrganizationService:
 
     @staticmethod
     @transaction.atomic
-    def add_member(user, organization, role_codename):
-        try:
-            role = Role.objects.get(
-                slug=role_codename.lower(),
-                organization=organization,
-            )
-        except Role.DoesNotExist:
-            logger.error(
-                "Role inexistente: org=%s codename=%s",
-                organization.slug, role_codename,
-            )
-            raise ValidationError(f"Role '{role_codename}' não encontrada.")
+    def add_member(user, organization, role_codenames=None, extra_fields: dict | None = None):
+        if isinstance(role_codenames, str):
+            role_codenames = [role_codenames]
+
+        slugs = [code.lower() for code in (role_codenames or []) if code]
+
+        roles = []
+        if slugs:  # ← só valida se foram informados
+            roles_qs = Role.objects.filter(slug__in=slugs, organization=organization)
+            found_slugs = set(roles_qs.values_list("slug", flat=True))
+            missing = set(slugs) - found_slugs
+            if missing:
+                raise ValidationError(f"Roles não encontrados: {', '.join(missing)}")
+            roles = list(roles_qs)
 
         membership, created = OrganizationMember.objects.get_or_create(
             user=user,
             organization=organization,
+            defaults=extra_fields or {},
         )
-        membership.roles.add(role)
 
-        logger.info(
-            "Membro %s: user=%s org=%s role=%s",
-            "criado" if created else "atualizado",
-            user.email, organization.slug, role_codename,
-        )
+        if roles:
+            membership.roles.add(*roles)
+
         return membership
-
     # ──────────────── ATIVAÇÃO ────────────────
 
     @staticmethod
     @transaction.atomic
     def activate_organization(organization):
-        """Apenas marca a organização como ativa (idempotente)."""
         if organization.is_active:
             logger.debug("Organização %s já estava ativa.", organization.slug)
             return organization

@@ -10,6 +10,7 @@ TOKEN_TTL = {
     OnboardingToken.Purpose.EMAIL_VERIFICATION: timedelta(hours=48),
     OnboardingToken.Purpose.INVITATION: timedelta(days=7),
     OnboardingToken.Purpose.MAGIC_LINK: timedelta(minutes=15),
+    OnboardingToken.Purpose.ORG_ACTIVATION: timedelta(hours=48),
 }
 
 TOKEN_TTL_DEFAULT = timedelta(hours=1)

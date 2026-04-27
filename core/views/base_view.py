@@ -7,7 +7,7 @@ from django.views.generic import (
     DeleteView,
     DetailView,
     ListView,
-    UpdateView,
+    UpdateView, FormView,
 )
 
 
@@ -222,3 +222,13 @@ class BaseDeleteView(ContextMixin, BaseAuthMixin, DeleteView):
         if not self.success_url:
             raise ValueError("Defina 'success_url' na sua view de exclusão.")
         return self.success_url
+
+
+class BaseFormView(BaseAuthMixin, FormView):
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        ctx = getattr(self.request, 'context', None)
+        kwargs['tenant'] = getattr(ctx, 'organization', None)
+        kwargs['membership'] = getattr(ctx, 'membership', None)
+        return kwargs

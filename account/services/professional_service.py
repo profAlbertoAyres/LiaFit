@@ -1,35 +1,33 @@
+# account/services/professional_service.py
+import logging
 from django.db import transaction
-
 from account.models import Professional
-from account.services.user_service import UserService
-from account.services.organization_service import OrganizationService
-from account.services.token_service import TokenService
+
+logger = logging.getLogger(__name__)
 
 
 class ProfessionalService:
 
     @staticmethod
     @transaction.atomic
-    def create_professional(organization, user_data, cref, specialization=None, biography=None):
-
-        user = UserService.get_or_create_user(
-            email=user_data["email"],
-            user_data=user_data
-        )
-
-        OrganizationService.add_member(user, organization, role_codename="PROFESSIONAL")
-
-        UserService.setup_profile(user, user_data)
+    def create_for_member(membership, data: dict) -> Professional:
 
         professional = Professional.objects.create(
-            user=user,
-            organization=organization,
-            cref=cref,
-            specialization=specialization,
-            biography=biography,
+            organization=membership.organization,  # TenantModel exige
+            member=membership,
+            registration_type=data.get('registration_type', ''),
+            registration_number=data.get('registration_number', ''),
+            bio=data.get('bio', ''),
         )
 
-        # Gera token para o profissional definir senha
-        token = TokenService.create_token(user)
+        specialties = data.get('specialties')
+        if specialties:
+            professional.specialties.set(specialties)
 
-        return professional, token
+        logger.info(
+            "Professional criado: member=%s reg=%s/%s",
+            membership.user.email,
+            data.get('registration_type'),
+            data.get('registration_number'),
+        )
+        return professional

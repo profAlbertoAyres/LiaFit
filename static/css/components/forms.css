@@ -17,6 +17,10 @@
     gap: var(--space-5);
 }
 
+.lia-form-group-col-lg{
+    grid-column: span 2;
+}
+
 /* -------------------------------------------------------------------------
    LABEL
    ------------------------------------------------------------------------- */
@@ -146,4 +150,44 @@ select.lia-form-control {
     padding-top: var(--space-6);
     border-top: 1px solid var(--color-border);
     margin-top: var(--space-6);
+}
+
+/* -------------------------------------------------------------------------
+   INPUT GROUP (Campos com ícones/texto anexados)
+   ------------------------------------------------------------------------- */
+
+.lia-input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.lia-input-group__text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-3);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-right: none; /* Remove a borda direita para colar no input */
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    color: var(--color-text-muted);
+}
+
+/* Ajusta o campo para se unir ao ícone */
+.lia-input-group .lia-form-control,
+.lia-input-group input,
+.lia-input-group select {
+    flex: 1 1 auto;
+    width: 1%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Garante que a borda de focus (azul) não seja engolida pelo ícone */
+.lia-input-group .lia-form-control:focus,
+.lia-input-group input:focus,
+.lia-input-group select:focus {
+    position: relative;
+    z-index: 2;
 }

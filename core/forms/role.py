@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from core.forms.base import BaseModelForm
+from core.forms.base_form import BaseModelForm
 from core.models import Role
 from core.models.role_permission import RolePermission
 

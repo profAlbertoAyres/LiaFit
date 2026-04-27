@@ -15,6 +15,7 @@ Estrutura de cada role:
         • {"item": (<mod>, <item>), "actions": []} → actions específicas do item
         • "<codename>"                             → permission direta por codename
 """
+from core.constants import ItemSlug, ActionSlug
 from core.constants.catalog import CRUD, RO, RW
 from core.constants.permissions import ModuleSlug
 
@@ -47,6 +48,10 @@ ROLES = [
             {"module": ModuleSlug.MY_AREA},
             {"module": ModuleSlug.ACCOUNT,  "actions": CRUD},
             {"module": ModuleSlug.SETTINGS, "actions": RO},
+            {
+                "item": (ModuleSlug.SETTINGS, ItemSlug.MEMBER),
+                "actions": [ActionSlug.INVITE, ActionSlug.CHANGE],
+            },
         ],
     },
     {

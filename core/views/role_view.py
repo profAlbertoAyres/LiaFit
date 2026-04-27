@@ -5,11 +5,11 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from core.filters.role import RoleFilter
+from core.filters.role_filter import RoleFilter
 from core.forms.role import RoleForm, RolePermissionForm
 from core.models import Role, Permission
 from core.services.role_service import RoleService
-from core.views.base import (
+from core.views.base_view import (
     BaseCreateView,
     BaseDetailView,
     BaseListView,
@@ -59,7 +59,6 @@ class RoleDetailView(BaseDetailView):
         membership = self.get_membership()
 
         try:
-            # 👇 O Service resolve TUDO!
             permissions_updated = RoleService.process_role_permissions_update(
                 request=self.request,
                 role=self.object,

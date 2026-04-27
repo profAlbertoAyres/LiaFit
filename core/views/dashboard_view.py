@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from core.services.deshboard_service import DashboardService
-from core.views.base import BaseAuthMixin, ContextMixin
+from core.views.base_view import BaseAuthMixin, ContextMixin
 
 
 class DashboardView(ContextMixin, BaseAuthMixin, TemplateView):

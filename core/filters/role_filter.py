@@ -1,7 +1,7 @@
-# core/filters/role.py
+# core/filters/role_view.py
 import django_filters
 from django.utils.translation import gettext_lazy as _
-from core.filters.base import BaseFilter
+from core.filters.base_filter import BaseFilter
 from core.models import Role, RolePermission
 
 class RoleFilter(BaseFilter):

@@ -9,61 +9,24 @@ User = get_user_model()
 
 
 class UserService:
-    """
-    Service responsável por gerenciar a identidade central (User).
 
-    ⚠️ Escopo:
-    - Criação e recuperação de usuários
-    - Ativação de conta e definição de senha
-
-    ❌ Fora do escopo (responsabilidade de outros services):
-    - Criação de "cascas" (Client, Collaborator)
-    - Atribuição de papéis (Owner, Professional, Assistant)
-    - Dados de perfil específicos de cada casca
-    """
-
-    # ------------------------------------------------------------------ #
-    # Helpers
-    # ------------------------------------------------------------------ #
 
     @staticmethod
     def normalize_email(email: str) -> str:
-        """Normaliza email para evitar duplicatas por case/espaços."""
         if not email:
             return email
         return email.strip().lower()
 
-    # ------------------------------------------------------------------ #
-    # Criação / Recuperação
-    # ------------------------------------------------------------------ #
 
     @staticmethod
     @transaction.atomic
-    def get_or_create_user(email: str, fullname: str | None = None) -> User:
-        """
-        Recupera ou cria um User pelo email.
+    def get_or_create_user(email: str, extra_fields: dict | None = None) -> User:
 
-        Usuários criados aqui começam:
-        - `is_active=False` (aguardando ativação via token)
-        - Com senha inutilizável (`set_unusable_password`)
-
-        Args:
-            email: E-mail do usuário (será normalizado).
-            fullname: Nome completo (opcional, usado apenas na criação).
-
-        Returns:
-            Instância de User (nova ou existente).
-        """
         email = UserService.normalize_email(email)
 
-        defaults = {"is_active": False}
-        if fullname:
-            defaults["fullname"] = fullname
+        defaults = {"is_active": False, **(extra_fields or {})}
 
-        user, created = User.objects.get_or_create(
-            email=email,
-            defaults=defaults,
-        )
+        user, created = User.objects.get_or_create(email=email, defaults=defaults)
 
         if created:
             user.set_unusable_password()
@@ -74,9 +37,6 @@ class UserService:
 
         return user
 
-    # ------------------------------------------------------------------ #
-    # Ativação
-    # ------------------------------------------------------------------ #
 
     @staticmethod
     @transaction.atomic

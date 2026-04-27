@@ -1,0 +1,223 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Detalhes do Membro | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+
+{% block page_content %}
+    <!-- HEADER DA PÁGINA -->
+    <div class="lia-page-header">
+        <div class="lia-flex lia-items-center lia-gap-4">
+            <a href="{% url 'tenant:member_list' org_slug=request.context.organization.slug %}"
+               class="lia-btn lia-btn--icon lia-btn--ghost">
+                <i data-lucide="arrow-left" class="lucide"></i>
+            </a>
+
+            <div>
+                <h2 class="lia-page-header__title lia-flex lia-items-center lia-gap-3">
+                    {{ object.user.fullname|default:object.user.email }}
+
+                    {% if object.is_active %}
+                        <span class="lia-badge lia-badge--success">Membro Ativo</span>
+                    {% else %}
+                        <span class="lia-badge lia-badge--danger">Membro Inativo</span>
+                    {% endif %}
+                </h2>
+                <p class="lia-page-header__subtitle">Visualize as informações completas, vínculos e acesso deste membro.</p>
+            </div>
+        </div>
+
+        <div class="lia-page-header__actions">
+            {% if request.user.is_superuser or object.highest_role_level < request.context.membership.highest_role_level %}
+                <a href="{% url 'tenant:member_update' org_slug=request.context.organization.slug pk=object.pk %}"
+                   class="lia-btn lia-btn--outline">
+                    <i data-lucide="edit-2" class="lucide-sm"></i>
+                    <span>Editar Membro</span>
+                </a>
+            {% else %}
+                <button class="lia-btn lia-btn--outline lia-btn--disabled" disabled
+                        title="Nível hierárquico deste membro é igual ou superior ao seu.">
+                    <i data-lucide="lock" class="lucide-sm"></i>
+                    <span>Edição Bloqueada</span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CARD 1: DADOS PESSOAIS DO USUÁRIO -->
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Informações Pessoais</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Nome Completo</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1">{{ object.user.fullname|default:"Não informado" }}</p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">CPF</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="file-text" class="lucide-sm lia-text-primary"></i>
+                    {{ object.user.cpf|default:"Não informado" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Telefone</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="phone" class="lucide-sm lia-text-primary"></i>
+                    {{ object.user.phone|default:"Não informado" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Data de Nascimento</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="calendar" class="lucide-sm lia-text-primary"></i>
+                    {{ object.user.birth_date|date:"d/m/Y"|default:"Não informada" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Gênero</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1">
+                    {{ object.user.get_gender_display|default:"Não informado" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2: VÍNCULO ORGANIZACIONAL (MEMBERSHIP) -->
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Vínculo com a Organização</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Papel Principal (Role)</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="shield" class="lucide-sm lia-text-primary"></i>
+                    {{ object.highest_role_name|default:"Sem papel atribuído" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Tipo de Remuneração</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="dollar-sign" class="lucide-sm lia-text-primary"></i>
+                    {{ object.get_remuneration_type_display }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Data de Admissão</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1">
+                    {{ object.joined_at|date:"d/m/Y"|default:"-" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Data de Desligamento</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1">
+                    {% if object.left_at %}
+                        <span class="lia-text-danger">{{ object.left_at|date:"d/m/Y" }}</span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 3 CONDICIONAL: PERFIL PROFISSIONAL -->
+    {% if object.professional_profile %}
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Perfil Profissional de Saúde</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Registro Conselho</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="award" class="lucide-sm lia-text-primary"></i>
+                    {{ object.professional_profile.get_registration_type_display|default:"-" }}
+                    {{ object.professional_profile.registration_number|default:"" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Especialidades</span>
+                <p class="lia-font-medium lia-text-sm lia-mt-1 lia-flex lia-items-center lia-gap-2 lia-flex-wrap">
+                    {% for especialidade in object.professional_profile.specialties.all %}
+                        <span class="lia-badge lia-badge--info">{{ especialidade.name }}</span>
+                    {% empty %}
+                        <span class="lia-text-muted">Nenhuma especialidade vinculada</span>
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="lia-col-span-full">
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Bio</span>
+                <p class="lia-text-sm lia-text-secondary lia-mt-1">
+                    {{ object.professional_profile.bio|default:"Nenhuma biografia cadastrada." }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- CARD 3 CONDICIONAL: PERFIL ASSISTENTE -->
+    {% if object.assistant_profile %}
+    <div class="lia-card lia-mb-6">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Perfil Assistente</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Setor / Departamento</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="briefcase" class="lucide-sm lia-text-primary"></i>
+                    {{ object.assistant_profile.department|default:"Não informado" }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Profissional Vinculado</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="user-check" class="lucide-sm lia-text-primary"></i>
+                    {{ object.assistant_profile.linked_professional|default:"Sem vínculo específico" }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- CARD 4: DADOS DE ACESSO -->
+    <div class="lia-card">
+        <div class="lia-card__header">
+            <h3 class="lia-card__title">Credenciais de Acesso</h3>
+        </div>
+        <div class="lia-card__body lia-grid-auto-fit">
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">E-mail de Login</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="mail" class="lucide-sm lia-text-primary"></i>
+                    {{ object.user.email }}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Status do Usuário</span>
+                <p class="lia-font-medium lia-text-lg lia-mt-1">
+                    {% if object.user.is_shadow %}
+                        <span class="lia-badge lia-badge--warning">Convite Pendente</span>
+                    {% elif object.user.is_email_verified %}
+                        <span class="lia-badge lia-badge--success">E-mail Verificado</span>
+                    {% else %}
+                        <span class="lia-badge lia-badge--info">Cadastro Completo</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <span class="lia-text-xs lia-text-muted lia-font-semibold lia-text-overline">Último Login</span>
+                <p class="lia-text-sm lia-text-secondary lia-mt-1 lia-flex lia-items-center lia-gap-2">
+                    <i data-lucide="clock" class="lucide-sm lia-text-muted"></i>
+                    {% if object.user.last_login %}
+                        {{ object.user.last_login|date:"d/m/Y às H:i" }}
+                    {% else %}
+                        Nunca acessou
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,14 +1,13 @@
 <div class="{{ col|default:'col-md-12' }} {{ extra_class|default:'' }} mb-3">
-    <label for="{{ field.id_for_label }}" class="lia-label">
+    <!-- Corrigi lia-label para lia-form-label (que é o que está no seu forms.css) -->
+    <label for="{{ field.id_for_label }}" class="lia-form-label {% if field.field.required %}lia-form-label--required{% endif %}">
         {{ field.label }}
-        {% if field.field.required %}
-            <span class="text-danger">*</span>
-        {% endif %}
     </label>
 
-    <div class="input-group">
-        <span class="input-group-text bg-light text-muted border-end-0">
-            <i data-lucide="calendar" style="width: 18px; height: 18px;"></i>
+    <!-- Nosso novo grupo de input refatorado -->
+    <div class="lia-input-group">
+        <span class="lia-input-group__text">
+            <i data-lucide="calendar" class="lucide-sm"></i>
         </span>
         {{ field }}
     </div>
@@ -20,7 +19,7 @@
     {% endif %}
 
     {% if field.errors %}
-        <div class="text-danger small mt-1">
+        <div class="lia-form-error mt-1">
             {{ field.errors|striptags }}
         </div>
     {% endif %}

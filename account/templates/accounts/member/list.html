@@ -1,0 +1,253 @@
+{% extends 'base_app.html' %}
+{% load i18n %}
+
+{% block title %}Membros da Equipe | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+
+{% block page_content %}
+    <!-- CABEÇALHO DA PÁGINA (Limpo, apenas com a ação principal) -->
+    <div class="lia-page-header">
+        <div>
+            <h1 class="lia-page-header__title">Membros da Equipe</h1>
+            <p class="lia-page-header__subtitle">Gerencie quem tem acesso à sua organização e seus respectivos
+                papéis.</p>
+        </div>
+        <div class="lia-page-header__actions">
+            <!-- CONTROLE DE PERMISSÃO: Adicionar Membro -->
+            {#        {% if request.context.has_permission("settings.member.add") %}#}
+            <div class="lia-flex lia-gap-2">
+                <!-- Botão 1: Cadastro Manual -->
+                <a href="{% url 'tenant:member_create' org_slug=request.context.organization.slug %}"
+                   class="lia-btn lia-btn--primary" title="Cadastrar membro">
+                    <i data-lucide="user-plus" class="lucide-sm"></i>
+                    <span>Novo membro</span>
+                </a>
+            </div>
+            {#        {% endif %}#}
+        </div>
+    </div>
+
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__body lia-py-4">
+            <form method="get" class="lia-filter-form">
+
+                {# ─── LINHA PRINCIPAL (sempre visível) ─── #}
+                <div class="lia-form-row lia-items-center">
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Buscar membro</label>
+                        {{ filter.form.search }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Status</label>
+                        {{ filter.form.is_active }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Ordenar por</label>
+                        {{ filter.form.order_by }}
+                    </div>
+
+                    <div class="lia-flex lia-gap-2">
+                        <button type="submit" class="lia-btn lia-btn--secondary">
+                            <i data-lucide="search" class="lucide-sm"></i>
+                            {% if not request.GET %}
+                            <span>Filtrar</span>
+                            {% endif %}
+                        </button>
+
+                        {% if request.GET %}
+                            <a href="{% url 'tenant:member_list' org_slug=request.context.organization.slug %}"
+                               class="lia-btn lia-btn--danger" title="Limpar">
+                                <i data-lucide="search-x" class="lucide-sm"></i>
+                            </a>
+                        {% endif %}
+                        <button type="button" class="lia-btn lia-btn--outline-primary"
+                                onclick="document.getElementById('advancedFilters').classList.toggle('lia-hidden')">
+                            <i data-lucide="sliders-horizontal" class="lucide-sm"></i>
+                            <span>Avançado</span>
+                        </button>
+
+                    </div>
+                </div>
+
+                {# ─── FILTROS AVANÇADOS (colapsável) ─── #}
+                <div id="advancedFilters" class="lia-form-row lia-items-end lia-mt-3
+
+{% if not request.GET.has_left and not request.GET.profile_type and not request.GET.specialty and not request.GET.remuneration_type and not request.GET.joined_at_after %}lia-hidden{% endif %}">
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Situação</label>
+                        {{ filter.form.has_left }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Tipo de Perfil</label>
+                        {{ filter.form.profile_type }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Especialidade</label>
+                        {{ filter.form.specialty }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Remuneração</label>
+                        {{ filter.form.remuneration_type }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Admissão (de / até)</label>
+                        {{ filter.form.joined_at }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Criado em (de / até)</label>
+                        {{ filter.form.created_at }}
+                    </div>
+                </div>
+
+            </form>
+
+
+        </div>
+    </div>
+
+    <!-- CONTAINER DA TABELA -->
+    <div class="lia-table-container">
+        <table class="lia-table">
+            <thead>
+            <tr>
+                <th>Colaborador</th>
+                <th>Celular</th>
+                <th>Status</th>
+                <th class="lia-text-right">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in members %}
+                <tr>
+                    <!-- Coluna 1: Nome e Email -->
+                    <td>
+                        <div class="lia-flex lia-items-center lia-gap-3">
+                            <!-- Avatar / Ícone -->
+                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary lia-text-muted">
+                                <i data-lucide="user" class="lucide-sm"></i>
+                            </div>
+                            <div>
+                                <div class="lia-font-medium">{{ member.user.get_full_name|default:"Usuário Convidado" }}</div>
+                                <div class="lia-text-xs lia-text-muted">{{ member.user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Coluna 2: Papéis (Roles) -->
+                    <td>
+                        <div class="lia-flex lia-flex-wrap lia-gap-1">
+                            {% for role in member.roles.all %}
+                                <span class="lia-badge lia-badge--outline lia-text-xs">{{ member.user.p }}</span>
+                            {% empty %}
+                                <span class="lia-text-xs lia-text-muted">Sem papel definido</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+
+                    <!-- Coluna 3: Status / Badge -->
+                    <td>
+                        <!-- Verificação fictícia (ajuste conforme seu model de Member/User) -->
+                        {% if member.user.is_active %}
+                            <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold">Ativo</span>
+                        {% elif member.invite_pending %}
+                            <span class="lia-badge lia-badge--warning lia-text-xs lia-font-bold">Pendente</span>
+                        {% else %}
+                            <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Inativo</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Coluna 4: Ações com Trava de Segurança -->
+                    <td>
+                        <div class="lia-table__actions lia-justify-end">
+                            <a href="{% url 'tenant:member_detail' org_slug=request.context.organization.slug pk=member.pk %}"
+                               class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" title="Ver Perfil">
+                                <i data-lucide="eye" class="lucide-sm"></i>
+                            </a>
+
+                            <!-- 🚀 TRAVA VISUAL DE EDIÇÃO DE MEMBRO -->
+                            {#                        {% if request.user.is_superuser or request.context.has_permission("settings.member.change") %}#}
+                            {% if member.highest_role_level < request.context.membership.highest_role_level or request.user.is_superuser %}
+                                <a href="{% url 'tenant:member_update' org_slug=request.context.organization.slug pk=member.pk %}"
+                                   class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" title="Editar Membro">
+                                    <i data-lucide="edit-2" class="lucide-sm"></i>
+                                </a>
+                            {% else %}
+                                <button class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-opacity-50 lia-cursor-not-allowed"
+                                        disabled
+                                        title="Bloqueado: Membro tem nível hierárquico igual ou superior ao seu.">
+                                    <i data-lucide="lock" class="lucide-sm"></i>
+                                </button>
+                                {#                            {% endif %}#}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+
+            {% empty %}
+                <!-- STATE: TABELA VAZIA -->
+                <tr>
+                    <td colspan="4" class="lia-p-0">
+                        <div class="lia-table-empty">
+                            <i data-lucide="users" class="lia-table-empty__icon"></i>
+                            <div class="lia-table-empty__text">Nenhum membro encontrado.</div>
+                            <p class="lia-text-sm lia-text-muted lia-mt-2">Comece convidando ou cadastrando pessoas na
+                                sua equipe.</p>
+
+                            <div class="lia-flex lia-justify-center lia-gap-3 lia-mt-4">
+                                {#                            {% if request.GET.search %}#}
+                                <a href="{% url 'tenant:member_list' org_slug=request.context.organization.slug %}"
+                                   class="lia-btn lia-btn--secondary">
+                                    <i data-lucide="x" class="lucide-sm"></i> Limpar Busca
+                                </a>
+                                {#                            {% elif request.context.has_permission("settings.member.add") %}#}
+                                <a href="{% url 'tenant:member_create' org_slug=request.context.organization.slug %}"
+                                   class="lia-btn lia-btn--secondary">
+                                    <i data-lucide="user-plus" class="lucide-sm"></i> Cadastrar
+                                </a>
+                                <a href="{% url 'tenant:member_invite' org_slug=request.context.organization.slug %}"
+                                   class="lia-btn lia-btn--primary">
+                                    <i data-lucide="mail" class="lucide-sm"></i> Convidar Primeiro Membro
+                                </a>
+                                {#                            {% endif %}#}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINAÇÃO -->
+    {% if page_obj.has_other_pages %}
+        <div class="lia-flex lia-justify-between lia-items-center lia-mt-6">
+            <div class="lia-text-sm lia-text-muted">
+                Página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong>
+            </div>
+            <div class="lia-flex lia-gap-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page=
+                            {{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
+                       class="lia-btn lia-btn--outline lia-btn--sm">Anterior</a>
+                {% else %}
+                    <button class="lia-btn lia-btn--outline lia-btn--sm" disabled>Anterior</button>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page=
+                            {{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
+                       class="lia-btn lia-btn--outline lia-btn--sm">Próxima</a>
+                {% else %}
+                    <button class="lia-btn lia-btn--outline lia-btn--sm" disabled>Próxima</button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

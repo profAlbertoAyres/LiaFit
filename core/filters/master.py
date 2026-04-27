@@ -1,15 +1,14 @@
-# core/filters/master.py
+# core/filters/master_view.py
 import django_filters
-from core.filters.base import BaseFilter
+from core.filters.base_filter import BaseFilter
 from core.models import Module, Permission, Role
 
 
 class ModuleFilter(BaseFilter):
     class Meta:
         model = Module
-        fields = ['is_active']  # Exemplo: Dropdown para filtrar ativos/inativos
-        search_fields = ['name', 'slug', 'description']  # Onde a barra de busca vai procurar
-
+        fields = ['is_active']
+        search_fields = ['name', 'slug', 'description']
 
 class PermissionFilter(BaseFilter):
     module = django_filters.ModelChoiceFilter(

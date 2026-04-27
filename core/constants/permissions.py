@@ -16,7 +16,6 @@ class ModuleSlug(models.TextChoices):
 class ItemSlug(models.TextChoices):
     # account
     CLIENT        = "client",        "Cliente"
-    COLLABORATOR  = "collaborator",  "Colaborador"
     # settings
     ROLE          = "role",          "Papel"
     MEMBER        = "member",        "Membro"
@@ -33,3 +32,4 @@ class ActionSlug(models.TextChoices):
     ADD    = "add",    "Adicionar"
     CHANGE = "change", "Alterar"
     DELETE = "delete", "Excluir"
+    INVITE = "invite", "Convidar" 

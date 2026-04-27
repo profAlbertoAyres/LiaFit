@@ -69,25 +69,20 @@ class LiaFitStyleMixin:
 
 
 class BaseForm(LiaFitStyleMixin, forms.Form):
-    """
-    Use esta classe para formulários simples que NÃO salvam diretamente em um Modelo
-    (ex: Login, Recuperar Senha, Contato, Registro Customizado).
-    """
 
     def __init__(self, *args, **kwargs):
+        # Captura kwargs de contexto SaaS (ficam disponíveis como self.tenant etc.)
+        self.tenant       = kwargs.pop('tenant', None)
+        self.membership   = kwargs.pop('membership', None)
+        self.professional = kwargs.pop('professional', None)
+
         super().__init__(*args, **kwargs)
-        self._apply_liafit_styles()  # ← Atualizou a chamada do método
+        self._apply_liafit_styles()
 
 
 class BaseModelForm(LiaFitStyleMixin, forms.ModelForm):
-    """
-    Use esta classe para formulários que SALVAM no banco de dados.
-    Ela já filtra automaticamente os dados (ForeignKeys) para não vazar
-    informações de um Tenant (Organização) para outro.
-    """
 
     def __init__(self, *args, **kwargs):
-        # Remove tenant e professional dos kwargs antes de passar para o super()
         self.tenant = kwargs.pop('tenant', None)
         self.membership = kwargs.pop('membership', None) # <-- ADICIONE ESTA LINHA
         self.professional = kwargs.pop('professional', None)

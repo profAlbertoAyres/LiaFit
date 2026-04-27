@@ -1,4 +1,4 @@
-# core/menu/base.py
+# core/menu/base_view.py
 from django.urls import reverse, NoReverseMatch
 
 
