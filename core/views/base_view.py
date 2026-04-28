@@ -142,17 +142,17 @@ class ContextMixin:
         kwargs['membership'] = getattr(self.request.context, 'membership', None)
         return kwargs
 
-    @staticmethod
-    def _is_admin(membership):
-        """Verifica se o membro tem role de admin/owner."""
-        roles = getattr(membership, 'roles', None)
-        if roles is None:
-            return False
-        if callable(getattr(roles, 'all', None)):
-            return roles.filter(slug__in=['owner', 'admin']).exists()
-        return any(r.slug in ('owner', 'admin') for r in roles)
-
-
+    # @staticmethod
+    # def _is_admin(membership):
+    #     """Verifica se o membro tem role de admin/owner."""
+    #     roles = getattr(membership, 'roles', None)
+    #     if roles is None:
+    #         return False
+    #     if callable(getattr(roles, 'all', None)):
+    #         return roles.filter(slug__in=['owner', 'admin']).exists()
+    #     return any(r.slug in ('owner', 'admin') for r in roles)
+#
+#
 # ─── VIEWS CONCRETAS ─────────────────────────────────────────
 
 # 📋 LIST

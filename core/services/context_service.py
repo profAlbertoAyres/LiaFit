@@ -4,6 +4,7 @@ from typing import Set, Optional, TYPE_CHECKING
 from django.core.cache import cache
 from django.conf import settings
 
+from core.constants import SystemRoleSlug
 from core.models import Permission, UserPermission
 from core.models.role_permission import RolePermission
 from core.models.organization_module import OrganizationModule
@@ -42,14 +43,14 @@ class MemberContext:
     def has_role(self, slug: str) -> bool:
         return slug in self.roles
 
-    def has_system_role(self, slug: str) -> bool:  # 🆕
+    def has_system_role(self, slug: str) -> bool: 
         return slug in self.system_roles
 
     def is_admin(self) -> bool:
         return bool(self.roles & ADMIN_ROLE_SLUGS)
 
     def is_platform_admin(self) -> bool:  # 🆕
-        return "platform_admin" in self.system_roles
+        return SystemRoleSlug.SUPERADMIN in self.system_roles
 
 
 @dataclass
@@ -69,10 +70,10 @@ class SystemContext:  # 🆕
         return slug in self.system_roles
 
     def is_platform_admin(self) -> bool:
-        return "platform_admin" in self.system_roles
+        return SystemRoleSlug.SUPERADMIN in self.system_roles
 
     def is_platform_client(self) -> bool:
-        return "client" in self.system_roles
+        return SystemRoleSlug.CLIENT in self.system_roles
 
 
 @dataclass

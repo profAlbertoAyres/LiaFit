@@ -2,6 +2,7 @@ from collections import defaultdict
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 
+from core.models import Module
 from core.models.permission import Permission
 from core.models.role_permission import RolePermission
 from core.services.permission_service import is_saas_staff  # 🆕
@@ -181,7 +182,8 @@ class RoleService:
             .filter(is_active=True)
             .filter(
                 Q(item__module_id__in=active_module_ids) | Q(item__isnull=True)
-            ).exclude(item__module__scope='superuser')
+            ).exclude(item__module__scope=Module.Scope.SUPERUSER)
+
         )
         permissoes_banco = list(permissoes_qs)
 

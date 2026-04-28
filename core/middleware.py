@@ -61,7 +61,6 @@ class SaaSContextMiddleware:
                 user=user,
                 organization=org,
                 membership=None,
-                roles={'saas_staff'},
                 modules=set(
                     OrganizationModule.objects
                     .filter(organization=org, is_active=True)

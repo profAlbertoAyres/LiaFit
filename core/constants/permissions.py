@@ -33,3 +33,12 @@ class ActionSlug(models.TextChoices):
     CHANGE = "change", "Alterar"
     DELETE = "delete", "Excluir"
     INVITE = "invite", "Convidar" 
+
+class SystemRoleSlug(models.TextChoices):
+    """
+    Slugs de System Roles (papéis globais, fora de organização).
+    Usado em UserSystemRole e nas verificações de contexto SaaS
+    (ex.: is_platform_admin, is_platform_client).
+    """
+    SUPERADMIN = "superadmin", "Super Administrador"
+    CLIENT     = "client",     "Cliente" 

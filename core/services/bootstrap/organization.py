@@ -1,22 +1,13 @@
-# ============================================================
-# 3) BOOTSTRAP DE ORGANIZAÇÃO
-# ============================================================
 from django.db import transaction
 
 from core.constants import ROLES
 from core.models import Role, RolePermission, Module, OrganizationModule, Permission
 from core.services.bootstrap.catalog import resolve_permissions
 
+OWNER_ROLE_SLUG = "owner"
 
 @transaction.atomic
 def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
-    """
-    Prepara uma organização nova:
-      1. Ativa módulos core (scope=tenant, is_core=True)
-      2. Cria/atualiza Roles tenant padrão com suas permissões
-      3. Concede permissões UNIVERSAIS a TODOS os roles
-      4. Garante que o owner tenha OrganizationMember com role 'owner'
-    """
     stats = {
         "modules_enabled": 0,
         "roles_created": 0,
@@ -53,7 +44,7 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
 
     # --- 2) Criar/atualizar roles tenant ---
     for role_def in ROLES:
-        if role_def.get("scope", "tenant") != "tenant":
+        if role_def.get("scope", Module.Scope.TENANT) != Module.Scope.TENANT:
             continue
 
         role, created = Role.objects.update_or_create(
@@ -109,7 +100,7 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
     if organization.owner_id:
         from account.models import OrganizationMember
 
-        owner_role = Role.objects.get(organization=organization, slug="owner")
+        owner_role = Role.objects.get(organization=organization, slug=OWNER_ROLE_SLUG)
         member, _ = OrganizationMember.objects.get_or_create(
             user=organization.owner,
             organization=organization,
@@ -198,10 +189,8 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
                     print(f"  [+] {org} → módulo {module.slug} ativado")
 
         # 2) Owner role com permissions core
-        owner_role = Role.objects.filter(
-            organization=org,
-            slug="owner",
-        ).first()
+        owner_role = Role.objects.filter(organization=org, slug=OWNER_ROLE_SLUG).first()
+
         if not owner_role:
             if verbose:
                 print(f"  [!] {org} sem role 'owner' — pule bootstrap_organization antes")

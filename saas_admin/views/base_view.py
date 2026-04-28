@@ -3,6 +3,8 @@ import logging
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import Http404
 
+from core.services.permission_service import is_saas_staff
+
 logger = logging.getLogger(__name__)
 
 
@@ -13,15 +15,13 @@ class SaaSAdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self) -> bool:
         user = self.request.user
 
-
         if not user.is_authenticated:
             return False
 
         if not user.is_active:
             return False
 
-
-        return getattr(user, "is_saas_staff", False)
+        return is_saas_staff(user)
 
     def handle_no_permission(self):
 

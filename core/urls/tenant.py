@@ -1,9 +1,11 @@
 # core/urls/tenant_view.py
 from django.urls import path
 
+from account.views.client_view import ClientListView
 from account.views.member_views import MemberListView, MemberCreateView, MemberDetailView
 from account.views.organization_view import OrganizationDetailView
 from core.views.dashboard_view import DashboardView
+from core.views.profile_view import ProfileView
 from core.views.role_view import (
     RoleCreateView,
     RoleDetailView,
@@ -15,6 +17,8 @@ app_name = 'tenant'
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('clients/', ClientListView.as_view(), name='client_list'),
 
     path('members/', MemberListView.as_view(), name='member_list'),
     path('members/create/', MemberCreateView.as_view(), name='member_create'),
