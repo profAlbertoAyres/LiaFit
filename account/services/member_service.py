@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class MemberService:
 
     USER_FIELDS = ('fullname', 'phone', 'gender', 'cpf', 'birth_date')
-    MEMBERSHIP_FIELDS = ('remuneration_type', 'joined_at', 'job_title')
+    MEMBERSHIP_FIELDS = ('remuneration_type', 'joined_at')
 
     @staticmethod
     @transaction.atomic

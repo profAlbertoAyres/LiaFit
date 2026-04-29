@@ -218,7 +218,7 @@ class OnboardingService:
         )
 
         logger.info(
-            "Ativação de membro enviada: user=%s org=%s roles=%s",
+            "Ativação de membro enviada: user=%s org=%s",
             user.email, organization.company_name
         )
 
@@ -236,8 +236,9 @@ class OnboardingService:
 
         user.set_password(password)
         user.email_verified_at = timezone.now()
+        user.is_active = True
 
-        user.save(update_fields=["password",'email_verified_at'])
+        user.save(update_fields=["password", "email_verified_at", "is_active"])
 
         ip, ua = OnboardingService._extract_request_meta(request)
         TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
@@ -247,7 +248,7 @@ class OnboardingService:
             login(request, user)
 
         logger.info(
-            "Convite aceito: user=%s org=%s roles=%s",
+            "Convite aceito: user=%s org=%s ",
             user.email, token_obj.organization.company_name
         )
 
@@ -370,3 +371,15 @@ class OnboardingService:
             "E-mail (%s) enviado para %s: %s",
             purpose, user.email, url
         )
+
+    @staticmethod
+    def get_invite_context(token_str):
+
+        token_obj = TokenService.get_valid_token(
+            token_str,
+            expected_purpose=OnboardingToken.Purpose.INVITATION,
+        )
+        return {
+            "email": token_obj.user.email,
+            "organization": token_obj.organization,
+        }

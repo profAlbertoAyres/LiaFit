@@ -20,7 +20,7 @@ def is_saas_staff(user) -> bool:
       2. UserSystemRole ativo com scope='superuser'
 
     ⚠️ Use SEMPRE este helper em vez de `user.is_superuser` direto
-    quando a intenção for "é alguém da equipe LiaFit?".
+    quando a intenção for "é alguém da equipe Lia Linda?".
     """
     if not user.is_authenticated:
         return False
@@ -40,7 +40,7 @@ def is_tenant_owner(user, organization) -> bool:
     """
     Verifica se o usuário é o proprietário (owner) da organização passada.
 
-    Owner = dono da empresa que CONTRATOU o LiaFit.
+    Owner = dono da empresa que CONTRATOU o Lia Linda.
     Manda na ORG dele, mas NÃO manda no sistema.
     """
     if not user.is_authenticated or organization is None:

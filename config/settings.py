@@ -137,7 +137,7 @@ else:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'liafit-default',
+            'LOCATION': 'lialinda-default',
             'TIMEOUT': 300,
             'OPTIONS': {'MAX_ENTRIES': 10000},
         }
@@ -198,6 +198,10 @@ LOGOUT_REDIRECT_URL = 'website:index'
 
 # Nome global da aplicação
 APP_NAME = 'Lia Linda'
+APP_DOMAIN = 'lialinda.com.br'
+APP_SUPPORT_EMAIL = f'suporte@{APP_DOMAIN}'
+DEFAULT_FROM_EMAIL = f'{APP_NAME} <noreply@{APP_DOMAIN}>'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -214,9 +218,4 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
 EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
-
-DEFAULT_FROM_EMAIL = os.getenv(
-    'DEFAULT_FROM_EMAIL',
-    'Alberto Ayres Benicio | PersonalPro <noreply@example.com>'
-)
 

@@ -1,10 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}
+    Aceitar Convite | {{ APP_NAME }}
+{% endblock %}
+
+{% block content %}
+<div class="lia-auth-wrapper">
+    <div class="lia-card lia-auth-card">
+
+        <!-- HEADER -->
+        <div class="lia-card__header lia-text-center">
+            <div class="lia-auth-card__icon">
+                <i data-lucide="user-check" class="lucide-lg"></i>
+            </div>
+            <h2 class="lia-card__title lia-mt-3">
+                Bem-vindo(a) à {{ organization.company_name }} 👋
+            </h2>
+            <p class="lia-card__subtitle">
+                Você foi convidado(a) por
+{#                <strong>{{ invited_by.get_full_name|default:invited_by.email }}</strong>#}
+                para fazer parte da equipe.
+            </p>
+        </div>
+
+        <!-- INFO DO CONVITE -->
+        <div class="lia-card__body lia-pt-0">
+            <div class="lia-alert lia-alert--info lia-alert--inline lia-mb-4">
+                <i data-lucide="mail" class="lia-alert__icon"></i>
+                <div class="lia-alert__content">
+                    <div class="lia-alert__message">
+                        <div><strong>E-mail:</strong> {{ user.email }}</div>
+                        {% if user.get_full_name %}
+                            <div><strong>Nome:</strong> {{ user.get_full_name }}</div>
+                        {% endif %}
+                        <div><strong>Função:</strong> {{ user.get_role_display }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="lia-text-muted lia-text-sm lia-mb-4">
+                Para concluir, defina uma senha de acesso segura:
+            </p>
+
+            <!-- FORM -->
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="lia-alert lia-alert--danger lia-alert--inline lia-mb-3">
+                        <i data-lucide="alert-circle" class="lia-alert__icon"></i>
+                        <div class="lia-alert__content">
+                            <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="row lia-mb-3">
+                    {% include "components/form_field.html" with field=form.password1 col="col-md-12" %}
+                </div>
+
+                <div class="row lia-mb-4">
+                    {% include "components/form_field.html" with field=form.password2 col="col-md-12" %}
+                </div>
+
+                <button type="submit" class="lia-btn lia-btn--primary lia-btn--block">
+                    <i data-lucide="check-circle" class="lucide-sm"></i>
+                    <span>Aceitar convite e entrar</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="lia-card__footer lia-text-center">
+            <a href="{% url 'auth:login' %}" class="lia-link lia-text-sm">
+                Já tenho conta — fazer login
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

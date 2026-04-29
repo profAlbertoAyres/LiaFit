@@ -107,3 +107,12 @@ class SetupPasswordForm(BaseForm):
             password=self.cleaned_data["password1"],
             request=request,
         )
+
+class AcceptInviteForm(SetupPasswordForm):
+
+    def save(self, token, request=None):
+        return OnboardingService.activate_member(
+            token_str=token,
+            password=self.cleaned_data["password1"],
+            request=request,
+        )

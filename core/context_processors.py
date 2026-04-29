@@ -3,17 +3,15 @@ from account.models import OrganizationMember
 
 
 def global_settings(request):
-    """Injeta variáveis globais do settings nos templates."""
     return {
         'APP_NAME': getattr(settings, 'APP_NAME', 'Lia Linda'),
+        'APP_DOMAIN': getattr(settings, 'APP_DOMAIN', 'lialinda.com.br'),
+        'APP_SUPPORT_EMAIL': getattr(
+            settings, 'APP_SUPPORT_EMAIL', 'suporte@lialinda.com.br'
+        ),
     }
 
-
 def tenant_context(request):
-    """
-    Injeta dados do tenant nos templates.
-    Trabalha junto com o SaaSContextMiddleware.
-    """
     if not hasattr(request, 'context'):
         return {}
 

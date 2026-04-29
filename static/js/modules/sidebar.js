@@ -1,5 +1,5 @@
 /* =============================================================================
-   LIAFIT — SIDEBAR & HEADER COMPONENTS
+   LIA LINDA — SIDEBAR & HEADER COMPONENTS
    Controle de colapso da sidebar (desktop/mobile) e dropdown do header.
    ============================================================================= */
 

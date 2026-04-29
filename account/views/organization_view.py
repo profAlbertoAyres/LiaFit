@@ -5,7 +5,7 @@ from django.views import View
 from django.views.generic import FormView, TemplateView
 
 from account.exceptions import TokenError, TokenExpiredError, TokenAlreadyUsedError, TokenInvalidError
-from account.forms.onboarding_form import OrganizationRegistrationForm, SetupPasswordForm
+from account.forms.onboarding_form import OrganizationRegistrationForm, SetupPasswordForm, AcceptInviteForm
 from account.models import OnboardingToken, Organization
 from account.services.onboarding_service import OnboardingService
 from account.services.token_service import TokenService
@@ -161,3 +161,68 @@ class OrganizationDetailView(BaseDetailView):
 
     def get_object(self, queryset=None):
         return self.request.context.organization
+
+
+class AcceptInviteView(View):
+    template_name = 'accounts/auth/accept_invite.html'
+    invalid_template_name = 'accounts/auth/setup_password_invalid.html'
+
+    def get(self, request, token):
+        try:
+            context = OnboardingService.get_invite_context(token)
+        except TokenError as e:
+            return render(
+                request,
+                self.invalid_template_name,
+                {"error_message": str(e)},
+                status=400,
+            )
+
+        return render(request, self.template_name, {
+            "form": AcceptInviteForm(),
+            "token": token,
+            **context,
+        })
+
+    def post(self, request, token):
+        try:
+            context = OnboardingService.get_invite_context(token)
+        except TokenError as e:
+            return render(
+                request,
+                self.invalid_template_name,
+                {"error_message": str(e)},
+                status=400,
+            )
+
+        form = AcceptInviteForm(request.POST)
+
+        if not form.is_valid():
+            return render(request, self.template_name, {
+                "form": form,
+                "token": token,
+                **context,
+            })
+
+        try:
+            form.save(token=token, request=request)
+        except TokenExpiredError:
+            messages.error(request, "Link de convite expirado. Solicite um novo.")
+            return redirect("auth:login")
+        except TokenAlreadyUsedError:
+            messages.info(request, "Este convite já foi aceito. Faça login.")
+            return redirect("auth:login")
+        except TokenInvalidError:
+            return render(
+                request,
+                self.invalid_template_name,
+                {"error_message": "Token inválido."},
+                status=400,
+            )
+
+        messages.success(
+            request,
+            f"Bem-vindo(a) à {context['organization'].company_name}! 🎉"
+        )
+        return redirect("master:dashboard")
+

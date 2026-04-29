@@ -21,7 +21,7 @@
 </div>
 
 <div style="max-width: 800px;">
-    <!-- Utilização da estrutura nativa do LiaFit Form dentro de um Card -->
+    <!-- Utilização da estrutura nativa do Lia Linda Form dentro de um Card -->
     <form method="post" novalidate class="lia-card">
         {% csrf_token %}
 
@@ -89,7 +89,7 @@
             <div class="lia-form-group">
                 <label class="lia-form-label lia-form-label--required" for="{{ form.slug.id_for_label }}">Subdomínio / Tenant</label>
                 {{ form.slug }}
-                <span class="lia-form-help">Ex: <strong>suaclinica</strong> (O link final ficará: suaclinica.liafit.com.br)</span>
+                <span class="lia-form-help">Ex: <strong>suaempresa</strong> (O link final ficará: suaempresa.{{ APP_DOMAIN }})</span>
                 {% if form.slug.errors %}<span class="lia-form-error">{{ form.slug.errors }}</span>{% endif %}
             </div>
 

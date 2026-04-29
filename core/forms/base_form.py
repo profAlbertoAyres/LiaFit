@@ -2,8 +2,8 @@ from django import forms
 from django.db.models import QuerySet
 
 
-class LiaFitStyleMixin:
-    def _apply_liafit_styles(self):
+class LiaLindaStyleMixin:
+    def _apply_lialinda_styles(self):
         for field_name, field in self.fields.items():
 
             # Localização de decimais (vírgula/ponto)
@@ -11,7 +11,7 @@ class LiaFitStyleMixin:
                 field.localize = True
                 field.widget.is_localized = True
 
-            # Define a classe CSS do LiaFit com filters no tipo de widget
+            # Define a classe CSS do Lia Linda com filters no tipo de widget
             if isinstance(field.widget, (
                     forms.TextInput,
                     forms.NumberInput,
@@ -68,7 +68,7 @@ class LiaFitStyleMixin:
                 field.widget.attrs['autocomplete'] = 'email'
 
 
-class BaseForm(LiaFitStyleMixin, forms.Form):
+class BaseForm(LiaLindaStyleMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         # Captura kwargs de contexto SaaS (ficam disponíveis como self.tenant etc.)
@@ -77,10 +77,10 @@ class BaseForm(LiaFitStyleMixin, forms.Form):
         self.professional = kwargs.pop('professional', None)
 
         super().__init__(*args, **kwargs)
-        self._apply_liafit_styles()
+        self._apply_lialinda_styles()
 
 
-class BaseModelForm(LiaFitStyleMixin, forms.ModelForm):
+class BaseModelForm(LiaLindaStyleMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.tenant = kwargs.pop('tenant', None)
@@ -91,7 +91,7 @@ class BaseModelForm(LiaFitStyleMixin, forms.ModelForm):
 
         # Aplica os filtros de segurança do SaaS e depois o visual
         self._apply_tenant_filter()
-        self._apply_liafit_styles()  # ← Atualizou a chamada do método
+        self._apply_lialinda_styles()
 
     def _apply_tenant_filter(self):
         if not self.tenant:

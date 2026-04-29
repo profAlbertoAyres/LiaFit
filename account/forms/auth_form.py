@@ -1,10 +1,10 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext_lazy as _
 
-from core.forms.base_form import LiaFitStyleMixin
+from core.forms.base_form import LiaLindaStyleMixin
 
 
-class LoginForm(LiaFitStyleMixin, AuthenticationForm):
+class LoginForm(LiaLindaStyleMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -16,4 +16,4 @@ class LoginForm(LiaFitStyleMixin, AuthenticationForm):
         if 'password' in self.fields:
             self.fields['password'].label = _("Senha")
 
-        self._apply_liafit_styles()
+        self._apply_lialinda_styles()
