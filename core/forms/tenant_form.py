@@ -1,4 +1,4 @@
-# core/forms/tenant_view.py
+# core/forms/tenant_form.py
 from core.forms.base_form import BaseModelForm
 from core.models.role_permission import RolePermission
 from core.models.user_permission import UserPermission

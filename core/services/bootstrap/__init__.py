@@ -9,9 +9,9 @@ Funções expostas:
                           padrões para uma nova Organization
 """
 
-from core.services.bootstrap.catalog import sync_system_catalog
-from core.services.bootstrap.system_roles import sync_system_roles
-from core.services.bootstrap.organization import bootstrap_organization
+from core.services.bootstrap.catalog_service import sync_system_catalog
+from core.services.bootstrap.system_roles_service import sync_system_roles
+from core.services.bootstrap.organization_service import bootstrap_organization
 
 __all__ = [
     "sync_system_catalog",

@@ -1,4 +1,4 @@
-# core/services/dashboard_view.py
+# core/services/dashboard_service.py
 from django.urls import reverse
 
 from account.models import OrganizationClient, OrganizationMember

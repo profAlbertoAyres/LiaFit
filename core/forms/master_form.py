@@ -1,4 +1,4 @@
-# core/forms/master.py
+# core/forms/master_form.py
 from core.forms.base_form import BaseModelForm
 from core.models import Module, Permission, Role
 

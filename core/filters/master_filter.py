@@ -1,4 +1,4 @@
-# core/filters/master.py
+# core/filters/master_filter.py
 import django_filters
 from core.filters.base_filter import BaseFilter
 from core.models import Module, Permission, Role

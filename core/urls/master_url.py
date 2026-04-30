@@ -1,4 +1,4 @@
-# core/urls/master_view.py
+# core/urls/master_url.py
 from django.urls import path
 
 from core.views import DashboardView

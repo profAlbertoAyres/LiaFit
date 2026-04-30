@@ -1,4 +1,4 @@
-# core/constants/permissions.py
+# core/constants/permissions_constant.py
 """
 Enums de slugs. Fonte única dos valores válidos.
 Usados como choices nos models e como chaves no catálogo.

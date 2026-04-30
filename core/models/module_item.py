@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse, NoReverseMatch
 
 from config import settings
-from core.constants.permissions import ItemSlug
+from core.constants.permissions_constant import ItemSlug
 from core.models.base import BaseModel
 from core.models.module import Module
 

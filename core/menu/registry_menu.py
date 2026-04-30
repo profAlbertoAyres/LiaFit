@@ -1,4 +1,4 @@
-# core/menu/registry.py
+# core/menu/registry_menu.py
 from django.db.models import Prefetch, Q
 
 from .base_menu import MenuGroup, MenuItem

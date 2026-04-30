@@ -1,4 +1,4 @@
-# core/filters/role_view.py
+# core/filters/role_filter.py
 import django_filters
 from django.utils.translation import gettext_lazy as _
 from core.filters.base_filter import BaseFilter

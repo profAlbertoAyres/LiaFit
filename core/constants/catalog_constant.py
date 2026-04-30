@@ -1,8 +1,8 @@
-# core/constants/catalog.py
+# core/constants/catalog_constant.py
 """
 Catálogo declarativo. Fonte única da estrutura de menu + permissions.
 """
-from core.constants.permissions import ModuleSlug, ItemSlug, ActionSlug
+from core.constants.permissions_constant import ModuleSlug, ItemSlug, ActionSlug
 
 # Presets
 CRUD = [ActionSlug.VIEW, ActionSlug.ADD, ActionSlug.CHANGE, ActionSlug.DELETE]

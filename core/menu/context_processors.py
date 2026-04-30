@@ -1,5 +1,5 @@
 # core/menu/context_processors.py
-from core.menu.registry import menu_registry
+from core.menu.registry_menu import menu_registry
 
 def menu_context(request):
     if not request.user.is_authenticated:

@@ -3,13 +3,13 @@ import sys
 from django.core.management.base import BaseCommand
 from django.urls import reverse, NoReverseMatch
 
-from core.constants.catalog import CATALOG
-from core.constants.permissions import ModuleSlug, ItemSlug
+from core.constants.catalog_constant import CATALOG
+from core.constants.permissions_constant import ModuleSlug, ItemSlug
 from core.models import Module, ModuleItem, Permission
 
 
 class Command(BaseCommand):
-    help = "Valida a coerência entre catalog.py, permissions.py e o banco."
+    help = "Valida a coerência entre catalog_constant.py, permissions_constant.py e o banco."
 
     def handle(self, *args, **opts):
         errors, warnings = [], []

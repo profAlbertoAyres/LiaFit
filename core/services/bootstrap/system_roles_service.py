@@ -5,7 +5,7 @@ from core.models import (
     Module,
     SystemRole,
 )
-from core.services.bootstrap.catalog import resolve_permissions
+from core.services.bootstrap.catalog_service import resolve_permissions
 
 
 @transaction.atomic

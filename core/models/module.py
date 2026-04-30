@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
-from core.constants.permissions import ModuleSlug
+from core.constants.permissions_constant import ModuleSlug
 from core.models.base import BaseModel
 
 

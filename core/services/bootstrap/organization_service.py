@@ -2,7 +2,7 @@ from django.db import transaction
 
 from core.constants import ROLES
 from core.models import Role, RolePermission, Module, OrganizationModule, Permission
-from core.services.bootstrap.catalog import resolve_permissions
+from core.services.bootstrap.catalog_service import resolve_permissions
 
 OWNER_ROLE_SLUG = "owner"
 

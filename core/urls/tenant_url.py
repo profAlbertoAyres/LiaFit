@@ -1,4 +1,4 @@
-# core/urls/tenant_view.py
+# core/urls/tenant_url.py
 from django.urls import path
 
 from account.views.client_view import ClientListView

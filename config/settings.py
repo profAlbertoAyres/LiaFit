@@ -24,9 +24,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+import os
+from pathlib import Path
 
-ALLOWED_HOSTS = []
+# ...
+
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+
+if DEBUG:
+    # Ambiente de desenvolvimento – permissão ampla
+    ALLOWED_HOSTS = ['*']
+else:
+    # Produção – lê a lista de hosts a partir da variável de ambiente
+    # Ex.: ALLOWED_HOSTS="example.com,api.example.com"
+    raw_hosts = os.getenv('ALLOWED_HOSTS', '')
+    ALLOWED_HOSTS = [host.strip() for host in raw_hosts.split(',') if host.strip()]
+
+# opcional: alerta caso a lista esteja vazia em produção
+if not DEBUG and not ALLOWED_HOSTS:
+    raise RuntimeError('ALLOWED_HOSTS não pode ficar vazio em ambiente de produção')
 
 # Application definition
 

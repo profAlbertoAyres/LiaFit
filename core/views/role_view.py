@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 from core.filters.role_filter import RoleFilter
-from core.forms.role import RoleForm, RolePermissionForm
+from core.forms.role_form import RoleForm, RolePermissionForm
 from core.models import Role, Permission
 from core.services.role_service import RoleService
 from core.views.base_view import (

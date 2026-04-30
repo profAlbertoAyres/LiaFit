@@ -1,4 +1,4 @@
-# core/constants/roles.py
+# core/constants/roles_constant.py
 """
 Catálogo declarativo de Roles (papéis).
 
@@ -16,8 +16,8 @@ Estrutura de cada role:
         • "<codename>"                             → permission direta por codename
 """
 from core.constants import ItemSlug, ActionSlug
-from core.constants.catalog import CRUD, RO, RW
-from core.constants.permissions import ModuleSlug
+from core.constants.catalog_constant import CRUD, RO, RW
+from core.constants.permissions_constant import ModuleSlug
 
 
 ROLES = [

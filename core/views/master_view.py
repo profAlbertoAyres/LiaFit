@@ -1,6 +1,6 @@
 from django.urls import reverse_lazy
 
-from core.forms.master import ModuleForm, PermissionForm, RoleForm
+from core.forms.master_form import ModuleForm, PermissionForm, RoleForm
 from core.models import Module, Permission, Role
 from core.views import BaseListView, BaseCreateView
 
