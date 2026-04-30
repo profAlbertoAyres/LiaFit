@@ -103,3 +103,4 @@ docker-compose.override.yml
 # Scripts descartaveis/experimentais (nao versionados)
 # Quando amadurecerem, viram management commands em app/management/commands/
 scripts/
+!.env.example

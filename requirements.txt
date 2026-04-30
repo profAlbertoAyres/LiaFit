@@ -3,5 +3,6 @@ certifi==2026.2.25
 Django==4.2.30
 django-filter==25.1
 pillow==11.3.0
+python-dotenv==1.2.2
 sqlparse==0.5.5
 typing_extensions==4.15.0

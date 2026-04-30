@@ -14,22 +14,37 @@ import ssl
 from pathlib import Path
 
 import certifi
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Carrega variáveis do .env (silencioso se o arquivo não existir)
+load_dotenv(BASE_DIR / '.env')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 # SECURITY WARNING: don't run with debug turned on in production!
-import os
-from pathlib import Path
+# Default 'False' por segurança (fail-safe): se a env var sumir, app sobe seguro.
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
-# ...
+# SECURITY WARNING: keep the secret key used in production secret!
+DEV_SECRET_KEY = 'django-insecure-dev-only-change-me'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', DEV_SECRET_KEY)
 
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+if not DEBUG and (
+    SECRET_KEY == DEV_SECRET_KEY
+    or SECRET_KEY.startswith('django-insecure-')
+    or len(SECRET_KEY) < 50
+):
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY ausente, fraca ou de desenvolvimento. "
+        "Defina uma chave forte em produção (>=50 chars, sem prefixo "
+        "'django-insecure-'). Gere com: "
+        "python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+    )
 
 if DEBUG:
     # Ambiente de desenvolvimento – permissão ampla
