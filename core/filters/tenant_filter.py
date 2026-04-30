@@ -1,4 +1,4 @@
-# core/filters/tenant_view.py
+# core/filters/role_filter.py
 import django_filters
 from core.filters.base_filter import BaseFilter
 from core.models import RolePermission, UserPermission, Role, Permission

@@ -1,7 +1,7 @@
 # core/menu/registry.py
 from django.db.models import Prefetch, Q
 
-from .base import MenuGroup, MenuItem
+from .base_menu import MenuGroup, MenuItem
 
 
 class MenuRegistry:
