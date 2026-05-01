@@ -234,7 +234,7 @@ class AcceptInviteView(View):
         try:
             token_obj = TokenService.get_valid_token(
                 token,
-                expected_purpose=OnboardingToken.Purpose.INVITATION,
+                expected_purpose=OnboardingToken.Purpose.MEMBER_ACTIVATION,
             )
         except TokenError as e:
             response = render(

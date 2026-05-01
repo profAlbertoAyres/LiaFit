@@ -4,9 +4,7 @@ from django.urls import path
 from core.views import DashboardView
 from core.views.master_view import (
     ModuleListView, ModuleCreateView,
-    PermissionListView, PermissionCreateView,
-    RoleListView, RoleCreateView
-)
+    PermissionListView, PermissionCreateView,)
 
 app_name = 'master'
 
@@ -21,6 +19,4 @@ urlpatterns = [
     path('permissions/', PermissionListView.as_view(), name='permission_list'),
     path('permissions/create/', PermissionCreateView.as_view(), name='permission_create'),
 
-    # ── CARGOS BASE (ROLES) ──
-    path('roles/create/', RoleCreateView.as_view(), name='role_create'),
-]
+    ]

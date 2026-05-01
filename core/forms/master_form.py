@@ -11,8 +11,3 @@ class PermissionForm(BaseModelForm):
     class Meta:
         model = Permission
         fields = ['item', 'action', 'name', 'codename', 'description']
-
-class RoleForm(BaseModelForm):
-    class Meta:
-        model = Role
-        fields = ['name', 'level','description']

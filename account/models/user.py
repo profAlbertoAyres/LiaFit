@@ -84,7 +84,7 @@ class OnboardingToken(BaseModel):
         RESET_PASSWORD = 'reset_password', 'Reset de Senha'
         EMAIL_CHANGE = 'email_change', 'Troca de Email'
         EMAIL_VERIFICATION = 'email_verification', 'Verificação de Email'
-        INVITATION = 'invitation', 'Convite para Organização'
+        MEMBER_ACTIVATION = 'member_activation', 'Ativação de Membro'
         MAGIC_LINK = 'magic_link', 'Login via Magic Link'
         ORG_ACTIVATION = 'org_activation', 'Ativação de Empresa Adicional'
 

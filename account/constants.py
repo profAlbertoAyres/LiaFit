@@ -8,7 +8,7 @@ TOKEN_TTL = {
     OnboardingToken.Purpose.RESET_PASSWORD: timedelta(hours=1),
     OnboardingToken.Purpose.EMAIL_CHANGE: timedelta(hours=24),
     OnboardingToken.Purpose.EMAIL_VERIFICATION: timedelta(hours=48),
-    OnboardingToken.Purpose.INVITATION: timedelta(days=7),
+    OnboardingToken.Purpose.MEMBER_ACTIVATION: timedelta(days=7),
     OnboardingToken.Purpose.MAGIC_LINK: timedelta(minutes=15),
     OnboardingToken.Purpose.ORG_ACTIVATION: timedelta(hours=48),
 }

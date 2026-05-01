@@ -282,14 +282,14 @@ class OnboardingService:
         token = TokenService.create_token(
             user=user,
             organization=organization,
-            purpose=OnboardingToken.Purpose.INVITATION,
+            purpose=OnboardingToken.Purpose.MEMBER_ACTIVATION,
             created_ip=ip,
             created_ua=ua,
         )
 
         transaction.on_commit(
             lambda: OnboardingService._send_email(
-                purpose=OnboardingToken.Purpose.INVITATION,
+                purpose=OnboardingToken.Purpose.MEMBER_ACTIVATION,
                 user=user,
                 organization=organization,
                 token=token,
@@ -311,7 +311,7 @@ class OnboardingService:
 
         token_obj = TokenService.get_valid_token(
             token_str,
-            expected_purpose=OnboardingToken.Purpose.INVITATION,
+            expected_purpose=OnboardingToken.Purpose.MEMBER_ACTIVATION,
         )
         user = token_obj.user
 
@@ -342,7 +342,7 @@ class OnboardingService:
 
         Decide automaticamente o purpose do token com base no estado do usuário:
           • Usuário SEM senha + é owner da org    → ONBOARDING
-          • Usuário SEM senha + é membro convidado → INVITATION
+          • Usuário SEM senha + é membro convidado → MEMBER_ACTIVATION
           • Usuário COM senha (criando org extra)  → ORG_ACTIVATION
 
         Comportamento silencioso (anti-enumeration): se o e-mail não existir
@@ -391,7 +391,7 @@ class OnboardingService:
             purpose = (
                 OnboardingToken.Purpose.ONBOARDING
                 if organization.owner_id == user.id
-                else OnboardingToken.Purpose.INVITATION
+                else OnboardingToken.Purpose.MEMBER_ACTIVATION
             )
         else:
             purpose = OnboardingToken.Purpose.ORG_ACTIVATION
@@ -447,9 +447,9 @@ class OnboardingService:
                 "title": "📧  E-MAIL DE ATIVAÇÃO (DEV)",
                 "label": "Link de setup",
             },
-            OnboardingToken.Purpose.INVITATION: {
+            OnboardingToken.Purpose.MEMBER_ACTIVATION: {
                 "path": "auth/accept-invite",
-                "title": "📩  E-MAIL DE CONVITE (DEV)",
+                "title": "📩  ATIVAÇÃO DE MEMBRO (DEV)",
                 "label": "Link do convite",
             },
             OnboardingToken.Purpose.ORG_ACTIVATION: {
