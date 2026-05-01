@@ -1,4 +1,4 @@
-# account/views/member_view.py
+# account/views/member_views.py
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages

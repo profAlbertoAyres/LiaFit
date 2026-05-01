@@ -232,7 +232,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # =============================================================================
 
 LOGIN_URL = 'auth:login'
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'website:index'
 
 # Nome global da aplicação
