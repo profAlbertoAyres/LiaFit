@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 from django.urls import path, include
 
 from core.views import DashboardView
@@ -11,6 +12,4 @@ urlpatterns = [
     path('org/<slug:org_slug>/', include(('core.urls.tenant_url', 'tenant'), namespace='tenant')),
     path('master/', include(('core.urls.master_url', 'master'), namespace='master')),
     path('admin-saas/', include(('saas_admin.urls', 'saas_admin'), namespace='saas_admin')),
-
-    path('dashboard/', DashboardView.as_view(), name='dashboard'),
 ]

@@ -16,6 +16,7 @@ from pathlib import Path
 import certifi
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
+from django_ratelimit import middleware
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,6 +93,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.SaaSContextMiddleware',
+    'django_ratelimit.middleware.RatelimitMiddleware',
 
 ]
 
@@ -178,6 +180,12 @@ else:
 RBAC_CACHE_TTL = 60 * 15
 RBAC_CACHE_VERSION = 1
 
+RATELIMIT_USE_CACHE = 'default'
+
+RATELIMIT_FAIL_OPEN = False
+
+RATELIMIT_VIEW = 'core.views.ratelimited_view'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -249,4 +257,6 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
 EMAIL_SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+
+RATELIMIT_VIEW = 'core.views.ratelimited_view'
 

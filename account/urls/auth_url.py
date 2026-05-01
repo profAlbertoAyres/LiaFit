@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from account.forms.auth_form import LoginForm
+from account.views.auth_view import CustomLoginView
 from account.views.organization_view import (
     AcceptInviteView,
     ActivateOrganizationView,
@@ -20,14 +21,8 @@ urlpatterns = [
     path('register_success/', RegisterSuccess.as_view(), name='register_success'),
 
     # Login / Logout
-    path(
-        'login/',
-        auth_views.LoginView.as_view(
-            template_name='accounts/auth/login.html',
-            form_class=LoginForm,
-        ),
-        name='login',
-    ),
+    path('login/', CustomLoginView.as_view(), name='login'),
+
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # Ativação inicial (definir senha pela 1ª vez)
@@ -39,7 +34,6 @@ urlpatterns = [
     # Convite de membro
     path('accept-invite/<str:token>/', AcceptInviteView.as_view(), name='accept_invite'),
 
-    # 🆕 Reset de senha
     path('password-reset/', PasswordResetRequestView.as_view(), name='password_reset_request'),
     path('password-reset/<str:token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 ]

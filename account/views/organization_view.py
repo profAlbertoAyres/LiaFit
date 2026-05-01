@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 from django.views.generic import FormView, TemplateView
 
 from account.exceptions import TokenError, TokenExpiredError, TokenAlreadyUsedError, TokenInvalidError
-from account.forms.onboarding_form import OrganizationRegistrationForm, SetupPasswordForm, AcceptInviteForm, PasswordResetConfirmForm
+from account.forms.onboarding_form import OrganizationRegistrationForm, SetupPasswordForm, AcceptInviteForm, \
+    PasswordResetConfirmForm, PasswordResetRequestForm
 from account.models import OnboardingToken, Organization
 from account.services.onboarding_service import OnboardingService
 from account.services.token_service import TokenService
@@ -42,6 +45,8 @@ class OrganizationRegisterView(FormView):
             )
         return super().form_valid(form)
 
+
+@method_decorator(never_cache, name='dispatch')
 class ActivateOrganizationView(View):
     invalid_template_name = 'accounts/auth/setup_password_invalid.html'
 
@@ -71,6 +76,7 @@ class ActivateOrganizationView(View):
         )
         return redirect("master:dashboard")
 
+@method_decorator(never_cache, name='dispatch')
 class SetupPasswordView(View):
     template_name = 'accounts/auth/setup_password.html'
     invalid_template_name = 'accounts/auth/setup_password_invalid.html'
@@ -157,11 +163,8 @@ class PasswordResetRequestView(View):
         return redirect('auth:login')
 
 
+@method_decorator(never_cache, name='dispatch')
 class PasswordResetConfirmView(View):
-    """
-    GET  → valida token e exibe formulário de nova senha
-    POST → consome token, redefine senha e faz login
-    """
     template_name = 'accounts/auth/password_reset_confirm.html'
     invalid_template_name = 'accounts/auth/setup_password_invalid.html'
 
@@ -240,6 +243,7 @@ class OrganizationDetailView(BaseDetailView):
         return self.request.context.organization
 
 
+@method_decorator(never_cache, name='dispatch')
 class AcceptInviteView(View):
     template_name = 'accounts/auth/accept_invite.html'
     invalid_template_name = 'accounts/auth/setup_password_invalid.html'
@@ -303,3 +307,32 @@ class AcceptInviteView(View):
         )
         return redirect("master:dashboard")
 
+
+@method_decorator(never_cache, name='dispatch')
+class PasswordResetRequestView(View):
+    """
+    GET  → exibe formulário "esqueci minha senha"
+    POST → dispara e-mail (silencioso, anti-enumeration) e redireciona pro login
+    """
+    template_name = 'accounts/auth/password_reset_request.html'
+
+    def get(self, request):
+        return render(request, self.template_name, {
+            "form": PasswordResetRequestForm(),
+        })
+
+    def post(self, request):
+        form = PasswordResetRequestForm(request.POST)
+
+        # 🛡️ Anti-enumeration: mesmo se o form for inválido,
+        # mostramos a mensagem de sucesso genérica.
+        # Mas só disparamos o e-mail se o formato for válido.
+        if form.is_valid():
+            email = form.get_normalized_email()
+            OnboardingService.resend_password_reset(email, request)
+
+        messages.success(
+            request,
+            'Se o e-mail estiver cadastrado, enviamos um link para redefinir sua senha.',
+        )
+        return redirect('auth:login')

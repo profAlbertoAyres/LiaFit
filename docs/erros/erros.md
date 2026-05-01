@@ -774,8 +774,8 @@ Este diretório contém **22 bugs** identificados em auditoria arquitetural do p
 - [BUG-01](BUG-01-saas-admin-nao-instalado.md) — App `saas_admin` referenciado mas não instalado <- Já resolvi
 - [BUG-02](BUG-02-resend-password-token-inexistente.md) — `OnboardingService.resend_password_token()` não existe <- corrigido
 - [BUG-03](BUG-03-typo-changer-member.md) — Typo: `settings.changer_member`<- corrigido
-- [BUG-04](BUG-04-url-role-permissions-view-errada.md) — URL `role_permissions_update` aponta para view errada
-- [BUG-05](BUG-05-dashboardview-template-view-getqueryset.md) — DashboardView mistura TemplateView + ContextMixin
+- [BUG-04](BUG-04-url-role-permissions-view-errada.md) — URL `role_permissions_update` aponta para view errada <- corrido
+- [BUG-05](BUG-05-dashboardview-template-view-getqueryset.md) — DashboardView mistura TemplateView + ContextMixin <- corrigido
 
 ### 🟡 Importantes (10)
 - [BUG-06](BUG-06-success-url-sem-namespace.md) — `success_url` sem namespace

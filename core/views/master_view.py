@@ -16,7 +16,7 @@ class ModuleCreateView(BaseCreateView):
     form_class = ModuleForm
     template_name = 'core/module_form.html'
     require_tenant = False
-    success_url = reverse_lazy('module_list')
+    success_url = reverse_lazy('master:module_list')
 
 # ... (UpdateView e DeleteView para Module seguem o mesmo padrão) ...
 
@@ -31,7 +31,7 @@ class PermissionCreateView(BaseCreateView):
     form_class = PermissionForm
     template_name = 'core/permission_form.html'
     require_tenant = False
-    success_url = reverse_lazy('permission_list')
+    success_url = reverse_lazy('master:permission_list')
 
 
 class RoleListView(BaseListView):
@@ -44,4 +44,4 @@ class RoleCreateView(BaseCreateView):
     form_class = RoleForm
     template_name = 'core/role_form.html'
     require_tenant = False
-    success_url = reverse_lazy('role_list')
+    success_url = reverse_lazy('master:role_list')

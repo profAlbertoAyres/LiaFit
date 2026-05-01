@@ -9,3 +9,4 @@ from .base_view import (
     BaseDeleteView,
 )
 from .dashboard_view import DashboardView
+from .errors_view import ratelimited_view

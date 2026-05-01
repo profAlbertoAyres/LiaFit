@@ -125,3 +125,21 @@ class PasswordResetConfirmForm(SetupPasswordForm):
             password=self.cleaned_data["password1"],
             request=request,
         )
+
+class PasswordResetRequestForm(forms.Form):
+    email = forms.EmailField(
+        label="E-mail",
+        max_length=254,
+        widget=forms.EmailInput(attrs={
+            "autocomplete": "email",
+            "placeholder": "seu@email.com",
+            "class": "form-control",
+        }),
+        error_messages={
+            "required": "Informe seu e-mail.",
+            "invalid": "E-mail inválido.",
+        },
+    )
+
+    def get_normalized_email(self):
+        return self.cleaned_data["email"].strip().lower()
