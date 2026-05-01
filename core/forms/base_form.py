@@ -62,8 +62,6 @@ class LiaLindaStyleMixin:
 
 
 class TenantKwargsMixin:
-    """Captura kwargs de contexto SaaS (tenant, membership, professional)."""
-
     def __init__(self, *args, **kwargs):
         self.tenant = kwargs.pop('tenant', None)
         self.membership = kwargs.pop('membership', None)

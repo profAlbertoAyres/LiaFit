@@ -28,14 +28,6 @@ urlpatterns = [
     # # ── ORGANIZAÇÃO (detalhe único - a própria org do contexto) ──
     path('organization/detail', OrganizationDetailView.as_view(), name='organization_detail'),
     path('organization/update/', OrganizationDetailView.as_view(), name='organization_update'),
-    #
-    # # ── ROLE PERMISSIONS ──
-    # path('role-permissions/', RolePermissionListView.as_view(), name='role_permission_list'),
-    # path('role-permissions/create/', RolePermissionCreateView.as_view(), name='role_permission_create'),
-    #
-    # # ── USER PERMISSIONS ──
-    # path('user-permissions/', UserPermissionListView.as_view(), name='user_permission_list'),
-    # path('user-permissions/create/', UserPermissionCreateView.as_view(), name='user_permission_create'),
 
     # ── ROLES ──
     path('roles/', RoleListView.as_view(), name='role_list'),
