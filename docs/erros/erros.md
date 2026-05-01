@@ -771,7 +771,7 @@ Este diretório contém **22 bugs** identificados em auditoria arquitetural do p
 ## 📋 Índice
 
 ### 🔴 Críticos (5)
-- [BUG-01](BUG-01-saas-admin-nao-instalado.md) — App `saas_admin` referenciado mas não instalado
+- [BUG-01](BUG-01-saas-admin-nao-instalado.md) — App `saas_admin` referenciado mas não instalado <- Já resolvi
 - [BUG-02](BUG-02-resend-password-token-inexistente.md) — `OnboardingService.resend_password_token()` não existe
 - [BUG-03](BUG-03-typo-changer-member.md) — Typo: `settings.changer_member`
 - [BUG-04](BUG-04-url-role-permissions-view-errada.md) — URL `role_permissions_update` aponta para view errada
@@ -806,5 +806,43 @@ Este diretório contém **22 bugs** identificados em auditoria arquitetural do p
 4. Baixas em sprint de polimento
 
 
+## 🐛 Erro: Manager não acessa "Permissões do Papel" e "Permissões do Usuário"
+
+**Sintoma:** Manager redirecionado para dashboard com mensagem
+"Você não tem permissão para acessar esta funcionalidade".
+Owner funciona normalmente.
+
+**Causa raiz:** strings de `permission_required` apontavam para
+codenames inexistentes no catálogo (`core.models.Permission`).
+
+| View                                   | String fantasma                       |
+|----------------------------------------|---------------------------------------|
+| `TenantRolePermissionsView`            | `settings.view_role_permission`       |
+| `TenantRolePermissionsUpdateView`      | `settings.change_rolepermission`      |
+| `TenantUserPermissionsView`            | `settings.view_user_permission`       |
+| `TenantUserPermissionsUpdateView`      | `settings.change_user_permission`     |
+
+O catálogo só registra permissões para items declarados em `ItemSlug`
+(`role`, `member`, `organization`, etc). Não existe `role_permission`
+nem `user_permission` como itens — são views auxiliares que operam
+sobre `Role` e `Member`.
+
+**Fix:** reusar as permissões dos itens proprietários:
+- `role_permission` views → `settings.{view,change}_role`
+- `user_permission` views → `settings.{view,change}_member`
+
+**Por que owner funcionava?** Owner tem `permissions: ["*"]` no
+`SYSTEM_ROLES`, então `resolve_permissions("*")` injeta TODAS as
+permissões do catálogo no role — incluindo qualquer codename que
+viesse a existir. Manager tem permissões granulares e por isso
+expôs o bug.
+
+**Lições:**
+1. Strings de permissão são pontos cegos — não há validação estática.
+2. O catálogo (`core.models.Permission`) é independente do
+   `django.contrib.auth.Permission`. `BaseAuthMixin` consulta apenas
+   o catálogo via `MemberContext.has_permission()`.
+3. Codenames seguem o formato `{module_slug}.{action}_{item_slug}`
+   gerado por `ModuleItem.permission_codename()`.
 
 

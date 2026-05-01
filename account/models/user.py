@@ -76,16 +76,18 @@ class User(AbstractUser):
         )
 
 
+class Purpose(models.TextChoices):
+    ONBOARDING = 'onboarding', 'Onboarding'
+    RESET_PASSWORD = 'reset_password', 'Reset de Senha'
+    EMAIL_CHANGE = 'email_change', 'Troca de Email'
+    EMAIL_VERIFICATION = 'email_verification', 'Verificação de Email'
+    INVITATION = 'invitation', 'Convite para Organização'
+    MAGIC_LINK = 'magic_link', 'Login via Magic Link'
+    ORG_ACTIVATION = 'org_activation', 'Ativação de Empresa Adicional'
+
+
 class OnboardingToken(BaseModel):
-    class Purpose(models.TextChoices):
-        ONBOARDING = 'onboarding', 'Onboarding'
-        RESET_PASSWORD = 'reset_password', 'Reset de Senha'
-        EMAIL_CHANGE = 'email_change', 'Troca de Email'
-        EMAIL_VERIFICATION = 'email_verification', 'Verificação de Email'
-        INVITATION = 'invitation', 'Convite para Organização'
-        MAGIC_LINK = 'magic_link', 'Login via Magic Link'
-        ORG_ACTIVATION = 'org_activation', 'Ativação de Empresa Adicional'
-        
+
 
     user = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name='onboarding_tokens',
                              verbose_name='Usuário')

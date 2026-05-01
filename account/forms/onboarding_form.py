@@ -116,3 +116,12 @@ class AcceptInviteForm(SetupPasswordForm):
             password=self.cleaned_data["password1"],
             request=request,
         )
+
+class PasswordResetConfirmForm(SetupPasswordForm):
+
+    def save(self, token, request=None):
+        return OnboardingService.confirm_password_reset(
+            token_str=token,
+            password=self.cleaned_data["password1"],
+            request=request,
+        )

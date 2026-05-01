@@ -5,8 +5,8 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from account.models import Organization, OrganizationMember
-from core.services.bootstrap import bootstrap_organization
 from core.models.role import Role
+from core.services.bootstrap import bootstrap_organization
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class OrganizationService:
     def create_organization(data, owner=None):
         """
         Cria a organização (inativa) + executa bootstrap (roles, permissões, módulos).
-        Se `owner` for informado, já vincula como dono e membro com role 'owner'.
+        Se `owner` for informado, vincula como dono e membro com role 'owner'.
         """
         company_name = data.get("company_name")
         if not company_name:
@@ -42,7 +42,7 @@ class OrganizationService:
             organization.id, company_name, slug,
         )
 
-        # 🔧 Bootstrap: cria roles + permissões + módulos logo na criação
+        # 🔧 Bootstrap: cria roles + permissões + módulos
         stats = bootstrap_organization(organization)
         logger.info(
             "Bootstrap: modules=%d roles_created=%d roles_updated=%d perms=%d",
@@ -52,7 +52,7 @@ class OrganizationService:
             stats["role_permissions_created"],
         )
 
-        # 🔗 Se houver owner, já adiciona como membro
+        # 🔗 Owner vira membro automaticamente
         if owner:
             OrganizationService.add_member(owner, organization, role_codenames="owner")
 
@@ -80,18 +80,23 @@ class OrganizationService:
     @staticmethod
     @transaction.atomic
     def add_member(user, organization, role_codenames=None, extra_fields: dict | None = None):
+        """
+        Cria (ou recupera) um membership de `user` em `organization` e vincula roles.
+        `role_codenames` pode ser str ou iterável de str.
+        """
+        # Normaliza para lista de slugs em lowercase
         if isinstance(role_codenames, str):
-            role_codenames = [role_codenames]
-
-        slugs = [code.lower() for code in (role_codenames or []) if code]
+            slugs = [role_codenames.lower()]
+        else:
+            slugs = [code.lower() for code in (role_codenames or []) if code]
 
         roles = []
-        if slugs:  # ← só valida se foram informados
+        if slugs:
             roles_qs = Role.objects.filter(slug__in=slugs, organization=organization)
             found_slugs = set(roles_qs.values_list("slug", flat=True))
             missing = set(slugs) - found_slugs
             if missing:
-                raise ValidationError(f"Roles não encontrados: {', '.join(missing)}")
+                raise ValidationError(f"Roles não encontrados: {', '.join(sorted(missing))}")
             roles = list(roles_qs)
 
         membership, created = OrganizationMember.objects.get_or_create(
@@ -103,12 +108,19 @@ class OrganizationService:
         if roles:
             membership.roles.add(*roles)
 
+        logger.info(
+            "Membership %s: user=%s org=%s roles=%s",
+            "criado" if created else "atualizado",
+            user.email, organization.slug, slugs or "—",
+        )
         return membership
+
     # ──────────────── ATIVAÇÃO ────────────────
 
     @staticmethod
     @transaction.atomic
     def activate_organization(organization):
+        """Idempotente: marca a organização como ativa, se ainda não estiver."""
         if organization.is_active:
             logger.debug("Organização %s já estava ativa.", organization.slug)
             return organization

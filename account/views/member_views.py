@@ -69,7 +69,7 @@ class MemberUpdateView(BaseUpdateView):
     template_name = "accounts/member/create.html"
 
     require_tenant = True
-    permission_required = "settings.changer_member"
+    permission_required = "settings.change_member"
 
     def get_success_url(self):
         messages.success(self.request, "Membro atualizado com sucesso!")
