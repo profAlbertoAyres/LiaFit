@@ -8,7 +8,7 @@ from core.constants import SystemRoleSlug
 from core.models import Permission, UserPermission
 from core.models.role_permission import RolePermission
 from core.models.organization_module import OrganizationModule
-from core.models.user_system_role import UserSystemRole  # 🆕
+from core.models.user_system_role import UserSystemRole
 
 if TYPE_CHECKING:
     from core.models import Organization, OrganizationMember
@@ -25,7 +25,7 @@ class MemberContext:
     roles: Set[str] = field(default_factory=set)
     modules: Set[str] = field(default_factory=set)
     permissions: Set[str] = field(default_factory=set)
-    system_roles: Set[str] = field(default_factory=set)  # 🆕
+    system_roles: Set[str] = field(default_factory=set)
     professional: Optional[object] = None
 
     def has_permission(self, codename: str) -> bool:
@@ -43,22 +43,18 @@ class MemberContext:
     def has_role(self, slug: str) -> bool:
         return slug in self.roles
 
-    def has_system_role(self, slug: str) -> bool: 
+    def has_system_role(self, slug: str) -> bool:
         return slug in self.system_roles
 
     def is_admin(self) -> bool:
         return bool(self.roles & ADMIN_ROLE_SLUGS)
 
-    def is_platform_admin(self) -> bool:  # 🆕
+    def is_platform_admin(self) -> bool:
         return SystemRoleSlug.SUPERADMIN in self.system_roles
 
 
 @dataclass
-class SystemContext:  # 🆕
-    """
-    Contexto para usuários SEM organização ativa.
-    Usado em: /minha-area/ (client) e /saas-admin/ (platform_admin).
-    """
+class SystemContext:
     user: object
     system_roles: Set[str] = field(default_factory=set)
     permissions: Set[str] = field(default_factory=set)
@@ -83,15 +79,6 @@ class ClientContext:
 
 
 class ContextService:
-    """
-    Calcula o contexto RBAC de um usuário, com cache.
-
-    Precedência de permissões (tenant):
-        final = (system_perms ∪ role_perms ∪ allow_perms) − deny_perms
-    """
-
-    # ---------- API PÚBLICA ----------
-
     @classmethod
     def build_member_context(cls, user, organization, membership) -> MemberContext:
         cache_key = cls._cache_key(user.id, organization.id)
@@ -105,15 +92,17 @@ class ContextService:
                 roles=cached['roles'],
                 modules=cached['modules'],
                 permissions=cached['permissions'],
-                system_roles=cached.get('system_roles', set()),  # 🆕 backward-compat
+                system_roles=cached.get('system_roles', set()),
                 professional=getattr(membership, 'professional_profile', None),
             )
 
-        # ❄️ COLD PATH
         roles = cls.load_roles(membership)
         modules = cls.load_modules(organization)
-        system_roles = cls.load_system_roles(user)  # 🆕
-        permissions = cls.load_permissions(user, organization, roles, modules, system_roles)
+        universal_modules = cls.load_universal_modules(organization)
+        system_roles = cls.load_system_roles(user)
+        permissions = cls.load_permissions(
+            user, organization, roles, modules, universal_modules, system_roles
+        )
 
         cache.set(
             cache_key,
@@ -121,7 +110,7 @@ class ContextService:
                 'roles': roles,
                 'modules': modules,
                 'permissions': permissions,
-                'system_roles': system_roles,  # 🆕
+                'system_roles': system_roles,
             },
             timeout=settings.RBAC_CACHE_TTL,
         )
@@ -138,10 +127,7 @@ class ContextService:
         )
 
     @classmethod
-    def build_system_context(cls, user) -> SystemContext:  # 🆕
-        """
-        Contexto para rotas SEM organização (área do client, SaaS admin).
-        """
+    def build_system_context(cls, user) -> SystemContext:
         cache_key = cls._system_cache_key(user.id)
         cached = cache.get(cache_key)
 
@@ -167,15 +153,13 @@ class ContextService:
     def build_client_context(cls, user, client) -> ClientContext:
         return ClientContext(user=user, client=client)
 
-    # ---------- CACHE HELPERS ----------
-
     @staticmethod
     def _cache_key(user_id: int, organization_id: int) -> str:
         v = settings.RBAC_CACHE_VERSION
         return f'rbac:ctx:v{v}:u{user_id}:o{organization_id}'
 
     @staticmethod
-    def _system_cache_key(user_id: int) -> str:  # 🆕
+    def _system_cache_key(user_id: int) -> str:
         v = settings.RBAC_CACHE_VERSION
         return f'rbac:sysctx:v{v}:u{user_id}'
 
@@ -184,10 +168,8 @@ class ContextService:
         cache.delete(cls._cache_key(user_id, organization_id))
 
     @classmethod
-    def invalidate_system(cls, user_id: int) -> None:  # 🆕
+    def invalidate_system(cls, user_id: int) -> None:
         cache.delete(cls._system_cache_key(user_id))
-
-    # ---------- BLOCOS DE CONSTRUÇÃO ----------
 
     @staticmethod
     def load_roles(membership) -> Set[str]:
@@ -203,7 +185,17 @@ class ContextService:
         )
 
     @staticmethod
-    def load_system_roles(user) -> Set[str]:  # 🆕
+    def load_universal_modules(organization) -> Set[str]:
+        return set(
+            OrganizationModule.objects.filter(
+                organization=organization,
+                is_active=True,
+                module__is_universal=True,
+            ).values_list('module__slug', flat=True)
+        )
+
+    @staticmethod
+    def load_system_roles(user) -> Set[str]:
         return set(
             UserSystemRole.objects.filter(
                 user=user,
@@ -213,16 +205,20 @@ class ContextService:
         )
 
     @staticmethod
-    def load_permissions(user, organization, roles, modules, system_roles) -> Set[str]:
-        # 1) Permissões via Role tenant
+    def load_permissions(user, organization, roles, modules, universal_modules, system_roles) -> Set[str]:
         role_perms = set(
             RolePermission.objects.filter(
                 role__slug__in=roles,
                 permission__item__module__slug__in=modules,
             ).values_list('permission__codename', flat=True)
-        )
+        ) if roles else set()
 
-        # 2) 🆕 Permissões via SystemRole (global/superuser)
+        universal_perms = set(
+            Permission.objects.filter(
+                item__module__slug__in=universal_modules,
+            ).values_list('codename', flat=True)
+        ) if universal_modules else set()
+
         system_perms = set(
             Permission.objects.filter(
                 system_roles__slug__in=system_roles,
@@ -230,7 +226,6 @@ class ContextService:
             ).values_list('codename', flat=True)
         ) if system_roles else set()
 
-        # 3) Overrides ALLOW
         allow_perms = set(
             Permission.objects.filter(
                 user_permissions__user=user,
@@ -240,7 +235,6 @@ class ContextService:
             ).values_list('codename', flat=True)
         )
 
-        # 4) Overrides DENY
         deny_perms = set(
             Permission.objects.filter(
                 user_permissions__user=user,
@@ -249,11 +243,10 @@ class ContextService:
             ).values_list('codename', flat=True)
         )
 
-        return (role_perms | system_perms | allow_perms) - deny_perms
+        return (role_perms | universal_perms | system_perms | allow_perms) - deny_perms
 
     @staticmethod
-    def load_system_permissions(user, system_roles: Set[str]) -> Set[str]:  # 🆕
-        """Permissões para contexto sem organização (só SystemRole)."""
+    def load_system_permissions(user, system_roles: Set[str]) -> Set[str]:
         if not system_roles:
             return set()
         return set(
