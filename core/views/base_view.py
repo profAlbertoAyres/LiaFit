@@ -7,7 +7,8 @@ from django.views.generic import (
     DeleteView,
     DetailView,
     ListView,
-    UpdateView, FormView,
+    UpdateView,
+    FormView,
 )
 
 
@@ -29,7 +30,6 @@ class BaseAuthMixin(LoginRequiredMixin):
                 return denied
 
         return super().dispatch(request, *args, **kwargs)
-
 
     def _check_tenant_access(self, request):
         ctx = getattr(request, 'context', None)
@@ -68,7 +68,10 @@ class BaseAuthMixin(LoginRequiredMixin):
         return redirect("master:dashboard")
 
 
+# ─── CONTEXTO DE TENANT ──────────────────────────────────────
+
 class TenantContextMixin:
+    """Helpers de tenant. Seguro em qualquer CBV (incluindo TemplateView)."""
 
     def get_tenant(self):
         if getattr(self, 'require_tenant', True) is False:
@@ -84,8 +87,8 @@ class TenantContextMixin:
         return getattr(ctx, 'membership', None)
 
 
-
-class ContextMixin:
+class ContextMixin(TenantContextMixin):
+    """Filtros multi-tenant em queryset/form. Só usar em CBVs de modelo."""
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -107,7 +110,6 @@ class ContextMixin:
         ):
             queryset = queryset.filter(organization=tenant)
 
-
         if (
             hasattr(model, 'member')
             and membership
@@ -120,10 +122,12 @@ class ContextMixin:
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['tenant'] = getattr(self.request.context, 'organization', None)
-        kwargs['membership'] = getattr(self.request.context, 'membership', None)
+        kwargs['tenant'] = self.get_tenant()
+        kwargs['membership'] = self.get_membership()
         return kwargs
 
+
+# ─── BASE VIEWS ──────────────────────────────────────────────
 
 class BaseListView(ContextMixin, BaseAuthMixin, ListView):
     filterset_class = None
@@ -164,19 +168,18 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
 class BaseCreateView(ContextMixin, BaseAuthMixin, CreateView):
     def form_valid(self, form):
         tenant = self.get_tenant()
-        if any(f.name == 'organization' for f in form.instance._meta.fields):
+        if tenant and any(f.name == 'organization' for f in form.instance._meta.fields):
             form.instance.organization = tenant
-
         return super().form_valid(form)
 
 
 class BaseUpdateView(ContextMixin, BaseAuthMixin, UpdateView):
     def form_valid(self, form):
         tenant = self.get_tenant()
-        if any(f.name == 'organization' for f in form.instance._meta.fields):
+        if tenant and any(f.name == 'organization' for f in form.instance._meta.fields):
             form.instance.organization = tenant
-
         return super().form_valid(form)
+
 
 class BaseDetailView(ContextMixin, BaseAuthMixin, DetailView):
     pass
@@ -189,11 +192,9 @@ class BaseDeleteView(ContextMixin, BaseAuthMixin, DeleteView):
         return self.success_url
 
 
-class BaseFormView(BaseAuthMixin, FormView):
-
+class BaseFormView(TenantContextMixin, BaseAuthMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        ctx = getattr(self.request, 'context', None)
-        kwargs['tenant'] = getattr(ctx, 'organization', None)
-        kwargs['membership'] = getattr(ctx, 'membership', None)
+        kwargs['tenant'] = self.get_tenant()
+        kwargs['membership'] = self.get_membership()
         return kwargs

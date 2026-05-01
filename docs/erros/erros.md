@@ -779,7 +779,7 @@ Este diretório contém **22 bugs** identificados em auditoria arquitetural do p
 
 ### 🟡 Importantes (10)
 - [BUG-06](BUG-06-success-url-sem-namespace.md) — `success_url` sem namespace
-- [BUG-07](BUG-07-typo-deshboard-service.md) — Typo no nome do arquivo `deshboard_service.py`<-corrigido
+- [BUG-07](BUG-07-typo-deshboard-service.md) — Typo no nome do arquivo `deshboard_service.py
 - [BUG-08](BUG-08-comentario-cabecalho-errado.md) — Comentário de cabeçalho errado
 - [BUG-09](BUG-09-login-redirect-url-hardcoded.md) — `LOGIN_REDIRECT_URL` hard-coded
 - [BUG-10](BUG-10-logging-vazio.md) — LOGGING vazio
