@@ -14,18 +14,6 @@ from django.views.generic import (
 # ─── AUTENTICAÇÃO + PERMISSÃO ────────────────────────────────
 
 class BaseAuthMixin(LoginRequiredMixin):
-    """
-    Exige usuário autenticado + (opcionalmente) tenant + permissão RBAC.
-
-    Atributos:
-        require_tenant: bool  — exige org na URL (default: True)
-        permission_required: str | tuple[str] | None
-            - str   → exige essa única permissão
-            - tuple → AND: exige TODAS
-            - None  → não checa permissão (só auth + tenant)
-        permission_required_any: tuple[str] | None
-            - tuple → OR: basta ter UMA
-    """
 
     require_tenant = True
     permission_required = None
@@ -42,25 +30,20 @@ class BaseAuthMixin(LoginRequiredMixin):
 
         return super().dispatch(request, *args, **kwargs)
 
-    # ─── Helpers privados ────────────────────────────────────
 
     def _check_tenant_access(self, request):
-        """Retorna um redirect se negado, ou None se OK."""
         ctx = getattr(request, 'context', None)
 
-        # Superuser: só precisa de org na URL
         if request.user.is_superuser:
             if not getattr(ctx, 'organization', None):
                 return self._deny("Organização não encontrada na URL.")
             return None
 
-        # Usuário comum: exige contexto com membership
         if not ctx or not getattr(ctx, 'membership', None):
             return self._deny(
                 "Contexto de organização não encontrado. Faça login novamente."
             )
 
-        # RBAC
         if not self._has_required_permission(ctx):
             return self._deny(
                 "Você não tem permissão para acessar esta funcionalidade."
@@ -69,7 +52,6 @@ class BaseAuthMixin(LoginRequiredMixin):
         return None
 
     def _has_required_permission(self, ctx) -> bool:
-        """Delega a decisão pro MemberContext."""
         if self.permission_required:
             required = self.permission_required
             if isinstance(required, str):
@@ -85,9 +67,8 @@ class BaseAuthMixin(LoginRequiredMixin):
         messages.error(self.request, message)
         return redirect("master:dashboard")
 
-# ─── CONTEXTO MULTI-TENANT ───────────────────────────────────
 
-class ContextMixin:
+class TenantContextMixin:
 
     def get_tenant(self):
         if getattr(self, 'require_tenant', True) is False:
@@ -101,6 +82,10 @@ class ContextMixin:
     def get_membership(self):
         ctx = getattr(self.request, 'context', None)
         return getattr(ctx, 'membership', None)
+
+
+
+class ContextMixin:
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -117,14 +102,12 @@ class ContextMixin:
 
         model = queryset.model
 
-        # 1. Filtra sempre pela Organização (isolamento de tenant)
         if hasattr(model, 'organization') or any(
             f.name == 'organization' for f in model._meta.fields
         ):
             queryset = queryset.filter(organization=tenant)
 
-        # 2. Se o modelo tem campo 'member' e o usuário NÃO é admin/superuser,
-        #    filtra apenas registros que pertencem a ele.
+
         if (
             hasattr(model, 'member')
             and membership
@@ -136,14 +119,12 @@ class ContextMixin:
         return queryset
 
     def get_form_kwargs(self):
-        """Injeta tenant e membership nos forms."""
         kwargs = super().get_form_kwargs()
         kwargs['tenant'] = getattr(self.request.context, 'organization', None)
         kwargs['membership'] = getattr(self.request.context, 'membership', None)
         return kwargs
 
 
-# 📋 LIST
 class BaseListView(ContextMixin, BaseAuthMixin, ListView):
     filterset_class = None
     paginate_by = 10
@@ -180,7 +161,6 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
         return context
 
 
-# ➕ CREATE
 class BaseCreateView(ContextMixin, BaseAuthMixin, CreateView):
     def form_valid(self, form):
         tenant = self.get_tenant()
@@ -190,7 +170,6 @@ class BaseCreateView(ContextMixin, BaseAuthMixin, CreateView):
         return super().form_valid(form)
 
 
-# ✏️ UPDATE
 class BaseUpdateView(ContextMixin, BaseAuthMixin, UpdateView):
     def form_valid(self, form):
         tenant = self.get_tenant()
@@ -199,12 +178,10 @@ class BaseUpdateView(ContextMixin, BaseAuthMixin, UpdateView):
 
         return super().form_valid(form)
 
-# 🔍 DETAIL
 class BaseDetailView(ContextMixin, BaseAuthMixin, DetailView):
     pass
 
 
-# 🗑️ DELETE
 class BaseDeleteView(ContextMixin, BaseAuthMixin, DeleteView):
     def get_success_url(self):
         if not self.success_url:

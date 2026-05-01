@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 class TokenService:
     """Gerencia o ciclo de vida dos OnboardingTokens."""
 
-    # ──────────────── CRIAÇÃO ────────────────
 
     @staticmethod
     @transaction.atomic

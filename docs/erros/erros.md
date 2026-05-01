@@ -772,14 +772,14 @@ Este diretório contém **22 bugs** identificados em auditoria arquitetural do p
 
 ### 🔴 Críticos (5)
 - [BUG-01](BUG-01-saas-admin-nao-instalado.md) — App `saas_admin` referenciado mas não instalado <- Já resolvi
-- [BUG-02](BUG-02-resend-password-token-inexistente.md) — `OnboardingService.resend_password_token()` não existe
-- [BUG-03](BUG-03-typo-changer-member.md) — Typo: `settings.changer_member`
+- [BUG-02](BUG-02-resend-password-token-inexistente.md) — `OnboardingService.resend_password_token()` não existe <- corrigido
+- [BUG-03](BUG-03-typo-changer-member.md) — Typo: `settings.changer_member`<- corrigido
 - [BUG-04](BUG-04-url-role-permissions-view-errada.md) — URL `role_permissions_update` aponta para view errada
 - [BUG-05](BUG-05-dashboardview-template-view-getqueryset.md) — DashboardView mistura TemplateView + ContextMixin
 
 ### 🟡 Importantes (10)
 - [BUG-06](BUG-06-success-url-sem-namespace.md) — `success_url` sem namespace
-- [BUG-07](BUG-07-typo-deshboard-service.md) — Typo no nome do arquivo `deshboard_service.py`
+- [BUG-07](BUG-07-typo-deshboard-service.md) — Typo no nome do arquivo `deshboard_service.py`<-corrigido
 - [BUG-08](BUG-08-comentario-cabecalho-errado.md) — Comentário de cabeçalho errado
 - [BUG-09](BUG-09-login-redirect-url-hardcoded.md) — `LOGIN_REDIRECT_URL` hard-coded
 - [BUG-10](BUG-10-logging-vazio.md) — LOGGING vazio

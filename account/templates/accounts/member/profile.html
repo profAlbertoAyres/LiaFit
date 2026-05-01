@@ -1,0 +1,60 @@
+{% extends "base_app.html" %}
+{% load static %}
+
+{% block title %}Meu Perfil{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+
+      <div class="d-flex align-items-center mb-4">
+        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+             style="width: 64px; height: 64px; font-size: 1.5rem;">
+          {{ user.first_name|first|default:user.email|first|upper }}
+        </div>
+        <div class="ms-3">
+          <h2 class="mb-0">{{ user.get_full_name|default:user.email }}</h2>
+          <small class="text-muted">{{ user.email }}</small>
+        </div>
+      </div>
+
+      <div class="card shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">
+            <i class="bi bi-person-circle me-2"></i>Informações da conta
+          </h5>
+        </div>
+        <div class="card-body">
+          <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted">Nome</dt>
+            <dd class="col-sm-8">{{ user.get_full_name|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted">E-mail</dt>
+            <dd class="col-sm-8">{{ user.email }}</dd>
+
+            <dt class="col-sm-4 text-muted">Último acesso</dt>
+            <dd class="col-sm-8">{{ user.last_login|date:"d/m/Y H:i"|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted">Conta criada em</dt>
+            <dd class="col-sm-8">{{ user.date_joined|date:"d/m/Y" }}</dd>
+
+            {% if request.context.organization %}
+              <dt class="col-sm-4 text-muted">Organização</dt>
+              <dd class="col-sm-8">{{ request.context.organization.name }}</dd>
+            {% endif %}
+          </dl>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-4 d-flex align-items-center" role="alert">
+        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+        <div>
+          <strong>Em breve:</strong> edição de perfil, alteração de senha e foto.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -82,15 +82,13 @@ class OnboardingService:
         TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
 
         if request:
-            login(request, user)
+            OnboardingService._secure_login(request, user)
 
         logger.info(
             "Onboarding concluído: user=%s org=%s",
             user.email, organization.company_name,
         )
         return user
-
-    # ──────────────── RESET DE SENHA ────────────────
 
     @staticmethod
     @transaction.atomic
@@ -149,9 +147,6 @@ class OnboardingService:
     @staticmethod
     @transaction.atomic
     def confirm_password_reset(token_str, password, request=None):
-        """
-        Consome o token de RESET_PASSWORD, redefine a senha e faz login.
-        """
         if not password:
             raise ValidationError("Senha não informada.")
 
@@ -173,7 +168,7 @@ class OnboardingService:
         TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
 
         if request:
-            login(request, user)
+            OnboardingService._secure_login(request, user)
 
         logger.info("Senha redefinida: user=%s", user.email)
         return user
@@ -267,7 +262,7 @@ class OnboardingService:
         TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
 
         if request:
-            login(request, user)
+            OnboardingService._secure_login(request, user)
 
         logger.info(
             "Organização adicional ativada: user=%s org=%s",
@@ -329,7 +324,7 @@ class OnboardingService:
         TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
 
         if request:
-            login(request, user)
+            OnboardingService._secure_login(request, user)
 
         logger.info(
             "Convite aceito: user=%s org=%s",
@@ -473,3 +468,13 @@ class OnboardingService:
             "E-mail (%s) enviado para %s: %s",
             purpose, user.email, url,
         )
+
+    # account/services/onboarding_service.py (topo da classe)
+
+    @staticmethod
+    def _secure_login(request, user):
+        if request is None:
+            return
+        request.session.cycle_key()
+        login(request, user)
+

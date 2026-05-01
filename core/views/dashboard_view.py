@@ -2,10 +2,10 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from core.services.dashboard_service import DashboardService
-from core.views.base_view import BaseAuthMixin, ContextMixin
+from core.views.base_view import BaseAuthMixin, TenantContextMixin
 
 
-class DashboardView(ContextMixin, BaseAuthMixin, TemplateView):
+class DashboardView(TenantContextMixin, BaseAuthMixin, TemplateView):
     template_name = 'core/dashboard/dashboard.html'
     permission_required = None
     require_tenant = False

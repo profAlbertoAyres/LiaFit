@@ -1,5 +1,6 @@
 from .base_view import (
     BaseAuthMixin,
+    TenantContextMixin,
     ContextMixin,
     BaseListView,
     BaseCreateView,

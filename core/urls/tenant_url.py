@@ -5,7 +5,7 @@ from account.views.client_view import ClientListView
 from account.views.member_views import MemberListView, MemberCreateView, MemberDetailView
 from account.views.organization_view import OrganizationDetailView
 from core.views.dashboard_view import DashboardView
-from core.views.profile_view import ProfileView
+from account.views.profile_view import ProfileView
 from core.views.role_view import (
     RoleCreateView,
     RoleDetailView,
