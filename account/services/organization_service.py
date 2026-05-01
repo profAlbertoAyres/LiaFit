@@ -80,10 +80,6 @@ class OrganizationService:
     @staticmethod
     @transaction.atomic
     def add_member(user, organization, role_codenames=None, extra_fields: dict | None = None):
-        """
-        Cria (ou recupera) um membership de `user` em `organization` e vincula roles.
-        `role_codenames` pode ser str ou iterável de str.
-        """
         # Normaliza para lista de slugs em lowercase
         if isinstance(role_codenames, str):
             slugs = [role_codenames.lower()]

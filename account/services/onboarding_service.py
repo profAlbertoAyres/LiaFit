@@ -336,20 +336,57 @@ class OnboardingService:
 
     @staticmethod
     @transaction.atomic
-    def resend_activation(email, request=None):
+    def resend_activation(email, request=None, organization=None):
+        """
+        Reenvia o e-mail de ativação adequado para o usuário.
+
+        Decide automaticamente o purpose do token com base no estado do usuário:
+          • Usuário SEM senha + é owner da org    → ONBOARDING
+          • Usuário SEM senha + é membro convidado → INVITATION
+          • Usuário COM senha (criando org extra)  → ORG_ACTIVATION
+
+        Comportamento silencioso (anti-enumeration): se o e-mail não existir
+        ou o usuário não tiver vínculo, retorna sem erro — apenas loga.
+
+        Args:
+            email: e-mail do destinatário
+            request: HttpRequest (para montar URL absoluta no e-mail)
+            organization: Organization específica para reativar.
+                Se None, usa a primeira membership encontrada (compatibilidade).
+                ⚠️ Recomendado informar quando o usuário tem múltiplas orgs.
+        """
         if not email:
+            logger.warning("resend_activation: e-mail vazio")
             return
 
         user = User.objects.filter(email__iexact=email.strip()).first()
         if not user:
+            logger.warning("resend_activation: usuário não encontrado para %s", email)
             return
 
-        membership = user.memberships.select_related("organization").first()
-        if not membership:
-            return
+        # Se a organização foi informada, valida que o usuário pertence a ela.
+        # Caso contrário, pega a primeira membership (comportamento legado).
+        if organization is not None:
+            membership = user.memberships.filter(
+                organization=organization
+            ).select_related("organization").first()
+            if not membership:
+                logger.warning(
+                    "resend_activation: usuário %s não pertence à org %s",
+                    user.email, organization.id,
+                )
+                return
+        else:
+            membership = user.memberships.select_related("organization").first()
+            if not membership:
+                logger.warning(
+                    "resend_activation: usuário %s sem nenhuma membership",
+                    user.email,
+                )
+                return
+            organization = membership.organization
 
-        organization = membership.organization
-
+        # Decide o purpose com base no estado do usuário
         if OnboardingService._user_needs_password_setup(user):
             purpose = (
                 OnboardingToken.Purpose.ONBOARDING
@@ -359,42 +396,22 @@ class OnboardingService:
         else:
             purpose = OnboardingToken.Purpose.ORG_ACTIVATION
 
-        ip, ua = OnboardingService._extract_request_meta(request)
         token = TokenService.create_token(
             user=user,
             organization=organization,
             purpose=purpose,
-            created_ip=ip,
-            created_ua=ua,
         )
-
-        transaction.on_commit(
-            lambda: OnboardingService._send_email(
-                purpose=purpose,
-                user=user,
-                organization=organization,
-                token=token,
-                request=request,
-            )
+        OnboardingService._send_email(
+            purpose=purpose,
+            user=user,
+            organization=organization,
+            token=token,
+            request=request,
         )
-
         logger.info(
-            "Reenvio de ativação: user=%s org=%s purpose=%s",
-            user.email, organization.company_name, purpose,
+            "resend_activation: e-mail %s reenviado para %s (org=%s)",
+            purpose, user.email, organization.id,
         )
-
-    # ──────────────── CONTEXTO DE CONVITE ────────────────
-
-    @staticmethod
-    def get_invite_context(token_str):
-        token_obj = TokenService.get_valid_token(
-            token_str,
-            expected_purpose=OnboardingToken.Purpose.INVITATION,
-        )
-        return {
-            "email": token_obj.user.email,
-            "organization": token_obj.organization,
-        }
 
     # ──────────────── HELPERS ────────────────
 

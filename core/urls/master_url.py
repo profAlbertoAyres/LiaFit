@@ -22,6 +22,5 @@ urlpatterns = [
     path('permissions/create/', PermissionCreateView.as_view(), name='permission_create'),
 
     # ── CARGOS BASE (ROLES) ──
-    path('roles/', RoleListView.as_view(), name='role_list'),
     path('roles/create/', RoleCreateView.as_view(), name='role_create'),
 ]

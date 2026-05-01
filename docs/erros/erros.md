@@ -783,8 +783,8 @@ Este diretório contém **22 bugs** identificados em auditoria arquitetural do p
 - [BUG-08](BUG-08-comentario-cabecalho-errado.md) — Comentário de cabeçalho errado
 - [BUG-09](BUG-09-login-redirect-url-hardcoded.md) — `LOGIN_REDIRECT_URL` hard-coded <- corrigido
 - [BUG-10](BUG-10-logging-vazio.md) — LOGGING vazio <- corrigido
-- [BUG-11](BUG-11-action-invite-vs-add-member.md) — Inconsistência `INVITE` vs `ADD` para Member
-- [BUG-12](BUG-12-rolelistview-conflito-namespaces.md) — `RoleListView` em dois namespaces
+- [BUG-11](BUG-11-action-invite-vs-add-member.md) — Inconsistência `INVITE` vs `ADD` para Member <- corrigido
+- [BUG-12](BUG-12-rolelistview-conflito-namespaces.md) — `RoleListView` em dois namespaces 
 - [BUG-13](BUG-13-clientprofessional-import-faltante.md) — `ClientProfessional` import faltante
 - [BUG-14](BUG-14-userpermissionform-export-incerto.md) — `UserPermissionForm` export incerto
 - [BUG-15](BUG-15-roles-sem-scope-global.md) — Falta role com scope=global

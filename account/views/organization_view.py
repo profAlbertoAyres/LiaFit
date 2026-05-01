@@ -143,25 +143,6 @@ class SetupPasswordView(View):
 class RegisterSuccess(TemplateView):
     template_name = 'accounts/auth/register_success.html'
 
-class PasswordResetRequestView(View):
-    """
-    GET  → exibe formulário "esqueci minha senha"
-    POST → dispara e-mail (silencioso, anti-enumeration) e redireciona pro login
-    """
-    template_name = 'accounts/auth/password_reset_request.html'
-
-    def get(self, request):
-        return render(request, self.template_name)
-
-    def post(self, request):
-        email = (request.POST.get('email') or '').strip()
-        OnboardingService.resend_password_reset(email, request)
-        messages.success(
-            request,
-            'Se o e-mail estiver cadastrado, enviamos um link para redefinir sua senha.',
-        )
-        return redirect('auth:login')
-
 
 @method_decorator(never_cache, name='dispatch')
 class PasswordResetConfirmView(View):
@@ -248,41 +229,47 @@ class AcceptInviteView(View):
     template_name = 'accounts/auth/accept_invite.html'
     invalid_template_name = 'accounts/auth/setup_password_invalid.html'
 
-    def get(self, request, token):
+    def _get_token_or_invalid(self, request, token):
+        """Retorna (token_obj, None) se válido, ou (None, response) se inválido."""
         try:
-            context = OnboardingService.get_invite_context(token)
+            token_obj = TokenService.get_valid_token(
+                token,
+                expected_purpose=OnboardingToken.Purpose.INVITATION,
+            )
         except TokenError as e:
-            return render(
+            response = render(
                 request,
                 self.invalid_template_name,
                 {"error_message": str(e)},
                 status=400,
             )
+            return None, response
+        return token_obj, None
+
+    def get(self, request, token):
+        token_obj, invalid_response = self._get_token_or_invalid(request, token)
+        if invalid_response:
+            return invalid_response
 
         return render(request, self.template_name, {
             "form": AcceptInviteForm(),
             "token": token,
-            **context,
+            "email": token_obj.user.email,
+            "organization": token_obj.organization,
         })
 
     def post(self, request, token):
-        try:
-            context = OnboardingService.get_invite_context(token)
-        except TokenError as e:
-            return render(
-                request,
-                self.invalid_template_name,
-                {"error_message": str(e)},
-                status=400,
-            )
+        token_obj, invalid_response = self._get_token_or_invalid(request, token)
+        if invalid_response:
+            return invalid_response
 
         form = AcceptInviteForm(request.POST)
-
         if not form.is_valid():
             return render(request, self.template_name, {
                 "form": form,
                 "token": token,
-                **context,
+                "email": token_obj.user.email,
+                "organization": token_obj.organization,
             })
 
         try:
@@ -303,7 +290,7 @@ class AcceptInviteView(View):
 
         messages.success(
             request,
-            f"Bem-vindo(a) à {context['organization'].company_name}! 🎉"
+            f"Bem-vindo(a) à {token_obj.organization.company_name}! 🎉"
         )
         return redirect("master:dashboard")
 
