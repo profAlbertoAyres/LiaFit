@@ -1,0 +1,28 @@
+{# Espera no contexto: member, available_roles #}
+<div class="lia-card lia-mb-6">
+    <div class="lia-card__header lia-flex lia-items-center lia-justify-between">
+        <div>
+            <h3 class="lia-card__title">Papéis Atribuídos</h3>
+            <p class="lia-text-sm lia-text-muted lia-mt-1">
+                Clique em um papel para atribuí-lo ou removê-lo deste membro.
+            </p>
+        </div>
+        <span class="lia-badge lia-badge--outline">
+            {{ member.roles.count }} ativo{{ member.roles.count|pluralize:"s" }}
+        </span>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="lia-card-grid">
+            {% for role in available_roles %}
+                {% include "accounts/member/_role_toggle_card.html" with membership=member role=role is_assigned=role.is_assigned last_log=None %}
+            {% empty %}
+                <div class="lia-text-muted lia-text-sm">
+                    Nenhum papel disponível para atribuir nesta organização.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="role-error-toast"></div>

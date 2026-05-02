@@ -230,7 +230,6 @@ class AcceptInviteView(View):
     invalid_template_name = 'accounts/auth/setup_password_invalid.html'
 
     def _get_token_or_invalid(self, request, token):
-        """Retorna (token_obj, None) se válido, ou (None, response) se inválido."""
         try:
             token_obj = TokenService.get_valid_token(
                 token,
@@ -254,7 +253,7 @@ class AcceptInviteView(View):
         return render(request, self.template_name, {
             "form": AcceptInviteForm(),
             "token": token,
-            "email": token_obj.user.email,
+            "invited_user": token_obj.user,
             "organization": token_obj.organization,
         })
 
@@ -268,7 +267,7 @@ class AcceptInviteView(View):
             return render(request, self.template_name, {
                 "form": form,
                 "token": token,
-                "email": token_obj.user.email,
+                "invited_user": token_obj.user,
                 "organization": token_obj.organization,
             })
 

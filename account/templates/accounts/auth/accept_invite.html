@@ -1,84 +1,105 @@
 {% extends 'base_auth.html' %}
 {% load static %}
-{% block meta %}<meta name="referrer" content="same-origin">{% endblock %}
+{% block meta %}
+    <meta name="referrer" content="same-origin">{% endblock %}
 
-{% block title %}
-    Aceitar Convite | {{ APP_NAME }}
-{% endblock %}
+{% block title %}Ativar conta — {{ APP_NAME }}{% endblock %}
 
-{% block content %}
-<div class="lia-auth-wrapper">
-    <div class="lia-card lia-auth-card">
+{% block page_content %}
+    <div class="lia-auth">
+        <div class="lia-auth__form-side">
+            <div class="lia-auth__container">
 
-        <!-- HEADER -->
-        <div class="lia-card__header lia-text-center">
-            <div class="lia-auth-card__icon">
-                <i data-lucide="user-check" class="lucide-lg"></i>
-            </div>
-            <h2 class="lia-card__title lia-mt-3">
-                Bem-vindo(a) à {{ organization.company_name }} 👋
-            </h2>
-            <p class="lia-card__subtitle">
-                Você foi convidado(a) por
-{#                <strong>{{ invited_by.get_full_name|default:invited_by.email }}</strong>#}
-                para fazer parte da equipe.
-            </p>
-        </div>
-
-        <!-- INFO DO CONVITE -->
-        <div class="lia-card__body lia-pt-0">
-            <div class="lia-alert lia-alert--info lia-alert--inline lia-mb-4">
-                <i data-lucide="mail" class="lia-alert__icon"></i>
-                <div class="lia-alert__content">
-                    <div class="lia-alert__message">
-                        <div><strong>E-mail:</strong> {{ user.email }}</div>
-                        {% if user.get_full_name %}
-                            <div><strong>Nome:</strong> {{ user.get_full_name }}</div>
-                        {% endif %}
-                        <div><strong>Função:</strong> {{ user.get_role_display }}</div>
-                    </div>
+                <!-- BRAND -->
+                <div class="lia-auth__brand">
+                    <div class="lia-auth__brand-logo">{{ APP_NAME|slice:":1"|upper }}</div>
+                    <span class="lia-auth__brand-text">{{ APP_NAME }}</span>
                 </div>
-            </div>
 
-            <p class="lia-text-muted lia-text-sm lia-mb-4">
-                Para concluir, defina uma senha de acesso segura:
-            </p>
+                <!-- HEADER -->
+                <div class="lia-auth__header">
+                    <h1 class="lia-auth__title">
+                        Olá{% if invited_user.fullname %}, {{ invited_user.get_short_name }}{% endif %}! 👋
+                    </h1>
+                    <p class="lia-auth__subtitle">
+                        Você foi adicionado(a) à equipe da
+                        <strong>{{ organization.company_name }}</strong>.
+                        Para acessar o sistema, defina uma senha segura abaixo.
+                    </p>
+                </div>
 
-            <!-- FORM -->
-            <form method="post" novalidate>
-                {% csrf_token %}
+                <!-- INFO DA CONTA -->
+                <div class="p-3 mb-1 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25">
+                    <div class="d-flex align-items-center gap-2 mb-2 fw-bold small text-primary">
+                        <i data-lucide="user" style="width: 16px; height: 16px;"></i>
+                        <span>Sua conta</span>
+                    </div>
+                    <ul class="list-unstyled mb-0 small text-secondary">
+                        {% if invited_user.fullname %}
+                            <li><strong>Nome:</strong> {{ invited_user.fullname }}</li>
+                        {% endif %}
+                        <li><strong>E-mail:</strong> {{ invited_user.email }}</li>
+                        <li><strong>Empresa:</strong> {{ organization.company_name }}</li>
+                    </ul>
+                </div>
 
+                <!-- ERROS GERAIS -->
                 {% if form.non_field_errors %}
-                    <div class="lia-alert lia-alert--danger lia-alert--inline lia-mb-3">
-                        <i data-lucide="alert-circle" class="lia-alert__icon"></i>
-                        <div class="lia-alert__content">
-                            <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+                    <div class="p-3 mb-2 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger">
+                        <div class="d-flex align-items-center gap-2 mb-2 fw-bold small">
+                            <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+                            <span>Atenção:</span>
                         </div>
+                        <ul class="mb-0 ps-4 small">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endif %}
 
-                <div class="row lia-mb-3">
-                    {% include "components/form_field.html" with field=form.password1 col="col-md-12" %}
+                <!-- FORM -->
+                <form method="post" class="lia-auth__form" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row">
+                        {% include "components/form_field.html"  with field=form.password1 %}
+                        {% include "components/form_field.html"  with field=form.password2 %}
+                    </div>
+
+                    <button type="submit"
+                            class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
+                        Definir senha e acessar
+                        <i data-lucide="arrow-right-circle"></i>
+                    </button>
+                </form>
+
+                <!-- FOOTER -->
+                <div class="mt-4 text-center">
+                    <a href="{% url 'auth:login' %}" class="text-secondary d-inline-flex align-items-center gap-2"
+                       style="text-decoration: none; font-weight: 500; transition: color 0.2s ease;">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                        Já defini minha senha — fazer login
+                    </a>
                 </div>
 
-                <div class="row lia-mb-4">
-                    {% include "components/form_field.html" with field=form.password2 col="col-md-12" %}
-                </div>
-
-                <button type="submit" class="lia-btn lia-btn--primary lia-btn--block">
-                    <i data-lucide="check-circle" class="lucide-sm"></i>
-                    <span>Aceitar convite e entrar</span>
-                </button>
-            </form>
+            </div>
         </div>
 
-        <!-- FOOTER -->
-        <div class="lia-card__footer lia-text-center">
-            <a href="{% url 'auth:login' %}" class="lia-link lia-text-sm">
-                Já tenho conta — fazer login
-            </a>
+        <!-- HERO -->
+        <div class="lia-auth__hero-side">
+            <div class="lia-auth__hero-content">
+            <span class="lia-auth__hero-icon mb-3 d-inline-block p-3 bg-white bg-opacity-10 rounded-circle text-white">
+                <i data-lucide="key-round" style="width: 32px; height: 32px;"></i>
+            </span>
+                <h2 class="lia-auth__hero-title fw-bold text-white mb-3">
+                    Sua conta está quase pronta
+                </h2>
+                <p class="lia-auth__hero-text text-white text-opacity-75 lead">
+                    Defina uma senha segura para começar a usar o {{ APP_NAME }}
+                    como membro da {{ organization.company_name }}.
+                </p>
+            </div>
         </div>
-
     </div>
-</div>
 {% endblock %}

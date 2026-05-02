@@ -1,350 +1,244 @@
-## 🎯 Visão Geral
-LiaFit é um SaaS multi-tenant nas áreas de saúde, beleza e bem-estar. Não é só academia, não é só personal, não é só nutrição — é tudo ao mesmo tempo, num sistema modular.
+# 📐 LiaFit — Estrutura do Projeto
 
-Stack: Django + arquitetura multi-tenant por organização (sem schema separado — tenant por FK).
+> Documento de referência da arquitetura e organização de arquivos.
+> Stack: Django 4.2 LTS + SQLite + Design System próprio (Lia Linda).
 
-## 🏗️ Arquitetura de Domínio
-### Entidades principais
+---
 
-| Entidade | Papel |
-| --- | --- |
-| User | Usuário global. Não pertence a org diretamente. Pode ser superuser, profissional, assistente ou cliente. |
-| Organization | Empresa que contrata o LiaFit. Tem owner (dono) e members. |
-| OrganizationMember | Vínculo de trabalho: usuário trabalha em uma org. N:N com Role. Um usuário pode ter múltiplos vínculos (várias orgs) e múltiplos papéis na mesma org. |
-| Professional | Perfil profissional atrelado a um OrganizationMember (CREF, CRP, CRN, etc.). |
-| Assistant | Perfil de assistente atrelado a um OrganizationMember. |
-| Client | Perfil de cliente. Global — não pertence a nenhuma org. |
-| OrganizationClient | Vínculo de atendimento entre Client e Organization. Suporta arquivamento (soft-delete preserva histórico). |
-| OnboardingToken | Tokens para onboarding, reset senha, magic link, convite, etc. |
+## 🧱 Stack Técnica
 
+| Categoria | Tecnologia |
+|---|---|
+| Framework | Django 4.2.30 (LTS) |
+| Banco de Dados | SQLite |
+| Frontend | Templates Django + CSS próprio (Lia Linda) + Bootstrap 5 (modais/utilitários) |
+| Ícones | Lucide Icons |
+| Fonte | Inter |
+| Filtros | django-filter 25.1 |
+| Rate Limit | django-ratelimit 4.1.0 |
+| Imagens | Pillow 11.3.0 |
+| Variáveis | python-dotenv 1.2.2 |
 
-### Regras-chave
-Cliente é global: um cliente pode ser atendido por várias orgs ao mesmo tempo e vê tudo dele agregado.
-Organização só enxerga clientes vinculados via OrganizationClient.
-Profissional pode trabalhar em várias orgs e ter vários papéis na mesma org.
+---
 
-## 🧱 Sistema de Módulos
-
-| Model | Função |
-| --- | --- |
-| Module | Feature do sistema (ex: Dashboard, Agenda, Financeiro, Psicologia). |
-| ModuleItem | Sub-item/tela de um módulo. É o que vira entrada de menu. |
-| OrganizationModule | Quais módulos a org contratou. |
-
-
-### Módulo Core vs. Contratado
-Module.is_core = True → ativo automaticamente em toda org nova
-Module.is_core = False → precisa ser contratado via OrganizationModule
-
-### 🆕 Campo scope em Module
-Define o "mundo" em que o módulo aparece:
-
-superuser → área admin global do LiaFit
-global → área do cliente (menu pessoal, vê tudo dele agregado)
-tenant → dentro de uma organização (profissionais/assistentes)
-
-### 🆕 Campo owner em ModuleItem
-FK opcional pra Module. Permite desacoplar grupo visual da regra de contratação:
-
-module = grupo visual onde o item aparece no menu (ex: "Cadastros")
-owner = módulo que controla a disponibilidade (ex: "Financeiro")
-Se owner = null → module controla ambos
-Ex: item "Fornecedor" aparece no grupo "Cadastros" (core), mas só se a org contratou "Financeiro" (owner).
-
-## 🔐 Sistema de Permissões
-
-| Model | Função |
-| --- | --- |
-| Permission | Ação (view/add/change/delete) sobre um ModuleItem. Identificada por codename. |
-| Role | Papel dentro de uma org (tenant). Tem level (hierarquia numérica). |
-| RolePermission | Permissões atribuídas a um papel. |
-| OrganizationMember.roles | N:N — papéis do membro naquela org. |
-| UserPermission | Override individual por usuário (allow/deny). |
-
-
-### Resolução de permissões
-User.get_permission_codenames(organization) retorna o set final de codenames.
-
-Superuser → todas
-Sem org → set vazio
-Com org → codenames via roles ativas do membership
-(UserPermission ainda não está integrado à resolução — TODO)
-
-## 📋 Regra de Visibilidade do Menu
-Para cada ModuleItem, ele aparece se todas as condições baterem:
-
-Scope bate com o contexto atual (superuser / global / tenant)
-Módulo e item ativos (is_active e show_in_menu em ambos)
-Disponibilidade do módulo (só scope tenant):
-controlador = item.owner OR item.module
-controlador.is_core = True OU org tem OrganizationModule ativo
-Permissão do usuário:
-Superuser → libera
-Scope tenant → checa view_<route_base> em get_permission_codenames(org)
-Scope global (cliente) → sem checagem de permissão (visibilidade implícita). Segurança dos dados fica nas queries das views, filtrando por OrganizationClient.user.
-Scope superuser → só is_superuser
-
-## 🧭 Contexto de Request (request.context)
-Middleware já existente (em ajustes) que injeta no request:
-
-ctx.organization — org atual (scope tenant)
-ctx.modules — módulos disponíveis na org
-ctx.permissions — codenames do usuário naquela org
-(usado pelo builder de menu e pelas views)
-
-## 📐 Convenções Técnicas
-TenantModel (abstrato)
-Todo model tenant-aware herda de TenantModel, que força:
-
-FK obrigatória para Organization
-Manager customizado (TenantManager) com for_tenant()
-
-### Rotas
-ModuleItem.route_base = slug.replace('-', '_')
-url_name(action) → tenant:<route_base>_<action> (ex: tenant:supplier_list)
-SPECIAL_MENU_ROUTES → exceções para rotas fora do padrão
-
-### Codenames de permissão
-Formato: <action>_<route_base> (ex: view_supplier, add_client)
-Devem ser consumidos como constantes em core/constants/permissions.py para evitar typos
-
-### Constantes (🆕 a criar)
-
-core/
-  constants/
-    __init__.py
-    permissions.py   → Perms.VIEW_SUPPLIER, ADD_CLIENT, ...
-    modules.py       → Modules.CORE, Modules.FINANCIAL, ...
-    scopes.py        → Scopes.SUPERUSER, Scopes.GLOBAL, Scopes.TENANT
-
-## 🛣️ Roadmap Atual
-✅ Models de account, módulos, permissões consolidados
-✅ Adicionar Module.scope + ModuleItem.owner (migration)
-✅ Criar core/constants/
-⏳ Refatorar builder do menu para o fluxo acima (hoje é híbrido → passa 100% pro banco)
-⏳ Integrar UserPermission na resolução de permissões
-
-## 🚨 Pontos de Atenção
-Cliente nunca vê dados de outro cliente. Filtro por OrganizationClient.user = request.user.client_profile em toda query do scope global.
-Cliente vê dados agregados de todas as orgs que o atendem — não filtrar por org no scope global.
-owner pode ser null — nesse caso o próprio module controla disponibilidade.
-Soft-delete em OrganizationClient via archived_at — usar all_objects para incluir arquivados.
-
-
-## 📝 Contexto atualizado — Sistema de Permissões LiaFit
-
-### ✅ Fase 1 concluída
-module_item.py — imports limpos, permission_codename() retorna {module_slug}.{action}_{item_slug}, UniqueConstraint em (module, slug)
-permission.py — codename sempre regenerado no save, max_length=200
-### ✅ Fase 2 concluída
-core/constants/ virou pacote com catalog.py + menu_routes.py + __init__.py
-Apagado catalogy.py (nome errado)
-MODULES agora tem scope (tenant/global/superuser) e suporta owner_slug em items
-ROLES agora tem scope (tenant/global/superuser)
-2 módulos novos: my-area (global) e saas-admin (superuser)
-2 roles novos: client (global) e platform_admin (superuser)
-Criado SystemRole (não herda de TenantModel, permissions M2M direto)
-Criado UserSystemRole (atribuição user ↔ system_role com timestamps)
-bootstrap.py refatorado com 3 funções:
-sync_system_catalog() — modules + items + perms (com owner em 2ª passada)
-sync_system_roles() — cria SystemRoles (global + superuser)
-bootstrap_organization(org) — só tenant (módulos core + roles + owner)
-_resolve_permissions() com scope_filter pra isolar permissões por escopo
-## 🗂️ Arquitetura de permissões consolidada
-
-┌─ TENANT (dentro da org) ──────────────────┐
-│  Role ── RolePermission ── Permission     │
-│  User ── OrganizationMember.roles ── Role │
-└───────────────────────────────────────────┘
-
-┌─ GLOBAL / SUPERUSER (fora da org) ────────┐
-│  SystemRole.permissions (M2M) ── Permission│
-│  User ── UserSystemRole ── SystemRole     │
-└───────────────────────────────────────────┘
-
-
-### 🎯 Padrão de codename
-{module_slug}.{action}_{item_slug} → ex: clients.view_client, saas-admin.change_billing
-
-## 📦 Estrutura final de arquivos
-
-core/
-├── constants/
-│   ├── __init__.py       ← re-exporta
-│   ├── catalog.py        ← MODULES, ROLES, DEFAULT_ACTIONS
-│   └── menu_routes.py    ← SPECIAL_MENU_ROUTES
-├── models/
-│   ├── base.py
-│   ├── tenant.py
-│   ├── module.py                ← com scope
-│   ├── module_item.py           ← com owner + codename corrigido
-│   ├── organization_module.py
-│   ├── permission.py            ← codename auto-regenerado
-│   ├── role.py                  ← tenant only
-│   ├── role_permission.py
-│   ├── user_permission.py
-│   ├── system_role.py           🆕 global/superuser
-│   └── user_system_role.py      🆕 atribuição
-└── bootstrap.py
+## 🗂️ Árvore de Diretórios
 
 
 ---
 
-# 🛡️ Projeto: SaaS Admin (`/admin-saas/`)
+## 🧩 Apps Django
 
-> Área administrativa global da plataforma LiaFit — exclusiva da equipe interna.
-> Separada do Django Admin (`/admin/`) e do painel de cada tenant.
+### `config/`
+Configuração raiz do projeto. Contém `settings.py` e `urls.py` principal que inclui as rotas dos demais apps via namespaces.
 
-## 🎯 Objetivo
+### `account/`
+App de **identidade e organizações**. Responsável por:
+- Modelo de usuário customizado (`User`)
+- Organizações (tenants) e seus membros
+- Perfis (Owner, Professional, Client)
+- Onboarding (registro, ativação por e-mail, magic links)
+- Autenticação (login, logout, reset de senha)
+- Gestão de equipe (members) e clientes
 
-Criar uma área administrativa global onde a equipe SaaS LiaFit (você + staff interno) possa:
+### `core/`
+App de **infraestrutura compartilhada**. Responsável por:
+- Modelos abstratos base (`BaseModel`, `TenantModel`)
+- Sistema de permissões (Module, ModuleItem, Permission, Role, RolePermission)
+- System Roles (papéis globais como SaaS Staff)
+- Catálogo de módulos do SaaS (OrganizationModule)
+- Bootstrap services (provisionamento inicial)
+- Menu/sidebar dinâmica baseada em permissões
+- Forms, filters e views base para reuso
+- Dashboard do tenant
+- Páginas de erro
 
-- Visualizar todas as organizações da plataforma
-- Acompanhar métricas globais (MRR, MAU, etc.)
-- Gerenciar usuários globais
-- Entrar em **modo suporte** dentro de uma org cliente (com auditoria)
+### `saas_admin/`
+App do **painel administrativo SaaS** (super admin). Acessado via prefixo `/painel/` e protegido pelo `SaaSAdminRequiredMixin`. Atualmente em fase inicial.
 
-Essa área é o ponto de partida para o fluxo de **suporte técnico controlado** — onde um operador SaaS pode entrar dentro de um tenant pra dar suporte, com tudo logado.
+### `website/`
+App do **site público** (landing page). Rotas sem autenticação para apresentação do produto.
 
-## 🧩 Decisões arquiteturais cravadas
+---
 
-| # | Decisão | Justificativa |
+## 🛣️ Roteamento (Namespaces)
+
+| Namespace | Origem | Prefixo URL | Responsabilidade |
+|---|---|---|---|
+| `website` | `website/urls.py` | `/` | Site público |
+| `auth` | `account/urls/auth_url.py` | `/auth/` | Login, registro, reset de senha |
+| `tenant` | `core/urls/tenant_url.py` | `/app/` | Área autenticada do tenant |
+| `master` | `core/urls/master_url.py` | `/master/` | Painel master/admin |
+| `saas_admin` | `saas_admin/urls.py` | `/painel/` | Painel SaaS Admin |
+
+---
+
+## 🗃️ Modelagem de Dados
+
+### Identidade
+- **`User`** — usuário do sistema (e-mail como username)
+- **`Organization`** — tenant / empresa (com `slug` para subdomínio)
+- **`OrganizationMember`** — relação User ↔ Organization (M2M com role)
+
+### Perfis
+- **`OwnerProfile`** — dono da organização
+- **`ProfessionalProfile`** — profissional/colaborador
+- **`ClientProfile`** — cliente final
+- **`Specialty`** — especialidades dos profissionais
+- **`Client`** — modelo de cliente vinculado à organização
+
+### Permissões
+- **`Module`** — módulo do sistema (ex: Agenda, Clientes, Financeiro)
+- **`ModuleItem`** — item dentro de um módulo (ex: Agenda → Calendário)
+- **`Permission`** — permissão granular (item + action)
+- **`Role`** — papel dentro de uma organização
+- **`RolePermission`** — permissões atribuídas a um papel
+- **`UserPermission`** — permissão direta a usuário (override)
+- **`SystemRole`** — papel global do sistema (ex: SaaS Staff)
+- **`UserSystemRole`** — atribuição de role global a usuário
+
+### Catálogo
+- **`OrganizationModule`** — quais módulos cada organização tem ativos
+
+### Tokens
+- **`OnboardingToken`** — tokens assinados para fluxos de onboarding (ativação, convite, reset de senha)
+
+---
+
+## 🔐 Sistema de Permissões
+
+Hierarquia: **Module → ModuleItem → Permission**
+
+- Permissões são atribuídas a **Roles** (por organização) via `RolePermission`
+- Usuários recebem permissões via **OrganizationMember.role**
+- Permissões diretas via `UserPermission` (override individual)
+- Permissões globais (cross-tenant) via `SystemRole` + `UserSystemRole`
+
+Verificação centralizada em `core/services/permission_service.py`.
+
+---
+
+## 🎨 Design System "Lia Linda"
+
+Prefixo de classes: **`lia-*`**
+
+### Estrutura CSS
+
+
+### Tokens principais (`variables.css`)
+
+| Categoria | Variáveis |
+|---|---|
+| Cores marca | `--color-primary`, `--color-secondary` (+ hover, light, border) |
+| Cores feedback | `--color-success`, `--color-danger`, `--color-warning`, `--color-info` |
+| Cores neutras | `--color-bg`, `--color-surface`, `--color-border`, `--color-text-*` |
+| Tipografia | `--font-family` (Inter), `--font-size-xs` a `--font-size-3xl`, `--font-weight-*` |
+| Espaçamento | `--space-1` (4px) a `--space-12` (48px) |
+| Bordas | `--radius-sm/md/lg/xl/full` |
+| Sombras | `--shadow-sm/md/lg` |
+| Transições | `--transition-fast/base/slow` |
+| Layout | `--sidebar-width: 260px`, `--sidebar-collapsed-width: 72px`, `--header-height: 64px`, `--content-max-width: 1200px` |
+
+### Tema escuro
+Suporte preparado via `[data-theme="dark"]` no `<html>`.
+
+---
+
+## 🧬 Templates Base
+
+| Template | Uso |
+|---|---|
+| `base.html` | Template raiz (HTML, head, scripts comuns) |
+| `base_app.html` | Layout da área autenticada (sidebar + header + conteúdo) |
+| `base_auth.html` | Layout das telas de autenticação (split form + hero) |
+
+### Blocos disponíveis
+- `{% block title %}` — título da página
+- `{% block meta %}` — meta tags extras
+- `{% block page_css %}` — CSS específico da página
+- `{% block page_content %}` — conteúdo principal
+- `{% block page_js %}` — JS específico da página
+- `{% block header_title %}` — título no header (apenas em `base_app.html`)
+
+### Componentes reutilizáveis (`templates/components/`)
+- `form_field.html` — campo de input com label, ícone e erros
+- `form_select.html` — select estilizado
+- `form_switch.html` — toggle switch
+- `form_textarea.html` — textarea
+- `form_date.html` — campo de data
+- `form_file.html` — upload de arquivo
+- `modal_delete_confirm.html` — modal de confirmação de exclusão
+
+### Partials (`templates/partials/`)
+- `_sidebar.html` — menu lateral dinâmico (renderiza menu baseado em permissões)
+- `_alerts.html` — renderização de Django Messages como toasts
+
+---
+
+## ⚙️ Middlewares Customizados
+
+Localizados em `core/middleware.py`. Responsáveis por:
+- Resolução do tenant atual (via subdomínio/slug)
+- Injeção do contexto de organização na request
+
+---
+
+## 🌐 Context Processors
+
+| Processor | Origem | Função |
 |---|---|---|
-| 1 | App Django: **`saas_admin`** | Nome neutro, não conflita com `django.contrib.admin` |
-| 2 | URL prefix: **`/admin-saas/`** | Distingue de `/admin/` (Django) e do tenant |
-| 3 | Namespace URL: **`saas_admin`** | Ex: `{% url 'saas_admin:dashboard' %}` |
-| 4 | Acesso protegido por **`SaaSAdminRequiredMixin`** | Verifica `user.is_saas_staff == True` |
-| 5 | **Bloqueio total** de `is_saas_staff` no fluxo tenant normal | Staff SaaS NÃO pode usar tenants comuns — só via "modo suporte" |
-| 6 | **Modo Suporte** (Opção A.1) | Sessão temporária pra entrar como staff numa org cliente |
-| 7 | Sessão de suporte = **4h** ou até logout | Expira automaticamente |
-| 8 | Login **centralizado** em `auth:login` | Sem login separado para o saas_admin |
-| 9 | Identidade visual: **chumbo escuro** (`--color-secondary`) | Diferenciar do tenant (índigo) |
-| 10 | Cor variabilizada em `--saas-admin-primary` | Trocar identidade em 1 linha |
-| 11 | Modo suporte futuro: **vermelho** (`--color-danger`) | 3 estados visuais distintos |
-| 12 | Item "Usuários globais" entra como **Fase 6** | Por enquanto, badge "em breve" na sidebar |
+| `core.context_processors` | `core/context_processors.py` | Variáveis globais (`APP_NAME`, `APP_DOMAIN`, organização atual) |
+| `core.menu.context_processors` | `core/menu/context_processors.py` | Menu da sidebar dinâmico |
 
-> 📝 Observação: a estrutura de permissões para esse mundo já existe no projeto via
-> `SystemRole` + `UserSystemRole` com `scope = "superuser"` (catálogo `saas-admin`).
-> O flag `is_saas_staff` é o gatilho de acesso à área; as permissões finas dentro
-> dela podem ser refinadas via `SystemRole` futuramente.
+---
 
-## 🗺️ Roadmap por fases
+## 🔧 Management Commands
 
-```text
-🔜 Fase 0 → Esqueleto navegável /admin-saas/        ← EM ANDAMENTO
-   Fase 1 → Middleware: bloquear is_saas_staff no fluxo tenant
-   Fase 2 → Modelo SupportSession (entrada/saída/log)
-   Fase 3 → UX: botão "entrar como suporte" + sair
-   Fase 4 → Polimentos (auditoria, expiração, alertas)
-   Fase 5 → Gestão completa de Organizações (CRUD)
-   Fase 6 → Gestão de Usuários globais
-   Fase 7 → Métricas / Billing / Planos
-```
+| Comando | Função |
+|---|---|
+| `python manage.py bootstrap_core` | Provisiona catálogo, módulos, permissões e roles do sistema |
+| `python manage.py check_catalog` | Valida integridade do catálogo de módulos/permissões |
 
-## 📦 Fase 0 — Escopo
+---
 
-### O que será entregue
+## 📦 Padrão de Camadas
 
-Esqueleto navegável e protegido, **sem lógica de negócio ainda**:
 
-- Dashboard placeholder com 3 cards zerados
-- Listagem de organizações (read-only, paginada)
-- Detalhe de organização (read-only)
-- Sidebar chumbo escura com identidade própria
-- Header com badge "🛡️ SAAS ADMIN"
-- Bloqueio de acesso pra quem não é `is_saas_staff` (403)
+- **Views** apenas orquestram (recebem request, chamam services, devolvem response)
+- **Services** concentram regras de negócio e operações de domínio
+- **Forms** fazem validação de entrada
+- **Filters** (django-filter) para listagens com query params
+- **Models** apenas dados e métodos triviais
+- **Bootstrap services** isolam provisionamento inicial
 
-### Sidebar — itens iniciais
+---
 
-```text
-📊 Dashboard
-🏢 Organizações
-👥 Usuários            🔒 em breve
-─────────────
-👤 Meu perfil          🔒 em breve
-🚪 Sair
-```
+## 🎟️ Fluxos de Onboarding
 
-### Lista de arquivos da Fase 0 (15 itens)
+Gerenciados por `account/services/onboarding_service.py` + `token_service.py`.
 
-**Backend Python:**
-
-1. `saas_admin/__init__.py`
-2. `saas_admin/apps.py`
-3. `saas_admin/urls.py`
-4. `saas_admin/views/__init__.py`
-5. `saas_admin/views/base.py` — `SaaSAdminRequiredMixin`
-6. `saas_admin/views/dashboard.py`
-7. `saas_admin/views/organization.py`
-
-**Templates HTML:**
-
-8. `templates/saas_admin/base_saas_admin.html`
-9. `templates/partials/_sidebar_saas_admin.html`
-10. `templates/saas_admin/dashboard.html`
-11. `templates/saas_admin/orgs/list.html`
-12. `templates/saas_admin/orgs/detail.html`
-
-**CSS:**
-
-13. `static/css/pages/saas_admin.css`
-
-**Integração:**
-
-14. Adicionar `'saas_admin'` em `INSTALLED_APPS`
-15. Adicionar `path('admin-saas/', include('saas_admin.urls'))` no `urls.py` raiz
-
-### ⚠️ Pontos a confirmar/ajustar no código
-
-- Caminho do import do modelo `Organization` (provavelmente `core.models`?)
-- Nome do campo de data de criação (`created_at`?)
-- Namespace do logout (`auth:logout`?)
-- Verificar se `User` tem mesmo o campo `is_saas_staff` ou se vamos usar um critério via `UserSystemRole` com scope `superuser`
-
-## 🎨 Identidade visual do SaaS Admin
-
-Tokens próprios definidos no escopo `.saas-admin` em `static/css/pages/saas_admin.css`:
-
-```css
-.saas-admin {
-    --saas-admin-primary:         var(--color-secondary);   /* chumbo */
-    --saas-admin-primary-hover:   var(--color-secondary-hover);
-    --saas-admin-text-on-primary: var(--color-text-inverse);
-
-    --saas-admin-accent:          var(--color-primary);     /* índigo destaque */
-    --saas-admin-accent-light:    var(--color-primary-light);
-
-    --saas-admin-sidebar-bg:      var(--saas-admin-primary);
-    --saas-admin-sidebar-text:    var(--saas-admin-text-on-primary);
-}
-```
-
-Trocar a identidade visual = mudar `--saas-admin-primary` em **1 linha**.
-
-### Estados visuais previstos
-
-| Estado | Cor | Quando |
+| Fluxo | Origem | Ação |
 |---|---|---|
-| 🟦 Tenant normal | Índigo (`--color-primary`) | Operação comum dos clientes |
-| ⬛ SaaS Admin | Chumbo (`--color-secondary`) | Você dentro do `/admin-saas/` |
-| 🟥 Modo Suporte | Vermelho (`--color-danger`) | Você dentro de uma org cliente em modo de suporte |
+| Cadastro de empresa | `register.html` | Cria User + Organization + envia link de ativação |
+| Ativação de conta | `setup_password.html` | Define senha e ativa o usuário |
+| Convite de membro | `accept_invite.html` | Aceita convite e define senha |
+| Reset de senha | `password_reset_request.html` → `password_reset_done.html` | Envia link de redefinição |
+| E-mail já existe | `_modal_email_exists_confirm.html` | Vincula nova empresa a conta existente |
+| Link inválido | `setup_password_invalid.html` | Estado de erro para tokens expirados |
 
-## 🎓 Modo de trabalho com a IA
+---
 
-- 👨‍🏫 **Contexto pessoal**: Alberto é professor e usa o projeto pra aprender/ensinar
-- 🐢 **Ritmo**: um arquivo por vez, sem pressa
-- 📚 **Didática**: explicação curta do "porquê" antes do código
-- 📄 **Entrega**: arquivo inteiro no final, com indicação clara de onde colocar
-- ❓ **Pausa pra dúvida**: avançar só após confirmação do Alberto
-- 🌐 **Idioma**: Português (BR)
-- 🤝 **Tom**: profissional + leve, com emojis pontuais
+## 📋 Convenções
 
-## 📍 Estado atual do SaaS Admin
+- **Idioma**: Português (Brasil) na UI, inglês no código
+- **Nomes de arquivos**: `snake_case` em Python, `kebab-case` em CSS, `_underscore` para partials Django
+- **Classes CSS**: BEM com prefixo `lia-` (`.lia-card__header--active`)
+- **Imports**: agrupados (stdlib → Django → terceiros → projeto)
+- **Strings de UI**: envolvidas em `{% translate %}` ou `{% blocktranslate %}` (i18n)
+- **IDs no HTML**: `kebab-case`
+- **Form fields no Django**: `snake_case`
 
-- ✅ Discovery completo (backend + frontend + design system)
-- ✅ Todas as decisões arquiteturais cravadas
-- ✅ Plano da Fase 0 aprovado
-- 🔜 **Próximo passo**: começar a Fase 0 pelo arquivo nº 1 (`saas_admin/__init__.py`)
+Nunca implementar código direto. 
 
+Ser cirúrgico, nada de codificar ao acaso.
 
-
+Se não entender algo pergunte ou pede arquvivos não chute nada.

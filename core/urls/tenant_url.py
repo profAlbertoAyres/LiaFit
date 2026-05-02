@@ -2,10 +2,19 @@
 from django.urls import path
 
 from account.views.client_view import ClientListView
-from account.views.member_view import MemberListView, MemberCreateView, MemberDetailView
 from account.views.organization_view import OrganizationDetailView
 from core.views.dashboard_view import DashboardView
 from account.views.profile_view import ProfileView
+from account.views.member_view import (
+    MemberListView,
+    MemberCreateView,
+    MemberDetailView,
+    MemberUpdateView,
+    MemberRoleAssignView,
+    MemberRoleRevokeView,
+    MemberRoleUndoView,
+)
+
 from core.views.role_view import (
     RoleCreateView,
     RoleDetailView,
@@ -23,6 +32,12 @@ urlpatterns = [
     path('members/', MemberListView.as_view(), name='member_list'),
     path('members/create/', MemberCreateView.as_view(), name='member_create'),
     path('members/<int:pk>/', MemberDetailView.as_view(), name='member_detail'),
+    path('members/<int:pk>/update/', MemberUpdateView.as_view(), name='member_update'),
+
+    # 🆕 Role assignment HTMX
+    path('members/<int:pk>/roles/<int:role_id>/assign/', MemberRoleAssignView.as_view(), name='member_role_assign'),
+    path('members/<int:pk>/roles/<int:role_id>/revoke/', MemberRoleRevokeView.as_view(), name='member_role_revoke'),
+    path('members/roles/log/<int:log_id>/undo/', MemberRoleUndoView.as_view(), name='member_role_undo'),
 
     #
     # # ── ORGANIZAÇÃO (detalhe único - a própria org do contexto) ──

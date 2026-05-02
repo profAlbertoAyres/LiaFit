@@ -1,0 +1,27 @@
+<div id="lia-undo-toast"
+     class="lia-undo-toast"
+     role="status"
+     aria-live="polite"
+     aria-atomic="true"
+     hidden>
+    <div class="lia-undo-toast__content">
+        <i data-lucide="check-circle" class="lucide lia-undo-toast__icon"></i>
+        <span class="lia-undo-toast__message" id="lia-undo-toast-message">
+            {# Preenchido via JS #}
+        </span>
+    </div>
+    <button type="button"
+            class="lia-undo-toast__action"
+            id="lia-undo-toast-button"
+            hx-post=""
+            hx-swap="none">
+        <i data-lucide="undo-2" class="lucide"></i>
+        Desfazer
+    </button>
+    <button type="button"
+            class="lia-undo-toast__close"
+            id="lia-undo-toast-close"
+            aria-label="Fechar">
+        <i data-lucide="x" class="lucide"></i>
+    </button>
+</div>

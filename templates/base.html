@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/sidebar.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toggle-cards.css' %}">
 
     <!-- CSS Específico da página (se houver) -->
     {% block extra_css %}{% endblock %}
@@ -38,7 +39,9 @@
     {% include 'partials/_alerts.html' %}
 
     <!-- Conteúdo Principal -->
-    {% block content %}{% endblock %}
+    {% block content %}
+
+    {% endblock %}
 
     <!-- JS Vendor -->
     <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>

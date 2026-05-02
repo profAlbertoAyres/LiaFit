@@ -1,0 +1,178 @@
+/* =============================================================================
+   UNDO TOAST — Notificação de ação reversível
+   Usado após ações como revogar papel, remover membro, etc.
+   ============================================================================= */
+
+.lia-undo-toast {
+    position: fixed;
+    bottom: var(--space-6);
+    right: var(--space-6);
+    z-index: 1080; /* acima de modais Bootstrap (1050) */
+
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+
+    min-width: 320px;
+    max-width: 480px;
+    padding: var(--space-3) var(--space-4);
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-success);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+
+    /* Animação de entrada (controlada via classe --visible) */
+    transform: translateY(calc(100% + var(--space-6)));
+    opacity: 0;
+    transition:
+            transform var(--transition-base),
+            opacity var(--transition-base);
+}
+
+.lia-undo-toast[hidden] {
+    display: none !important;
+}
+
+.lia-undo-toast--visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* ----- Variantes por tipo de ação ----- */
+.lia-undo-toast--danger {
+    border-left-color: var(--color-danger);
+}
+
+.lia-undo-toast--warning {
+    border-left-color: var(--color-warning);
+}
+
+.lia-undo-toast--info {
+    border-left-color: var(--color-info);
+}
+
+/* ----- Conteúdo (ícone + mensagem) ----- */
+.lia-undo-toast__content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1;
+    min-width: 0; /* permite truncar texto longo */
+
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-primary);
+}
+
+.lia-undo-toast__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--color-success);
+}
+
+.lia-undo-toast--danger .lia-undo-toast__icon {
+    color: var(--color-danger);
+}
+
+.lia-undo-toast--warning .lia-undo-toast__icon {
+    color: var(--color-warning);
+}
+
+.lia-undo-toast--info .lia-undo-toast__icon {
+    color: var(--color-info);
+}
+
+.lia-undo-toast__message {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ----- Botão "Desfazer" ----- */
+.lia-undo-toast__action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-primary);
+    cursor: pointer;
+    white-space: nowrap;
+
+    transition:
+            background-color var(--transition-fast),
+            color var(--transition-fast);
+}
+
+.lia-undo-toast__action:hover {
+    background: var(--color-primary-light);
+}
+
+.lia-undo-toast__action:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.lia-undo-toast__action .lucide {
+    width: 14px;
+    height: 14px;
+}
+
+/* ----- Botão fechar (X) ----- */
+.lia-undo-toast__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+    padding: 0;
+
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    transition:
+            background-color var(--transition-fast),
+            color var(--transition-fast);
+}
+
+.lia-undo-toast__close:hover {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+}
+
+.lia-undo-toast__close:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.lia-undo-toast__close .lucide {
+    width: 16px;
+    height: 16px;
+}
+
+/* ----- Responsivo: mobile full-width ----- */
+@media (max-width: 640px) {
+    .lia-undo-toast {
+        left: var(--space-4);
+        right: var(--space-4);
+        bottom: var(--space-4);
+        min-width: 0;
+        max-width: none;
+    }
+}

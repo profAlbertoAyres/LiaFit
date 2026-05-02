@@ -69,10 +69,18 @@
 
         </div>
     </div>
+    {% include 'partials/_undo_toast.html' %}
 {% endblock %}
 
 {% block extra_js %}
     <!-- JS específico do sistema logado -->
+    <script src="{% static 'js/vendor/htmx/htmx.min.js' %}"></script>
+    <!-- HTMX: CSRF automático em todos os requests -->
+    <script>
+        document.body.addEventListener('htmx:configRequest', (e) => {
+            e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        });
+    </script>
     <script src="{% static 'js/vendor/flatpickr/flatpickr.min.js' %}"></script>
     <script src="{% static 'js/vendor/flatpickr/flatpickr-pt.js' %}"></script>
 

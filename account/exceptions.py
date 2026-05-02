@@ -43,3 +43,41 @@ class UserError(AccountError):
 
 class UserAlreadyActiveError(UserError):
     default_message = "Usuário já está ativo."
+
+
+
+# ──────────────── Role Assignment ────────────────
+class RoleAssignmentError(AccountError):
+    default_message = "Erro na atribuição de papel."
+
+
+class RoleAssignmentHierarchyError(RoleAssignmentError):
+    default_message = "Você não pode mexer em papéis com nível igual ou superior ao seu."
+
+
+class RoleAssignmentLastRoleError(RoleAssignmentError):
+    default_message = "Não é possível remover o último papel de um membro."
+
+
+class RoleAssignmentSelfError(RoleAssignmentError):
+    default_message = "Você não pode alterar seus próprios papéis."
+
+
+class RoleAssignmentOwnerError(RoleAssignmentError):
+    default_message = "Os papéis do proprietário da organização são protegidos."
+
+
+class RoleAssignmentDuplicateError(RoleAssignmentError):
+    default_message = "Este membro já possui esse papel."
+
+
+class RoleAssignmentNotFoundError(RoleAssignmentError):
+    default_message = "Atribuição de papel não encontrada."
+
+
+class UndoWindowExpiredError(RoleAssignmentError):
+    default_message = "A janela de desfazer expirou."
+
+
+class UndoAlreadyDoneError(RoleAssignmentError):
+    default_message = "Esta ação já foi desfeita."

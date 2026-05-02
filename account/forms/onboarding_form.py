@@ -126,7 +126,7 @@ class PasswordResetConfirmForm(SetupPasswordForm):
             request=request,
         )
 
-class PasswordResetRequestForm(forms.Form):
+class PasswordResetRequestForm(BaseForm):
     email = forms.EmailField(
         label="E-mail",
         max_length=254,
@@ -134,6 +134,7 @@ class PasswordResetRequestForm(forms.Form):
             "autocomplete": "email",
             "placeholder": "seu@email.com",
             "class": "form-control",
+
         }),
         error_messages={
             "required": "Informe seu e-mail.",

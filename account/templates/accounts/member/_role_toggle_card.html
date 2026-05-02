@@ -1,0 +1,127 @@
+{# Espera: membership, role, is_assigned, last_log #}
+<div class="lia-toggle-card {% if is_assigned %}lia-toggle-card--active{% endif %}"
+     id="role-card-{{ membership.pk }}-{{ role.pk }}">
+
+    <div class="lia-flex lia-items-center lia-justify-between">
+        <div class="lia-flex lia-items-center lia-gap-2">
+            <i data-lucide="{% if is_assigned %}shield-check{% else %}shield{% endif %}"
+               class="lucide-sm {% if is_assigned %}lia-text-success{% else %}lia-text-muted{% endif %}"></i>
+            <strong>{{ role.name }}</strong>
+        </div>
+        <span class="lia-badge lia-badge--outline lia-text-xs">Nível {{ role.level }}</span>
+    </div>
+
+    {% if role.description %}
+        <p class="lia-text-xs lia-text-muted lia-mt-2">{{ role.description }}</p>
+    {% endif %}
+
+    <div class="lia-mt-3">
+        {% if last_log and not last_log.is_undone %}
+            {# === DESFAZER (mantido igual) === #}
+            <button type="button"
+                    class="lia-btn lia-btn--sm lia-btn--warning"
+                    hx-post="{% url 'tenant:member_role_undo' org_slug=request.context.organization.slug log_id=last_log.pk %}"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    hx-target="#role-card-{{ membership.pk }}-{{ role.pk }}"
+                    hx-swap="outerHTML">
+                <i data-lucide="undo-2" class="lucide-xs"></i>
+                <span>Desfazer</span>
+                <span class="lia-undo-counter" data-log-created="{{ last_log.created_at|date:'U' }}">(10s)</span>
+            </button>
+            <span class="lia-text-xs lia-text-muted lia-ml-2">{{ last_log.get_action_display }} agora</span>
+
+        {% else %}
+            {% if is_assigned %}
+                {# === REVOGAR — agora abre modal bonito === #}
+                <button type="button"
+                        class="lia-btn lia-btn--sm lia-btn--outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmRevoke-{{ membership.pk }}-{{ role.pk }}">
+                    <i data-lucide="x" class="lucide-xs"></i>
+                    <span>Revogar</span>
+                </button>
+
+                {# === MODAL DE CONFIRMAÇÃO (dentro do card pra sobreviver ao swap) === #}
+                <div class="modal fade"
+                     id="confirmRevoke-{{ membership.pk }}-{{ role.pk }}"
+                     tabindex="-1"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content"
+                             style="background-color: transparent; border: none; box-shadow: none;">
+
+                            <div class="lia-card" style="box-shadow: var(--shadow-lg);">
+
+                                <!-- HEADER -->
+                                <div class="lia-flex lia-items-center lia-justify-between lia-p-6"
+                                     style="padding-bottom: var(--space-4);">
+                                    <div class="lia-flex lia-items-center lia-gap-2"
+                                         style="color: var(--color-danger);">
+                                        <i data-lucide="alert-triangle" class="lucide"></i>
+                                        <h5 class="lia-font-bold"
+                                            style="font-size: var(--font-size-lg); margin: 0;">
+                                            Revogar papel
+                                        </h5>
+                                    </div>
+                                    <button type="button"
+                                            class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Fechar"
+                                            style="color: var(--color-text-muted);">
+                                        <i data-lucide="x" class="lucide"></i>
+                                    </button>
+                                </div>
+
+                                <!-- BODY -->
+                                <div class="lia-p-4" style="padding-bottom: var(--space-6);">
+                                    <p class="lia-text-secondary" style="margin-bottom: 0;">
+                                        Tem certeza que deseja revogar o papel
+                                        <strong>{{ role.name }}</strong> deste membro?
+                                    </p>
+                                    <p class="lia-text-xs lia-text-muted lia-mt-2" style="margin-bottom: 0;">
+                                        <i data-lucide="info" class="lucide-xs"></i>
+                                        Você poderá <strong>desfazer</strong> esta ação por 10 segundos.
+                                    </p>
+                                </div>
+
+                                <!-- FOOTER -->
+                                <div class="lia-card__footer">
+                                    <button type="button"
+                                            class="lia-btn lia-btn--ghost"
+                                            data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+                                    <button type="button"
+                                            class="lia-btn lia-btn--danger"
+                                            data-bs-dismiss="modal"
+                                            hx-post="{% url 'tenant:member_role_revoke' org_slug=request.context.organization.slug pk=membership.pk role_id=role.pk %}"
+                                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                            hx-target="#role-card-{{ membership.pk }}-{{ role.pk }}"
+                                            hx-swap="outerHTML">
+                                        <i data-lucide="x" class="lucide-sm"></i>
+                                        <span>Revogar</span>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                {# === ATRIBUIR (mantido igual — sem confirmação) === #}
+                <button type="button"
+                        class="lia-btn lia-btn--sm lia-btn--outline-success"
+                        hx-post="{% url 'tenant:member_role_assign' org_slug=request.context.organization.slug pk=membership.pk role_id=role.pk %}"
+                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                        hx-target="#role-card-{{ membership.pk }}-{{ role.pk }}"
+                        hx-swap="outerHTML">
+                    <i data-lucide="plus" class="lucide-xs"></i>
+                    <span>Atribuir</span>
+                </button>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<script>if (window.lucide) { window.lucide.createIcons(); }</script>
