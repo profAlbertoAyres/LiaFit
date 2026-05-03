@@ -10,9 +10,7 @@ from account.models.member import RemunerationType
 
 
 class OrganizationMemberFilter(BaseFilter):
-    # ───────────────────────────────────────────────────────────
-    # FILTROS DIRETOS
-    # ───────────────────────────────────────────────────────────
+
     roles = django_filters.ModelMultipleChoiceFilter(
         queryset=Role.objects.none(),
         label=_("Cargos"),
@@ -37,8 +35,8 @@ class OrganizationMemberFilter(BaseFilter):
     joined_at = django_filters.DateFromToRangeFilter(
         label=_("Período de Admissão"),
         widget=InlineRangeWidget(attrs={
-            'data-datepicker': '',       # Aciona seu Flatpickr nos dois inputs gerados
-            'type': 'text',              # Impede conflito com calendário nativo
+            'data-datepicker': '',
+            'type': 'text',
             'placeholder': 'dd/mm/aaaa',
         }),
     )
@@ -74,9 +72,29 @@ class OrganizationMemberFilter(BaseFilter):
         method='filter_specialty',
     )
 
-    # ───────────────────────────────────────────────────────────
-    # META
-    # ───────────────────────────────────────────────────────────
+    order_by = django_filters.OrderingFilter(
+        label=_("Ordenar por"),
+        fields=(
+            ('user__fullname', 'name'),
+            ('user__email', 'email'),
+            ('joined_at', 'joined'),
+            ('left_at', 'left'),
+            ('created_at', 'created'),
+        ),
+        choices=(
+            ('name', _('Nome (A-Z)')),
+            ('-name', _('Nome (Z-A)')),
+            ('email', _('E-mail (A-Z)')),
+            ('-email', _('E-mail (Z-A)')),
+            ('joined', _('Admissão (mais antiga)')),
+            ('-joined', _('Admissão (mais recente)')),
+            ('left', _('Desligamento (mais antigo)')),
+            ('-left', _('Desligamento (mais recente)')),
+            ('created', _('Cadastro mais antigo')),
+            ('-created', _('Cadastro mais recente')),
+        ),
+    )
+
     class Meta:
         model = OrganizationMember
         fields = [

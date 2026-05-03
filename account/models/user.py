@@ -87,6 +87,7 @@ class OnboardingToken(BaseModel):
         MEMBER_ACTIVATION = 'member_activation', 'Ativação de Membro'
         MAGIC_LINK = 'magic_link', 'Login via Magic Link'
         ORG_ACTIVATION = 'org_activation', 'Ativação de Empresa Adicional'
+        CLIENT_ACTIVATION = 'client_activation', 'Ativação de Cliente'
 
 
     user = models.ForeignKey('account.User', on_delete=models.CASCADE, related_name='onboarding_tokens',

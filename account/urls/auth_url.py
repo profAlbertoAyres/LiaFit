@@ -3,6 +3,7 @@ from django.urls import path
 
 from account.forms.auth_form import LoginForm
 from account.views.auth_view import CustomLoginView
+from account.views.client_view import AcceptClientInviteView
 from account.views.organization_view import (
     AcceptInviteView,
     ActivateOrganizationView,
@@ -30,6 +31,8 @@ urlpatterns = [
 
     # Ativação de empresa adicional (usuário já tem senha)
     path('activate-organization/<str:token>/', ActivateOrganizationView.as_view(), name='activate_organization'),
+    path('accept-client-invite/<uuid:token>/', AcceptClientInviteView.as_view(), name='accept_client_invite'),
+
 
     # Convite de membro
     path('accept-invite/<str:token>/', AcceptInviteView.as_view(), name='accept_invite'),

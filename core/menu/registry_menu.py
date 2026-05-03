@@ -65,6 +65,7 @@ class MenuRegistry:
                     permission=item.permission_codename(),
                     module=module.slug,
                     is_core=module.is_core,
+                    is_universal=module.is_universal,
                     scope=module.scope,
                 )
                 for item in module.items.all()
@@ -79,6 +80,7 @@ class MenuRegistry:
                     order=module.order,
                     scope=module.scope,
                     is_core=module.is_core,
+                    is_universal=module.is_universal,
                     module=module.slug,
                     items=menu_items,
                 )

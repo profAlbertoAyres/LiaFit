@@ -462,6 +462,12 @@ class OnboardingService:
                 "title": "🔑  RESET DE SENHA (DEV)",
                 "label": "Link de redefinição",
             },
+            OnboardingToken.Purpose.CLIENT_ACTIVATION: {
+                "path": "auth/accept-client-invite",
+                "title": "🤝  ATIVAÇÃO DE CLIENTE (DEV)",
+                "label": "Link do convite",
+            },
+
         }
 
         config = email_config.get(purpose)
@@ -495,3 +501,67 @@ class OnboardingService:
         request.session.cycle_key()
         login(request, user)
 
+    # ──────────────── CONVITE DE CLIENTE ────────────────
+
+    @staticmethod
+    @transaction.atomic
+    def send_client_activation(org_client, request=None):
+        user = org_client.user.user  # OrganizationClient → Client → User
+        organization = org_client.organization
+
+        ip, ua = OnboardingService._extract_request_meta(request)
+        token = TokenService.create_token(
+            user=user,
+            organization=organization,
+            purpose=OnboardingToken.Purpose.CLIENT_ACTIVATION,
+            created_ip=ip,
+            created_ua=ua,
+        )
+
+        transaction.on_commit(
+            lambda: OnboardingService._send_email(
+                purpose=OnboardingToken.Purpose.CLIENT_ACTIVATION,
+                user=user,
+                organization=organization,
+                token=token,
+                request=request,
+            )
+        )
+
+        org_client.welcome_email_sent = True
+        org_client.save(update_fields=['welcome_email_sent'])
+
+        logger.info(
+            "Ativação de cliente enviada: user=%s org=%s",
+            user.email, organization.company_name,
+        )
+        return token
+
+    @staticmethod
+    @transaction.atomic
+    def activate_client(token_str, password=None, request=None):
+        if not password:
+            raise ValidationError("Senha não informada.")
+
+        token_obj = TokenService.get_valid_token(
+            token_str,
+            expected_purpose=OnboardingToken.Purpose.CLIENT_ACTIVATION,
+        )
+        user = token_obj.user
+
+        user.set_password(password)
+        user.email_verified_at = timezone.now()
+        user.is_active = True
+        user.save(update_fields=["password", "email_verified_at", "is_active"])
+
+        ip, ua = OnboardingService._extract_request_meta(request)
+        TokenService.invalidate_token(token_obj, ip=ip, user_agent=ua)
+
+        if request:
+            OnboardingService._secure_login(request, user)
+
+        logger.info(
+            "Cliente ativado: user=%s org=%s",
+            user.email, token_obj.organization.company_name,
+        )
+        return user

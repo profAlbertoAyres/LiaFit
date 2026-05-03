@@ -1,0 +1,203 @@
+{% extends 'base_app.html' %}
+{% load i18n %}
+
+{% block title %}
+    {{ client.user.user.get_full_name|default:client.user.user.email }} | Cliente
+{% endblock %}
+
+{% block page_content %}
+
+    {# ═══════════════════ BANNER DE ARQUIVADO ═══════════════════ #}
+    {% if client.is_archived %}
+        <div class="lia-card lia-mb-3" style="border-left: 4px solid var(--color-danger);">
+            <div class="lia-card__body lia-py-3">
+                <div class="lia-flex lia-items-center lia-gap-3">
+                    <i data-lucide="archive" class="lucide-sm" style="color: var(--color-danger);"></i>
+                    <div>
+                        <div class="lia-font-medium">Cliente arquivado</div>
+                        <div class="lia-text-sm lia-text-muted">
+                            Arquivado em
+                            <strong>{{ client.archived_at|date:"d/m/Y" }}</strong>
+                            às {{ client.archived_at|date:"H:i" }}.
+                            Visualização em modo somente leitura.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# ═══════════════════ CABEÇALHO DA PÁGINA ═══════════════════ #}
+    <div class="lia-page-header">
+        <div>
+            <h1 class="lia-page-header__title">
+                {{ client.user.user.get_full_name|default:"Cliente" }}
+                {% if client.archived_at %}
+                    <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Arquivado</span>
+                {% elif not client.user.user.has_usable_password %}
+                    <span class="lia-badge lia-badge--warning lia-text-xs lia-font-bold">Pendente</span>
+                {% elif client.user.user.is_active %}
+                    <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold">Ativo</span>
+                {% else %}
+                    <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Inativo</span>
+                {% endif %}
+            </h1>
+            <p class="lia-page-header__subtitle">
+                {{ client.user.user.email }}
+            </p>
+        </div>
+        <div class="lia-page-header__actions">
+            <div class="lia-flex lia-gap-2">
+                <a href="{% url 'tenant:client_list' org_slug=request.context.organization.slug %}"
+                   class="lia-btn lia-btn--secondary" title="Voltar para lista">
+                    <i data-lucide="arrow-left" class="lucide-sm"></i>
+                    <span>Voltar</span>
+                </a>
+
+                {% if not client.is_archived %}
+                    <a href="{% url 'tenant:client_update' org_slug=request.context.organization.slug pk=client.pk %}"
+                       class="lia-btn lia-btn--primary" title="Editar cliente">
+                        <i data-lucide="edit-2" class="lucide-sm"></i>
+                        <span>Editar</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ═══════════════════ CARD: DADOS PESSOAIS ═══════════════════ #}
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__header">
+            <div class="lia-flex lia-items-center lia-gap-2">
+                <i data-lucide="user" class="lucide-sm"></i>
+                <h2 class="lia-card__title lia-mb-0">Dados Pessoais</h2>
+            </div>
+        </div>
+        <div class="lia-card__body">
+            <div class="lia-form-row">
+                <div class="lia-form-group">
+                    <label class="lia-form-label">Nome completo</label>
+                    <div class="lia-text-sm">
+                        {{ client.user.user.get_full_name|default:"---" }}
+                    </div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">E-mail</label>
+                    <div class="lia-text-sm">{{ client.user.user.email }}</div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">Telefone</label>
+                    <div class="lia-text-sm">{{ client.user.user.phone|default:"---" }}</div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">CPF</label>
+                    <div class="lia-text-sm">{{ client.user.user.cpf|default:"---" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# ═══════════════════ CARD: VÍNCULO COM A ORGANIZAÇÃO ═══════════════════ #}
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__header">
+            <div class="lia-flex lia-items-center lia-gap-2">
+                <i data-lucide="building-2" class="lucide-sm"></i>
+                <h2 class="lia-card__title lia-mb-0">Vínculo com a Organização</h2>
+            </div>
+        </div>
+        <div class="lia-card__body">
+            <div class="lia-form-row">
+                <div class="lia-form-group">
+                    <label class="lia-form-label">Organização</label>
+                    <div class="lia-text-sm">{{ client.organization.company_name }}</div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">Cadastrado em</label>
+                    <div class="lia-text-sm">{{ client.created_at|date:"d/m/Y H:i" }}</div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">Cadastrado por</label>
+                    <div class="lia-text-sm">
+                        {% if client.created_by %}
+                            {{ client.created_by.get_full_name|default:client.created_by.email }}
+                        {% else %}
+                            <span class="lia-text-muted">Sistema</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">Primeiro serviço</label>
+                    <div class="lia-text-sm">
+                        {% if client.first_service_at %}
+                            {{ client.first_service_at|date:"d/m/Y" }}
+                        {% else %}
+                            <span class="lia-text-muted">Ainda não realizado</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="lia-form-group">
+                    <label class="lia-form-label">E-mail de boas-vindas</label>
+                    <div class="lia-text-sm">
+                        {% if client.welcome_email_sent %}
+                            <span class="lia-badge lia-badge--success lia-text-xs">Enviado</span>
+                        {% else %}
+                            <span class="lia-badge lia-badge--warning lia-text-xs">Não enviado</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if client.archived_at %}
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Arquivado em</label>
+                        <div class="lia-text-sm">
+                            {{ client.archived_at|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# ═══════════════════ CARD: OBJETIVO ═══════════════════ #}
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__header">
+            <div class="lia-flex lia-items-center lia-gap-2">
+                <i data-lucide="target" class="lucide-sm"></i>
+                <h2 class="lia-card__title lia-mb-0">Objetivo</h2>
+            </div>
+        </div>
+        <div class="lia-card__body">
+            {% if client.objective %}
+                <p class="lia-text-sm lia-mb-0">{{ client.objective|linebreaksbr }}</p>
+            {% else %}
+                <p class="lia-text-sm lia-text-muted lia-mb-0">Nenhum objetivo registrado.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ═══════════════════ CARD: OBSERVAÇÕES INTERNAS ═══════════════════ #}
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__header">
+            <div class="lia-flex lia-items-center lia-gap-2">
+                <i data-lucide="file-text" class="lucide-sm"></i>
+                <h2 class="lia-card__title lia-mb-0">Observações Internas</h2>
+                <span class="lia-text-xs lia-text-muted">(visível apenas para a equipe)</span>
+            </div>
+        </div>
+        <div class="lia-card__body">
+            {% if client.notes %}
+                <p class="lia-text-sm lia-mb-0">{{ client.notes|linebreaksbr }}</p>
+            {% else %}
+                <p class="lia-text-sm lia-text-muted lia-mb-0">Nenhuma observação registrada.</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

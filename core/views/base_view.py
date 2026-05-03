@@ -1,3 +1,5 @@
+# core/views/base_view.py
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -143,6 +145,15 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
             request=self.request,
         )
 
+    @staticmethod
+    def _as_tuple(value):
+        """Garante iterável para .order_by(*args)."""
+        if value is None:
+            return ()
+        if isinstance(value, str):
+            return (value,)
+        return tuple(value)
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -150,12 +161,18 @@ class BaseListView(ContextMixin, BaseAuthMixin, ListView):
         if filterset:
             self.filterset = filterset
             queryset = filterset.qs
+            # 🔥 Filterset já cuidou da ordenação via OrderingFilter.
+            # Aplica fallback APENAS se o usuário não pediu ordenação na URL.
+            if not self.request.GET.get('order_by') and self.ordering:
+                queryset = queryset.order_by(*self._as_tuple(self.ordering))
+            return queryset
 
+        # Sem filterset: ordenação manual via querystring (modo legado)
         order = self.request.GET.get('order_by')
         if order:
             queryset = queryset.order_by(order)
         elif self.ordering:
-            queryset = queryset.order_by(self.ordering)
+            queryset = queryset.order_by(*self._as_tuple(self.ordering))
 
         return queryset
 

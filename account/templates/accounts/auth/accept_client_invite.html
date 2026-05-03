@@ -1,0 +1,105 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+{% block meta %}
+    <meta name="referrer" content="same-origin">{% endblock %}
+
+{% block title %}Ativar conta — {{ APP_NAME }}{% endblock %}
+
+{% block page_content %}
+    <div class="lia-auth">
+        <div class="lia-auth__form-side">
+            <div class="lia-auth__container">
+
+                <!-- BRAND -->
+                <div class="lia-auth__brand">
+                    <div class="lia-auth__brand-logo">{{ APP_NAME|slice:":1"|upper }}</div>
+                    <span class="lia-auth__brand-text">{{ APP_NAME }}</span>
+                </div>
+
+                <!-- HEADER -->
+                <div class="lia-auth__header">
+                    <h1 class="lia-auth__title">
+                        Olá{% if invited_user.fullname %}, {{ invited_user.get_short_name }}{% endif %}! 👋
+                    </h1>
+                    <p class="lia-auth__subtitle">
+                        A <strong>{{ organization.company_name }}</strong> te convidou
+                        para acessar o {{ APP_NAME }} como cliente.
+                        Defina uma senha segura abaixo para ativar sua conta.
+                    </p>
+                </div>
+
+                <!-- INFO DA CONTA -->
+                <div class="p-3 mb-1 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25">
+                    <div class="d-flex align-items-center gap-2 mb-2 fw-bold small text-primary">
+                        <i data-lucide="user-circle" style="width: 16px; height: 16px;"></i>
+                        <span>Sua conta</span>
+                    </div>
+                    <ul class="list-unstyled mb-0 small text-secondary">
+                        {% if invited_user.fullname %}
+                            <li><strong>Nome:</strong> {{ invited_user.fullname }}</li>
+                        {% endif %}
+                        <li><strong>E-mail:</strong> {{ invited_user.email }}</li>
+                        <li><strong>Empresa:</strong> {{ organization.company_name }}</li>
+                    </ul>
+                </div>
+
+                <!-- ERROS GERAIS -->
+                {% if form.non_field_errors %}
+                    <div class="p-3 mb-2 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger">
+                        <div class="d-flex align-items-center gap-2 mb-2 fw-bold small">
+                            <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+                            <span>Atenção:</span>
+                        </div>
+                        <ul class="mb-0 ps-4 small">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- FORM -->
+                <form method="post" class="lia-auth__form" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row">
+                        {% include "components/form_field.html" with field=form.password1 %}
+                        {% include "components/form_field.html" with field=form.password2 %}
+                    </div>
+
+                    <button type="submit"
+                            class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
+                        Definir senha e acessar
+                        <i data-lucide="arrow-right-circle"></i>
+                    </button>
+                </form>
+
+                <!-- FOOTER -->
+                <div class="mt-4 text-center">
+                    <a href="{% url 'auth:login' %}" class="text-secondary d-inline-flex align-items-center gap-2"
+                       style="text-decoration: none; font-weight: 500; transition: color 0.2s ease;">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                        Já defini minha senha — fazer login
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- HERO -->
+        <div class="lia-auth__hero-side">
+            <div class="lia-auth__hero-content">
+                <span class="lia-auth__hero-icon mb-3 d-inline-block p-3 bg-white bg-opacity-10 rounded-circle text-white">
+                    <i data-lucide="user-check" style="width: 32px; height: 32px;"></i>
+                </span>
+                <h2 class="lia-auth__hero-title fw-bold text-white mb-3">
+                    Sua conta está quase pronta
+                </h2>
+                <p class="lia-auth__hero-text text-white text-opacity-75 lead">
+                    Defina uma senha segura para começar a acompanhar
+                    seu progresso com a {{ organization.company_name }}.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

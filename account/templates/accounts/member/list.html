@@ -51,7 +51,7 @@
                         <button type="submit" class="lia-btn lia-btn--secondary">
                             <i data-lucide="search" class="lucide-sm"></i>
                             {% if not request.GET %}
-                            <span>Filtrar</span>
+                                <span>Filtrar</span>
                             {% endif %}
                         </button>
 
@@ -71,10 +71,7 @@
                 </div>
 
                 {# ─── FILTROS AVANÇADOS (colapsável) ─── #}
-                <div id="advancedFilters" class="lia-form-row lia-items-end lia-mt-3
-
-{% if not request.GET.has_left and not request.GET.profile_type and not request.GET.specialty and not request.GET.remuneration_type and not request.GET.joined_at_after %}lia-hidden{% endif %}">
-
+                <div id="advancedFilters" class="lia-form-row lia-items-end lia-mt-3">
                     <div class="lia-form-group">
                         <label class="lia-form-label">Situação</label>
                         {{ filter.form.has_left }}
@@ -112,7 +109,6 @@
         </div>
     </div>
 
-    <!-- CONTAINER DA TABELA -->
     <div class="lia-table-container">
         <table class="lia-table">
             <thead>
@@ -163,7 +159,6 @@
                         {% endif %}
                     </td>
 
-                    <!-- Coluna 4: Ações com Trava de Segurança -->
                     <td>
                         <div class="lia-table__actions lia-justify-end">
                             <a href="{% url 'tenant:member_detail' org_slug=request.context.organization.slug pk=member.pk %}"
@@ -171,7 +166,6 @@
                                 <i data-lucide="eye" class="lucide-sm"></i>
                             </a>
 
-                            <!-- 🚀 TRAVA VISUAL DE EDIÇÃO DE MEMBRO -->
                             {#                        {% if request.user.is_superuser or request.context.has_permission("settings.member.change") %}#}
                             {% if member.highest_role_level < request.context.membership.highest_role_level or request.user.is_superuser %}
                                 <a href="{% url 'tenant:member_update' org_slug=request.context.organization.slug pk=member.pk %}"
@@ -208,13 +202,10 @@
                                 </a>
                                 {#                            {% elif request.context.has_permission("settings.member.add") %}#}
                                 <a href="{% url 'tenant:member_create' org_slug=request.context.organization.slug %}"
-                                   class="lia-btn lia-btn--secondary">
+                                   class="lia-btn lia-btn--primary">
                                     <i data-lucide="user-plus" class="lucide-sm"></i> Cadastrar
                                 </a>
-                                <a href="{% url 'tenant:member_invite' org_slug=request.context.organization.slug %}"
-                                   class="lia-btn lia-btn--primary">
-                                    <i data-lucide="mail" class="lucide-sm"></i> Convidar Primeiro Membro
-                                </a>
+
                                 {#                            {% endif %}#}
                             </div>
                         </div>
@@ -234,6 +225,7 @@
             <div class="lia-flex lia-gap-2">
                 {% if page_obj.has_previous %}
                     <a href="?page=
+
                             {{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
                        class="lia-btn lia-btn--outline lia-btn--sm">Anterior</a>
                 {% else %}
@@ -242,6 +234,7 @@
 
                 {% if page_obj.has_next %}
                     <a href="?page=
+
                             {{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
                        class="lia-btn lia-btn--outline lia-btn--sm">Próxima</a>
                 {% else %}

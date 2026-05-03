@@ -1,7 +1,8 @@
 # core/urls/tenant_url.py
 from django.urls import path
 
-from account.views.client_view import ClientListView
+from account.views.client_view import ClientListView, ClientCreateView, ClientDetailView, ClientUpdateView, \
+    ClientArchiveView
 from account.views.organization_view import OrganizationDetailView
 from core.views.dashboard_view import DashboardView
 from account.views.profile_view import ProfileView
@@ -27,8 +28,6 @@ app_name = 'tenant'
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('profile/', ProfileView.as_view(), name='profile'),
-    path('clients/', ClientListView.as_view(), name='client_list'),
-
     path('members/', MemberListView.as_view(), name='member_list'),
     path('members/create/', MemberCreateView.as_view(), name='member_create'),
     path('members/<int:pk>/', MemberDetailView.as_view(), name='member_detail'),
@@ -50,4 +49,11 @@ urlpatterns = [
     path('roles/<int:pk>/', RoleDetailView.as_view(), name='role_detail'),
     path('roles/<int:pk>/update/', RoleUpdateView.as_view(), name='role_update'),
     path('roles/<int:pk>/permissions/', RoleUpdateView.as_view(), name='role_permissions_update'),
+
+
+    path('client/', ClientListView.as_view(), name='client_list'),
+    path('client/new/', ClientCreateView.as_view(), name='client_create'),
+    path('client/<int:pk>/', ClientDetailView.as_view(), name='client_detail'),
+    path('client/<int:pk>/edit/', ClientUpdateView.as_view(), name='client_update'),
+    path('client/<int:pk>/archive/', ClientArchiveView.as_view(), name='client_archive'),
 ]

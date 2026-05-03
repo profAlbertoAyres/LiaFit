@@ -11,8 +11,7 @@ class MenuNode:
         system_roles = getattr(ctx, "system_roles", set()) if ctx else set()
 
         if self.scope == "superuser":
-            # Só superuser Django ou platform_admin
-            return "platform_admin" in system_roles
+            return "saas-admin" in system_roles or "superadmin" in system_roles
 
         if self.scope == "tenant":
             return bool(ctx and getattr(ctx, "organization", None))
@@ -23,6 +22,8 @@ class MenuNode:
         return True
 
     def _check_module(self, request):
+        if getattr(self, "is_universal", False):
+            return True
         if self.is_core or not self.module:
             return True
         ctx = getattr(request, "context", None)
@@ -30,6 +31,8 @@ class MenuNode:
 
     def _check_permission(self, request):
         if not self.permission:
+            return True
+        if getattr(self, "is_universal", False):
             return True
         ctx = getattr(request, "context", None)
         if ctx and self.permission in ctx.permissions:
@@ -46,6 +49,7 @@ class MenuItem(MenuNode):
         permission=None,
         module=None,
         is_core=False,
+        is_universal=False,
         scope="tenant",
     ):
         self.label = label
@@ -54,6 +58,7 @@ class MenuItem(MenuNode):
         self.permission = permission
         self.module = module
         self.is_core = is_core
+        self.is_universal = is_universal
         self.scope = scope
 
     def get_url(self, request):
@@ -86,6 +91,7 @@ class MenuGroup(MenuNode):
         permission=None,
         module=None,
         is_core=False,
+        is_universal=False,
         order=0,
         scope="tenant",
     ):
@@ -95,6 +101,7 @@ class MenuGroup(MenuNode):
         self.permission = permission
         self.module = module
         self.is_core = is_core
+        self.is_universal = is_universal
         self.order = order
         self.scope = scope
 

@@ -1,0 +1,227 @@
+{% extends 'base_app.html' %}
+{% load i18n %}
+
+{% block title %}Clientes | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+
+{% block page_content %}
+    <!-- CABEÇALHO DA PÁGINA -->
+    <div class="lia-page-header">
+        <div>
+            <h1 class="lia-page-header__title">Clientes</h1>
+            <p class="lia-page-header__subtitle">Gerencie os clientes atendidos por
+                {{ request.context.organization.company_name }}.</p>
+        </div>
+        <div class="lia-page-header__actions">
+            <div class="lia-flex lia-gap-2">
+                <a href="{% url 'tenant:client_create' org_slug=request.context.organization.slug %}"
+                   class="lia-btn lia-btn--primary" title="Cadastrar cliente">
+                    <i data-lucide="user-plus" class="lucide-sm"></i>
+                    <span>Novo cliente</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__body lia-py-4">
+            <form method="get" class="lia-filter-form">
+
+                {# ─── LINHA PRINCIPAL (sempre visível) ─── #}
+                <div class="lia-form-row lia-items-center">
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Buscar cliente</label>
+                        {{ filter.form.search }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Status</label>
+                        {{ filter.form.status }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Ordenar por</label>
+                        {{ filter.form.order_by }}
+                    </div>
+
+                    <div class="lia-flex lia-justify-end lia-gap-2">
+                        <button type="submit" class="lia-btn lia-btn--secondary">
+                            <i data-lucide="search" class="lucide-sm"></i>
+                            <span>Filtrar</span>
+                        </button>
+
+                        {% if request.GET %}
+                            <a href="{% url 'tenant:client_list' org_slug=request.context.organization.slug %}"
+                               class="lia-btn lia-btn--danger" title="Limpar">
+                                <i data-lucide="search-x" class="lucide-sm"></i>
+                                <span>Limpar</span>
+
+                            </a>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- CONTAINER DA TABELA -->
+    <div class="lia-table-container">
+        <table class="lia-table">
+            <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Contato</th>
+                <th>Objetivo</th>
+                <th>Status</th>
+                <th class="lia-text-right">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for org_client in clients %}
+                <tr>
+                    <!-- Coluna 1: Nome e Email -->
+                    <td>
+                        <div class="lia-flex lia-items-center lia-gap-3">
+                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary lia-text-muted">
+                                <i data-lucide="user" class="lucide-sm"></i>
+                            </div>
+                            <div>
+                                <div class="lia-font-medium">
+                                    {{ org_client.user.user.get_full_name|default:"Cliente" }}
+                                </div>
+                                <div class="lia-text-xs lia-text-muted">{{ org_client.user.user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Coluna 2: Contato -->
+                    <td>
+                        <div class="lia-text-sm">{{ org_client.user.user.phone|default:"---" }}</div>
+                        <div class="lia-text-xs lia-text-muted">
+                            {{ org_client.user.user.cpf|default:"Sem CPF" }}
+                        </div>
+                    </td>
+
+                    <!-- Coluna 3: Objetivo -->
+                    <td>
+                        <div class="lia-text-sm">
+                            {{ org_client.objective|default:"---"|truncatechars:40 }}
+                        </div>
+                    </td>
+
+                    <!-- Coluna 4: Status -->
+                    <td>
+                        {% if org_client.archived_at %}
+                            <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Arquivado</span>
+                        {% elif not org_client.user.user.has_usable_password %}
+                            <span class="lia-badge lia-badge--warning lia-text-xs lia-font-bold">Pendente</span>
+                        {% elif org_client.user.user.is_active %}
+                            <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold">Ativo</span>
+                        {% else %}
+                            <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Inativo</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Coluna 5: Ações -->
+                    <td>
+                        <div class="lia-table__actions lia-justify-end">
+                            <a href="{% url 'tenant:client_detail' org_slug=request.context.organization.slug pk=org_client.pk %}"
+                               class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" title="Ver Perfil">
+                                <i data-lucide="eye" class="lucide-sm"></i>
+                            </a>
+
+                            {% if not org_client.archived_at %}
+                                {#                        {% if request.user.is_superuser or request.context.has_permission("clients.client.change") %}#}
+                                <a href="{% url 'tenant:client_update' org_slug=request.context.organization.slug pk=org_client.pk %}"
+                                   class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" title="Editar Cliente">
+                                    <i data-lucide="edit-2" class="lucide-sm"></i>
+                                </a>
+
+                                {#                                {% if not org_client.user.user.has_usable_password %}#}
+                                {#                                    <a href="{% url 'tenant:client_resend_activation' org_slug=request.context.organization.slug pk=org_client.pk %}"#}
+                                {#                                       class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"#}
+                                {#                                       style="color: var(--color-warning);"#}
+                                {#                                       title="Reenviar e-mail de ativação"#}
+                                {#                                       onclick="return confirm('Reenviar e-mail de ativação para este cliente?');">#}
+                                {#                                        <i data-lucide="mail" class="lucide-sm"></i>#}
+                                {#                                    </a>#}
+                                {#                                {% endif %}#}
+
+                                <a href="{% url 'tenant:client_archive' org_slug=request.context.organization.slug pk=org_client.pk %}"
+                                   class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
+                                   style="color: var(--color-danger);"
+                                   title="Arquivar"
+                                   onclick="return confirm('Arquivar este cliente? O histórico será preservado.');">
+                                    <i data-lucide="archive" class="lucide-sm"></i>
+                                </a>
+                                {#                        {% endif %}#}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+
+            {% empty %}
+                <!-- STATE: TABELA VAZIA -->
+                <tr>
+                    <td colspan="5" class="lia-p-0">
+                        <div class="lia-table-empty">
+                            <i data-lucide="users" class="lia-table-empty__icon"></i>
+                            <div class="lia-table-empty__text">Nenhum cliente encontrado.</div>
+                            <p class="lia-text-sm lia-text-muted lia-mt-2">
+                                {% if request.GET %}
+                                    Tente ajustar os filtros ou cadastre um novo cliente.
+                                {% else %}
+                                    Comece cadastrando o seu primeiro cliente para iniciar o atendimento.
+                                {% endif %}
+                            </p>
+
+                            <div class="lia-flex lia-justify-center lia-gap-3 lia-mt-4">
+                                {% if request.GET %}
+                                    <a href="{% url 'tenant:client_list' org_slug=request.context.organization.slug %}"
+                                       class="lia-btn lia-btn--secondary">
+                                        <i data-lucide="x" class="lucide-sm"></i> Limpar Filtros
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'tenant:client_create' org_slug=request.context.organization.slug %}"
+                                   class="lia-btn lia-btn--primary">
+                                    <i data-lucide="user-plus" class="lucide-sm"></i> Cadastrar Cliente
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINAÇÃO -->
+    {% if page_obj.has_other_pages %}
+        <div class="lia-flex lia-justify-between lia-items-center lia-mt-6">
+            <div class="lia-text-sm lia-text-muted">
+                Página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong>
+            </div>
+            <div class="lia-flex lia-gap-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page=
+
+                            {{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
+                       class="lia-btn lia-btn--outline lia-btn--sm">Anterior</a>
+                {% else %}
+                    <button class="lia-btn lia-btn--outline lia-btn--sm" disabled>Anterior</button>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page=
+
+                            {{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
+                       class="lia-btn lia-btn--outline lia-btn--sm">Próxima</a>
+                {% else %}
+                    <button class="lia-btn lia-btn--outline lia-btn--sm" disabled>Próxima</button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

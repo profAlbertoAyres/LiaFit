@@ -30,7 +30,6 @@ class MemberListView(BaseListView):
 
     paginate_by = 10
     filterset_class = OrganizationMemberFilter
-    ordering = 'user__fullname'
 
     def get_queryset(self):
         return super().get_queryset().select_related('user').prefetch_related('roles')

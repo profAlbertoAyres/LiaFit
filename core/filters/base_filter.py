@@ -30,7 +30,6 @@ class BaseFilter(django_filters.FilterSet):
         })
     )
 
-    order_by = django_filters.OrderingFilter(fields=[], field_labels={})
 
     def __init__(self, data=None, queryset=None, *, request=None, **kwargs):
         super().__init__(data=data, queryset=queryset, **kwargs)

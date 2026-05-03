@@ -1,0 +1,107 @@
+{% extends 'base_app.html' %}
+
+{% block title %}
+    {% if object %}Editar {{ object.user.user.fullname }}{% else %}Novo Cliente{% endif %} | {{ APP_NAME }}
+{% endblock %}
+
+{% block page_content %}
+<div class="lia-flex lia-items-center lia-gap-3 lia-mb-6">
+    <a href="javascript:history.back()" class="lia-btn lia-btn--icon lia-btn--ghost">
+        <i data-lucide="arrow-left" class="lucide"></i>
+    </a>
+    <div>
+        <h2 class="lia-font-bold lia-text-xl lia-m-0">
+            {% if object %}Editar Cliente{% else %}Novo Cliente{% endif %}
+        </h2>
+        <p class="lia-text-muted lia-text-sm lia-mt-1">
+            {% if object %}
+                Atualize as informações de {{ object.user.user.fullname }}.
+            {% else %}
+                Cadastre um novo cliente na sua organização.
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<form method="post" novalidate class="lia-card">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="lia-card__body pb-0">
+        <div class="lia-alert lia-alert--danger lia-alert--inline">
+            <i data-lucide="alert-circle" class="lia-alert__icon"></i>
+            <div class="lia-alert__content">
+                <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if form.has_email_conflict %}
+    <div class="lia-card__body pb-0">
+        <div class="lia-alert lia-alert--warning lia-alert--inline">
+            <i data-lucide="user-check" class="lia-alert__icon"></i>
+            <div class="lia-alert__content">
+                <div class="lia-alert__title">Usuário já existe na plataforma</div>
+                <div class="lia-alert__message">
+                    Marque a opção abaixo para vincular este usuário à sua organização
+                    e reenvie o formulário.
+                </div>
+                <div class="form-check form-switch mt-2">
+                    <input type="checkbox"
+                           name="confirm_link_user"
+                           id="id_confirm_link_user"
+                           value="true"
+                           class="form-check-input">
+                    <label for="id_confirm_link_user" class="form-check-label cursor-pointer">
+                        Sim, vincular este usuário à minha organização
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="lia-card__header lia-border-b-0 lia-pb-0">
+        <div>
+            <h3 class="lia-card__title">Dados Pessoais</h3>
+            <p class="lia-card__subtitle">Informações básicas do cliente.</p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="row">
+            {% include "components/form_field.html"  with field=form.fullname    col="col-md-6" %}
+            {% include "components/form_field.html"  with field=form.email       col="col-md-6" icon="mail" %}
+            {% include "components/form_field.html"  with field=form.cpf         col="col-md-3" %}
+            {% include "components/form_field.html"  with field=form.phone       col="col-md-3" %}
+            {% include "components/form_date.html"   with field=form.birth_date  col="col-md-3" %}
+            {% include "components/form_select.html" with field=form.gender      col="col-md-3" %}
+        </div>
+    </div>
+
+    <div class="lia-card__header lia-border-b-0 lia-pb-0 lia-pt-4">
+        <div>
+            <h3 class="lia-card__title">Atendimento</h3>
+            <p class="lia-card__subtitle">Contexto e anotações sobre este cliente.</p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="row">
+            {% include "components/form_textarea.html" with field=form.objective col="col-md-6" %}
+            {% include "components/form_textarea.html" with field=form.notes     col="col-md-6" %}
+        </div>
+    </div>
+
+    <div class="lia-card__footer">
+        <a href="javascript:history.back()" class="lia-btn lia-btn--outline">
+            Cancelar
+        </a>
+        <button type="submit" class="lia-btn lia-btn--primary">
+            <i data-lucide="save" class="lucide-sm"></i>
+            <span>{% if object %}Salvar Alterações{% else %}Criar Cliente{% endif %}</span>
+        </button>
+    </div>
+</form>
+{% endblock %}
