@@ -23,7 +23,7 @@ def bootstrap_organization(organization, *, verbose: bool = False) -> dict:
     core_modules = Module.objects.filter(
         is_core=True,
         scope=Module.Scope.TENANT,
-    ).exclude(scope=Module.Scope.SUPERUSER)  # 🛡️ defesa extra
+    ).exclude(scope=Module.Scope.SAAS_ADMIN)  # 🛡️ defesa extra
 
     for module in core_modules:
         # 🛡️ Sanity check: nunca deveria passar daqui se não for tenant
@@ -139,10 +139,9 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
         "universal_permissions_granted": 0,
     }
 
-    # 🧹 ETAPA 0 — Auto-limpeza de "sujeira" antiga
-    # OrganizationModule com módulos superuser são INVÁLIDOS em tenants
+
     invalid_oms = OrganizationModule.objects.filter(
-        module__scope=Module.Scope.SUPERUSER,
+        module__scope=Module.Scope.SAAS_ADMIN,
     )
     invalid_count = invalid_oms.count()
     if invalid_count > 0:

@@ -5,17 +5,6 @@ from core.models.base import BaseModel
 
 
 class SystemRole(BaseModel):
-    """
-    Role global do sistema, fora de organização.
-
-    Usado para:
-      - scope=global    → usuários comuns ("cliente" da plataforma)
-      - scope=superuser → staff/admins da plataforma SaaS
-
-    Diferença pra `Role`:
-      - Não pertence a uma Organization
-      - Permissões são M2M direto (não precisa de tabela de junção por org)
-    """
 
     class Scope(models.TextChoices):
         GLOBAL = "global", "Global (Cliente)"

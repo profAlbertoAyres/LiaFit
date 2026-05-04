@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'core',
     'account',
     'website',
+    'saas_admin',
     'financial',
     'shared',
     'scheduling',

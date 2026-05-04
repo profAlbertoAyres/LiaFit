@@ -182,7 +182,7 @@ class RoleService:
             .filter(is_active=True)
             .filter(
                 Q(item__module_id__in=active_module_ids) | Q(item__isnull=True)
-            ).exclude(item__module__scope=Module.Scope.SUPERUSER)
+            ).exclude(item__module__scope=Module.Scope.SAAS_ADMIN)
 
         )
         permissoes_banco = list(permissoes_qs)

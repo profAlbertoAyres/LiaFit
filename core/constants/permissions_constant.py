@@ -15,17 +15,19 @@ class ModuleSlug(models.TextChoices):
 
 class ItemSlug(models.TextChoices):
     # account
-    CLIENT        = "client",        "Cliente"
+    CLIENT          = "client",        "Cliente"
     # settings
-    ROLE          = "role",          "Papel"
-    MEMBER        = "member",        "Membro"
-    ORGANIZATION  = "organization",  "Organização"
+    ROLE            = "role",          "Papel"
+    MEMBER          = "member",        "Membro"
+    ORGANIZATION    = "organization",  "Organização"
     # my-area
-    DASHBOARD     = "dashboard",     "Dashboard"
-    PROFILE       = "profile",       "Perfil"
+    DASHBOARD       = "dashboard",     "Dashboard"
+    PROFILE         = "profile",       "Perfil"
     # saas-admin
-    ORGANIZATIONS = "organizations", "Organizações (Admin)"
-
+    ORGANIZATIONS   = "organizations", "Organizações (Admin)"
+    USERS_ADMIN     = "users-admin", "Usuários (Admin)"
+    DASHBOARD_ADMIN = "dashboard-admin", "Painel Admin"
+    SPECIALTY       = "specialty", "Especialidades"
 
 class ActionSlug(models.TextChoices):
     VIEW   = "view",   "Visualizar"
@@ -35,10 +37,5 @@ class ActionSlug(models.TextChoices):
     INVITE = "invite", "Convidar" 
 
 class SystemRoleSlug(models.TextChoices):
-    """
-    Slugs de System Roles (papéis globais, fora de organização).
-    Usado em UserSystemRole e nas verificações de contexto SaaS
-    (ex.: is_platform_admin, is_platform_client).
-    """
     SUPERADMIN = "superadmin", "Super Administrador"
     CLIENT     = "client",     "Cliente" 

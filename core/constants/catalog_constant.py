@@ -125,6 +125,25 @@ CATALOG = [
                 "show_in_menu": True,
                 "actions": CRUD,
             },
+{
+                "slug": ItemSlug.SPECIALTY,
+                "name": "Especialidades",
+                "icon": "graduation-cap",
+                "order": 20,
+                "route": "saas_admin:specialty_list",
+                "show_in_menu": True,
+                "actions": CRUD,
+            },
+
+            {
+                "slug": ItemSlug.USERS_ADMIN,
+                "name": "Usuários",
+                "icon": "users",
+                "order": 20,
+                "route": "saas_admin:user_list",
+                "show_in_menu": True,
+                "actions": CRUD,
+            },
         ],
     },
 ]

@@ -18,10 +18,6 @@ class OrganizationService:
     @staticmethod
     @transaction.atomic
     def create_organization(data, owner=None):
-        """
-        Cria a organização (inativa) + executa bootstrap (roles, permissões, módulos).
-        Se `owner` for informado, vincula como dono e membro com role 'owner'.
-        """
         company_name = data.get("company_name")
         if not company_name:
             raise ValidationError("company_name é obrigatório.")
@@ -31,9 +27,14 @@ class OrganizationService:
         organization = Organization.objects.create(
             company_name=company_name,
             slug=slug,
-            document=data.get("document", ""),
+            document=data.get("document") or None,
             phone=data.get("phone", ""),
             email=data.get("email", ""),
+            zip_code=data.get("zip_code", ""),
+            address=data.get("address", ""),
+            neighborhood=data.get("neighborhood", ""),
+            city=data.get("city", ""),
+            state=data.get("state", ""),
             owner=owner,
         )
 

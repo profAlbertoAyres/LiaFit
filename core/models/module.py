@@ -7,7 +7,7 @@ from core.models.base import BaseModel
 
 class Module(BaseModel):
     class Scope(models.TextChoices):
-        SUPERUSER = "superuser", "Superusuário"
+        SAAS_ADMIN = "superuser", "Admin SaaS"
         GLOBAL = "global", "Global (Cliente)"
         TENANT = "tenant", "Organização"
 

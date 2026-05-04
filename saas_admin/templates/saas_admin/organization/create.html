@@ -1,0 +1,102 @@
+{% extends 'base_app.html' %}
+
+{% block title %}
+    {% if object %}Editar {{ object.company_name }}{% else %}Nova Organização{% endif %} | {{ APP_NAME }}
+{% endblock %}
+
+{% block page_content %}
+<div class="lia-flex lia-items-center lia-gap-3 lia-mb-6">
+    <a href="javascript:history.back()" class="lia-btn lia-btn--icon lia-btn--ghost">
+        <i data-lucide="arrow-left" class="lucide"></i>
+    </a>
+    <div>
+        <h2 class="lia-font-bold lia-text-xl lia-m-0">
+            {% if object %}Editar Organização{% else %}Nova Organização{% endif %}
+        </h2>
+        <p class="lia-text-muted lia-text-sm lia-mt-1">
+            {% if object %}
+                Atualize as informações de {{ object.company_name }}.
+            {% else %}
+                Cadastre uma nova organização e seu usuário responsável.
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<form method="post" novalidate class="lia-card">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="lia-card__body pb-0">
+        <div class="lia-alert lia-alert--danger lia-alert--inline">
+            <i data-lucide="alert-circle" class="lia-alert__icon"></i>
+            <div class="lia-alert__content">
+                <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="lia-card__header lia-border-b-0 lia-pb-0">
+        <div>
+            <h3 class="lia-card__title">Responsável</h3>
+            <p class="lia-card__subtitle">
+                Dados do dono da conta. Receberá um e-mail para definir a senha e ativar o acesso.
+            </p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="row">
+            {% include "components/form_field.html" with field=form.user_fullname col="col-md-6" icon="user-star" %}
+            {% include "components/form_field.html" with field=form.user_email    col="col-md-6" icon="mail" %}
+        </div>
+    </div>
+
+    <div class="lia-card__header lia-border-b-0 lia-pb-0 lia-pt-4">
+        <div>
+            <h3 class="lia-card__title">Dados da Empresa</h3>
+            <p class="lia-card__subtitle">Informações da organização que será criada.</p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="row">
+            {% include "components/form_field.html" with field=form.company_name     col="col-md-12" icon="building-2" %}
+            {% include "components/form_field.html" with field=form.company_document col="col-md-4" icon="book-open-text" %}
+            {% include "components/form_field.html" with field=form.company_phone    col="col-md-4" icon="phone" %}
+            {% include "components/form_field.html" with field=form.company_email    col="col-md-4" icon="mail" %}
+        </div>
+    </div>
+{# ─────────── ENDEREÇO ─────────── #}
+    <div class="lia-card__header lia-border-b-0 lia-pb-0 lia-pt-4">
+        <div>
+            <h3 class="lia-card__title">Endereço</h3>
+            <p class="lia-card__subtitle">
+                Digite o CEP para preencher automaticamente os demais campos.
+            </p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="row">
+            {% include "components/form_field.html" with field=form.zip_code     col="col-md-2" icon="Mailbox" %}
+            {% include "components/form_field.html" with field=form.address      col="col-md-8" icon="Milestone" %}
+            {% include "components/form_field.html" with field=form.number      col="col-md-2" icon="Hash" %}
+            {% include "components/form_field.html" with field=form.neighborhood col="col-md-4" icon="Building2" %}
+            {% include "components/form_field.html" with field=form.city         col="col-md-6" icon="Building" %}
+            {% include "components/form_select.html" with field=form.state        col="col-md-2" icon="Map" %}
+        </div>
+    </div>
+
+    <div class="lia-card__footer">
+        <a href="javascript:history.back()" class="lia-btn lia-btn--outline">
+            Cancelar
+        </a>
+        <button type="submit" class="lia-btn lia-btn--primary">
+            <i data-lucide="save" class="lucide-sm"></i>
+            <span>{% if object %}Salvar Alterações{% else %}Criar Organização{% endif %}</span>
+        </button>
+    </div>
+</form>
+{% endblock %}

@@ -1,6 +1,7 @@
 # core/menu/registry_menu.py
 from django.db.models import Prefetch, Q
 
+from core.constants import SystemRoleSlug
 from .base_menu import MenuGroup, MenuItem
 
 
@@ -35,25 +36,25 @@ class MenuRegistry:
         ).prefetch_related(active_items_prefetch)
 
         # ── Filtros de scope ──
-        scope_filter = Q(scope="global")  # global é sempre visível p/ autenticados
+        scope_filter = Q(scope=Module.Scope.GLOBAL)
 
         if request.user.is_superuser:
-            # Superuser vê tudo
-            scope_filter |= Q(scope="superuser") | Q(scope="tenant")
+            scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN) | Q(scope=Module.Scope.TENANT)
         else:
-            if "platform_admin" in system_roles:
-                scope_filter |= Q(scope="superuser")
+            # 🔧 Antes usava "platform_admin" (slug fantasma).
+            # Agora usa SystemRoleSlug.SUPERADMIN, que é o que o ContextService popula.
+            if SystemRoleSlug.SUPERADMIN.value in system_roles:
+                scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN)
 
             if organization:
                 scope_filter |= Q(
-                    scope="tenant",
+                    scope=Module.Scope.TENANT,
                     organization_modules__organization=organization,
                     organization_modules__is_active=True,
                 )
 
         modules = base_qs.filter(scope_filter).distinct()
 
-        # ── Monta grupos dinâmicos ──
         groups_to_check = list(self._groups)
 
         for module in modules:
@@ -86,7 +87,6 @@ class MenuRegistry:
                 )
             )
 
-        # ── Render + dedupe por label ──
         seen = set()
         visible = []
         for group in groups_to_check:

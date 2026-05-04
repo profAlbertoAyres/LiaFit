@@ -1,6 +1,8 @@
 # core/menu/base_menu.py
 from django.urls import reverse, NoReverseMatch
 
+from core.constants import SystemRoleSlug
+
 
 class MenuNode:
     def _check_scope(self, request):
@@ -10,8 +12,9 @@ class MenuNode:
         ctx = getattr(request, "context", None)
         system_roles = getattr(ctx, "system_roles", set()) if ctx else set()
 
+        # Mantém o valor "superuser" pq é o que está no DB.
         if self.scope == "superuser":
-            return "saas-admin" in system_roles or "superadmin" in system_roles
+            return SystemRoleSlug.SUPERADMIN.value in system_roles
 
         if self.scope == "tenant":
             return bool(ctx and getattr(ctx, "organization", None))

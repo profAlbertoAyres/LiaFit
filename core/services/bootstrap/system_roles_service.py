@@ -17,7 +17,7 @@ def sync_system_roles(*, verbose: bool = False) -> dict:
         "system_role_permissions_set": 0,
     }
 
-    system_scopes = {Module.Scope.GLOBAL, Module.Scope.SUPERUSER}
+    system_scopes = {Module.Scope.GLOBAL, Module.Scope.SAAS_ADMIN}
 
     for role_def in ROLES:
         scope = role_def.get("scope", Module.Scope.TENANT)

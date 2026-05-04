@@ -73,28 +73,50 @@ const LiaUtils = {
         const cep = input.value.replace(/\D/g, '');
         if (cep.length !== 8) return;
 
+        const originalDisabled = input.disabled;
+        input.disabled = true;
+
         try {
             const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await res.json();
-            if (data.erro) return;
+            if (data.erro) {
+                console.warn('CEP não encontrado:', cep);
+                return;
+            }
 
             const form = input.closest('form');
             if (!form) return;
 
             const fill = (name, value) => {
                 const field = form.querySelector(`[name="${name}"]`);
-                if (field) field.value = value || '';
+                if (!field || !value) return;
+
+                // Funciona tanto em <input> quanto em <select>
+                if (field.tagName === 'SELECT') {
+                    const opt = Array.from(field.options).find(
+                        o => o.value.toUpperCase() === value.toUpperCase()
+                    );
+                    if (opt) field.value = opt.value;
+                } else {
+                    field.value = value;
+                }
+                field.dispatchEvent(new Event('change', {bubbles: true}));
             };
 
-            fill('rua', data.logradouro);
-            fill('bairro', data.bairro);
-            fill('cidade', data.localidade);
-            fill('uf', data.uf);
+            fill('address', data.logradouro);
+            fill('neighborhood', data.bairro);
+            fill('city', data.localidade);
+            fill('state', data.uf);
+
+            const addressField = form.querySelector('[name="address"]');
+            if (addressField && data.logradouro) addressField.focus();
+
         } catch (err) {
             console.warn('Erro ao buscar CEP:', err);
+        } finally {
+            input.disabled = originalDisabled;
         }
     },
-
     /**
      * Debounce — atrasa execução até parar de digitar
      * Uso: input.addEventListener('input', LiaUtils.debounce(fn, 400))
