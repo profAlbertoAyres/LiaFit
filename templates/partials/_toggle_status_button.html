@@ -1,0 +1,51 @@
+{% comment %}
+    ═══════════════════════════════════════════════════════════════════════
+    PARTIAL GENÉRICO — Botão de Toggle de Status (Ativar/Desativar)
+    ═══════════════════════════════════════════════════════════════════════
+
+    Renderiza um botão de ativar/desativar para QUALQUER entidade que tenha
+    o atributo `is_active` (Organization, User, Specialty, etc.).
+
+    📦 Parâmetros (via {% include ... with %}):
+    ───────────────────────────────────────────────────────────────────────
+    obj           (obrigatório) Instância com atributo `is_active`.
+    toggle_url    (obrigatório) URL já resolvida (use {% url %} antes).
+    label_name    (obrigatório) Texto exibido no confirm (nome do registro).
+    entity_label  (opcional)    Rótulo da entidade. Default: "o registro".
+                                Exemplos: "a organização", "o usuário".
+    show_label    (opcional)    Se truthy, exibe texto no botão. Default: vazio.
+    extra_class   (opcional)    Classes CSS extras no botão.
+
+    💡 Exemplo de uso:
+    ───────────────────────────────────────────────────────────────────────
+    {% url 'saas_admin:organization_toggle_status' org.pk as toggle_url %}
+    {% include 'partials/_toggle_status_button.html' with
+        obj=org
+        toggle_url=toggle_url
+        label_name=org.company_name
+        entity_label="a organização" %}
+    ═══════════════════════════════════════════════════════════════════════
+{% endcomment %}
+
+<form method="post"
+      action="{{ toggle_url }}"
+      class="lia-inline-form"
+      onsubmit="return confirm('{% if obj.is_active %}Desativar {{ entity_label|default:'o registro' }} “{{ label_name }}”?{% else %}Reativar {{ entity_label|default:'o registro' }} “{{ label_name }}”?{% endif %}');">
+    {% csrf_token %}
+
+    {% if obj.is_active %}
+        <button type="submit"
+                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-text-danger {{ extra_class }}"
+                title="Desativar">
+            <i data-lucide="power-off" class="lucide-sm"></i>
+            {% if show_label %}<span>Desativar</span>{% endif %}
+        </button>
+    {% else %}
+        <button type="submit"
+                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-text-success {{ extra_class }}"
+                title="Reativar">
+            <i data-lucide="power" class="lucide-sm"></i>
+            {% if show_label %}<span>Reativar</span>{% endif %}
+        </button>
+    {% endif %}
+</form>

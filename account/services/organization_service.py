@@ -126,3 +126,16 @@ class OrganizationService:
         organization.save(update_fields=["is_active"])
         logger.info("Organização ativada: %s", organization.slug)
         return organization
+
+    @staticmethod
+    @transaction.atomic
+    def deactivate_organization(organization):
+ 
+        if not organization.is_active:
+            logger.debug("Organização %s já estava inativa.", organization.slug)
+            return organization
+
+        organization.is_active = False
+        organization.save(update_fields=["is_active"])
+        logger.info("Organização desativada: %s", organization.slug)
+        return organization

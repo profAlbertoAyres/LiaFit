@@ -1,7 +1,11 @@
 import logging
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
 
 from core.services.permission_service import is_saas_staff
@@ -85,3 +89,59 @@ class SaaSBaseUpdateView(SaaSAdminRequiredMixin, UpdateView):
 class SaaSBaseFormView(SaaSAdminRequiredMixin, FormView):
     """Base para formulários de ação (não-CRUD direto) no painel SaaS."""
     pass
+
+class SaaSBaseToggleStatusView(SaaSAdminRequiredMixin, View):
+
+    http_method_names = ["post"]
+
+    model = None
+    service_action = None
+    fallback_url = None
+    pk_url_kwarg = "pk"
+
+    # ──────────────── Hooks customizáveis ────────────────
+
+    def get_object(self):
+        """Hook: subclasse pode sobrescrever pra adicionar filtros."""
+        if self.model is None:
+            raise NotImplementedError(
+                f"{self.__class__.__name__} precisa definir 'model'."
+            )
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(self.model, pk=pk)
+
+    def get_service_action(self):
+        """Hook: retorna o callable que executa a ação."""
+        if self.service_action is None:
+            raise NotImplementedError(
+                f"{self.__class__.__name__} precisa definir 'service_action'."
+            )
+        return self.service_action
+
+    def get_fallback_url(self):
+        """Hook: URL de fallback caso HTTP_REFERER esteja ausente."""
+        if self.fallback_url is None:
+            raise NotImplementedError(
+                f"{self.__class__.__name__} precisa definir 'fallback_url'."
+            )
+        return reverse(self.fallback_url)
+
+    def get_message_level(self, action: str) -> int:
+
+        if action == "deactivated":
+            return messages.WARNING
+        return messages.SUCCESS
+
+    # ──────────────── Fluxo principal ────────────────
+
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()
+        action_callable = self.get_service_action()
+
+        result = action_callable(instance)
+
+        level = self.get_message_level(result["action"])
+        messages.add_message(request, level, result["message"])
+
+        next_url = request.META.get("HTTP_REFERER") or self.get_fallback_url()
+        return redirect(next_url)

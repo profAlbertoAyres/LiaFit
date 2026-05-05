@@ -1,0 +1,197 @@
+{% extends 'base_app.html' %}
+
+{% block title %}{{ organization.company_name }} | Admin SaaS{% endblock %}
+
+{% block page_content %}
+    <!-- CABEÇALHO DA PÁGINA -->
+    <div class="lia-page-header">
+        <div class="lia-flex lia-items-center lia-gap-3">
+            <!-- Logo / Avatar -->
+            {% if organization.logo %}
+                <img src="{{ organization.logo.url }}"
+                     alt="Logo {{ organization.company_name }}"
+                     class="lia-avatar lia-avatar--lg"
+                     style="object-fit: cover;">
+            {% else %}
+                <div class="lia-avatar lia-avatar--lg lia-bg-secondary lia-text-muted lia-flex lia-items-center lia-justify-center lia-font-bold">
+                    {{ organization.company_name|slice:":1"|upper }}
+                </div>
+            {% endif %}
+
+            <div>
+                <h1 class="lia-page-header__title">
+                    {{ organization.company_name }}
+                    {% if organization.is_active %}
+                        <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold lia-ml-2">Ativa</span>
+                    {% else %}
+                        <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold lia-ml-2">Inativa</span>
+                    {% endif %}
+                </h1>
+                <p class="lia-page-header__subtitle">
+                    {{ organization.slug }}.liafit.com.br
+                </p>
+            </div>
+        </div>
+
+        <div class="lia-page-header__actions">
+            <div class="lia-flex lia-gap-2 lia-items-center">
+                <!-- Voltar -->
+                <a href="{% url 'saas_admin:organization_list' %}"
+                   class="lia-btn lia-btn--secondary"
+                   title="Voltar para a lista">
+                    <i data-lucide="arrow-left" class="lucide-sm"></i>
+                    <span>Voltar</span>
+                </a>
+
+                <!-- Toggle de status (partial genérico, com label visível) -->
+                {% url 'saas_admin:organization_toggle_status' organization.pk as toggle_url %}
+                {% include 'partials/_toggle_status_button.html' with obj=organization toggle_url=toggle_url label_name=organization.company_name entity_label="a organização" show_label=True %}
+            </div>
+        </div>
+    </div>
+
+    <!-- GRID DE CARDS -->
+    <div class="lia-grid lia-grid-auto-fit lia-gap-4">
+
+        <!-- CARD 1: Identificação -->
+        <div class="lia-card">
+            <div class="lia-card__header">
+                <h3 class="lia-card__title">
+                    <i data-lucide="building-2" class="lucide-sm"></i>
+                    Identificação
+                </h3>
+            </div>
+            <div class="lia-card__body">
+                <dl class="lia-data-list">
+                    <div class="lia-data-list__row">
+                        <dt>Razão Social</dt>
+                        <dd>{{ organization.company_name }}</dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Slug</dt>
+                        <dd><code>{{ organization.slug }}</code></dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Documento</dt>
+                        <dd>{{ organization.document|default:"—" }}</dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Cadastrada em</dt>
+                        <dd>{{ organization.created_at|date:"d/m/Y H:i" }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- CARD 2: Contato -->
+        <div class="lia-card">
+            <div class="lia-card__header">
+                <h3 class="lia-card__title">
+                    <i data-lucide="mail" class="lucide-sm"></i>
+                    Contato
+                </h3>
+            </div>
+            <div class="lia-card__body">
+                <dl class="lia-data-list">
+                    <div class="lia-data-list__row">
+                        <dt>E-mail</dt>
+                        <dd>{{ organization.email|default:"—" }}</dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Telefone</dt>
+                        <dd>{{ organization.phone|default:"—" }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- CARD 3: Endereço -->
+        <div class="lia-card">
+            <div class="lia-card__header">
+                <h3 class="lia-card__title">
+                    <i data-lucide="map-pin" class="lucide-sm"></i>
+                    Endereço
+                </h3>
+            </div>
+            <div class="lia-card__body">
+                <dl class="lia-data-list">
+                    <div class="lia-data-list__row">
+                        <dt>CEP</dt>
+                        <dd>{{ organization.zip_code|default:"—" }}</dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Logradouro</dt>
+                        <dd>{{ organization.address|default:"—" }}</dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Bairro</dt>
+                        <dd>{{ organization.neighborhood|default:"—" }}</dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Cidade / UF</dt>
+                        <dd>
+                            {% if organization.city or organization.state %}
+                                {{ organization.city }}{% if organization.state %} / {{ organization.state }}{% endif %}
+                            {% else %}—{% endif %}
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- CARD 4: Proprietário (Owner) -->
+        <div class="lia-card">
+            <div class="lia-card__header">
+                <h3 class="lia-card__title">
+                    <i data-lucide="user-cog" class="lucide-sm"></i>
+                    Proprietário
+                </h3>
+            </div>
+            <div class="lia-card__body">
+                {% if organization.owner %}
+                    <dl class="lia-data-list">
+                        <div class="lia-data-list__row">
+                            <dt>Nome</dt>
+                            <dd>{{ organization.owner.get_full_name|default:organization.owner.email }}</dd>
+                        </div>
+                        <div class="lia-data-list__row">
+                            <dt>E-mail</dt>
+                            <dd>{{ organization.owner.email }}</dd>
+                        </div>
+                    </dl>
+                {% else %}
+                    <p class="lia-text-muted lia-text-sm">Nenhum proprietário vinculado.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- CARD 5: Estatísticas -->
+        <div class="lia-card">
+            <div class="lia-card__header">
+                <h3 class="lia-card__title">
+                    <i data-lucide="bar-chart-3" class="lucide-sm"></i>
+                    Visão Geral
+                </h3>
+            </div>
+            <div class="lia-card__body">
+                <dl class="lia-data-list">
+                    <div class="lia-data-list__row">
+                        <dt>Status atual</dt>
+                        <dd>
+                            {% if organization.is_active %}
+                                <span class="lia-badge lia-badge--success">Ativa</span>
+                            {% else %}
+                                <span class="lia-badge lia-badge--danger">Inativa</span>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div class="lia-data-list__row">
+                        <dt>Membros ativos</dt>
+                        <dd>{{ members_count }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

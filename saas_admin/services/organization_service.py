@@ -65,3 +65,29 @@ class AdminOrganizationService:
                 "is_new_user": True,
                 "message": "Nova empresa criada. O novo usuário receberá um e-mail com o link de acesso."
             }
+
+    @staticmethod
+    @transaction.atomic
+    def toggle_status(organization):
+
+        was_active = organization.is_active
+
+        if was_active:
+            OrganizationService.deactivate_organization(organization)
+            action = "deactivated"
+            message = f"Organização '{organization.company_name}' foi desativada."
+        else:
+            OrganizationService.activate_organization(organization)
+            action = "activated"
+            message = f"Organização '{organization.company_name}' foi reativada."
+
+        logger.info(
+            "Admin SaaS: toggle_status org=%s action=%s",
+            organization.slug, action,
+        )
+
+        return {
+            "organization": organization,
+            "action": action,
+            "message": message,
+        }
