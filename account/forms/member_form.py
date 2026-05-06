@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from account.models.member import RemunerationType
 from account.models.profiles import RegistrationType
 from core.enums.account import Gender
-from core.forms import BaseForm
+from core.forms.base_form import BaseForm
 from account.models.specialty import Specialty
 
 User = get_user_model()

@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from core.enums.account import Gender
-from core.forms import BaseForm
+from core.forms.base_form import BaseForm
 
 User = get_user_model()
 

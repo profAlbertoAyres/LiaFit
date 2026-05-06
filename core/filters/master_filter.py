@@ -1,7 +1,8 @@
 # core/filters/master_filter.py
 import django_filters
+
 from core.filters.base_filter import BaseFilter
-from core.models import Module, Permission, Role
+from core.models import Module, Permission
 
 
 class ModuleFilter(BaseFilter):
@@ -9,6 +10,7 @@ class ModuleFilter(BaseFilter):
         model = Module
         fields = ['is_active']
         search_fields = ['name', 'slug', 'description']
+
 
 class PermissionFilter(BaseFilter):
     module = django_filters.ModelChoiceFilter(
@@ -21,10 +23,3 @@ class PermissionFilter(BaseFilter):
         model = Permission
         fields = ['module']
         search_fields = ['name', 'codename', 'description']
-
-
-class RoleFilter(BaseFilter):
-    class Meta:
-        model = Role
-        fields = []
-        search_fields = ['name', 'slug', 'description']

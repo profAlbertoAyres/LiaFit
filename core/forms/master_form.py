@@ -1,6 +1,6 @@
 # core/forms/master_form.py
 from core.forms.base_form import BaseModelForm
-from core.models import Module, Permission, Role
+from core.models import Module, Permission
 
 class ModuleForm(BaseModelForm):
     class Meta:

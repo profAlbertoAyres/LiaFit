@@ -1,15 +1,17 @@
-from django.conf import settings
+# core/context_processors/tenant_processor.py
+"""
+Context processor de tenant (organização atual).
+
+Injeta no template:
+    - current_organization: organização ativa do request (vem do middleware)
+    - current_membership: vínculo do usuário com a organização atual
+    - user_organizations: lista de orgs ativas do usuário (para o seletor)
+    - show_org_selector: True se o usuário tem mais de uma org ativa
+
+Depende de `request.context` populado pelo SaaSContextMiddleware.
+"""
 from account.models import OrganizationMember
 
-
-def global_settings(request):
-    return {
-        'APP_NAME': getattr(settings, 'APP_NAME', 'Lia Linda'),
-        'APP_DOMAIN': getattr(settings, 'APP_DOMAIN', 'lialinda.com.br'),
-        'APP_SUPPORT_EMAIL': getattr(
-            settings, 'APP_SUPPORT_EMAIL', 'suporte@lialinda.com.br'
-        ),
-    }
 
 def tenant_context(request):
     if not hasattr(request, 'context'):

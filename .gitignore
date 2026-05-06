@@ -104,3 +104,7 @@ docker-compose.override.yml
 # Quando amadurecerem, viram management commands em app/management/commands/
 scripts/
 !.env.example
+
+# Dumps gerados para análise (scripts/export_projeto.py / tree)
+projeto_completo.txt
+estrutura.txt

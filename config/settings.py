@@ -77,7 +77,6 @@ INSTALLED_APPS = [
     'website',
     'saas_admin',
     'financial',
-    'shared',
     'scheduling',
     'workout'
 ]
@@ -113,9 +112,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
-                'core.menu.context_processors.menu_context',
-                'core.context_processors.global_settings',
+                'core.context_processors.app_settings',
                 'core.context_processors.tenant_context',
+                'core.menu.context_processors.menu_context',
             ],
         },
     },
