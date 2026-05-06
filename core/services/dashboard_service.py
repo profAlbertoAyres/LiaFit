@@ -1,19 +1,57 @@
 # core/services/dashboard_service.py
-from django.urls import reverse
-
-from account.models import OrganizationClient, OrganizationMember
+from account.models import OrganizationClient
+from core.services.space_service import get_user_spaces
 
 
 class DashboardService:
     """
-    Serviço que consolida as regras de negócio e métricas do Dashboard.
-    Isolado por tenant (organization).
+    Serviço que consolida regras do Dashboard:
+      - Decisão de redirect pós-login (baseada em espaços)
+      - Métricas e dados de exibição (quando dentro de uma org)
     """
+
+    # ------------------------------------------------------------------
+    # Decisão de redirect (chamada pela DashboardView.dispatch)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def get_redirect_url(request) -> str | None:
+        """
+        Retorna:
+          - URL (str) → a view deve redirecionar
+          - None      → a view renderiza o template (cards ou vazio)
+
+        Regras:
+          1. Se já estamos dentro de um tenant (URL com org_slug) → não redireciona
+          2. Se user não autenticado → não é nossa responsabilidade
+          3. Se user tem exatamente 1 espaço → redireciona pra ele (auto-entra)
+          4. Se user tem 0 ou 2+ espaços → renderiza template
+        """
+        # 1. Já está em rota de tenant → segue normal
+        if 'org_slug' in request.resolver_match.kwargs:
+            return None
+
+        # 2. Não autenticado → deixa o auth tratar
+        if not request.user.is_authenticated:
+            return None
+
+        # 3. Auto-entra se tiver só 1 espaço
+        spaces = get_user_spaces(request.user)
+        if len(spaces) == 1:
+            return spaces[0]['url']
+
+        # 4. 0 ou 2+ espaços → renderiza
+        return None
+
+    # ------------------------------------------------------------------
+    # Dados de exibição (quando dentro de uma organização)
+    # ------------------------------------------------------------------
 
     @staticmethod
     def get_dashboard_data(organization, membership=None) -> dict:
         """
-        Retorna os dados necessários para o dashboard da clínica.
+        Retorna métricas e dados de exibição do dashboard de uma org.
+        Quando não há organization, retorna estrutura vazia.
         """
         if not organization:
             return {
@@ -21,19 +59,17 @@ class DashboardService:
                 'recent_clients': [],
             }
 
-        # 1. Métrica: Total de Clientes Ativos
-        # Usando o ActiveClientManager que você criou (arquivados não entram)
         total_clients = OrganizationClient.objects.filter(
             organization=organization
         ).count()
 
-        # 2. Lista: Últimos 5 clientes cadastrados
-        # select_related('user') evita N+1 queries ao exibir o nome/email na tabela
-        recent_clients = OrganizationClient.objects.filter(
-            organization=organization
-        ).select_related('user').order_by('-created_at')[:5]
+        recent_clients = (
+            OrganizationClient.objects
+            .filter(organization=organization)
+            .select_related('user')
+            .order_by('-created_at')[:5]
+        )
 
-        # Retornamos placeholders zerados para os widgets futuros para não quebrar o HTML
         return {
             'metrics': {
                 'total_clients': total_clients,
@@ -41,40 +77,5 @@ class DashboardService:
                 'today_appointments': 0,
                 'monthly_revenue': 0.0,
             },
-            'recent_clients': recent_clients
+            'recent_clients': recent_clients,
         }
-
-    @staticmethod
-    def get_redirect_url(request) -> str | None:
-        """
-        Retorna:
-          - URL (str) → a view deve redirecionar
-          - None      → a view segue o fluxo normal
-        """
-        # Se a URL já tem slug, não precisa redirecionar
-        if 'org_slug' in request.resolver_match.kwargs:
-            return None
-
-        # Usuário não autenticado → não é nossa responsabilidade
-        if not request.user.is_authenticated:
-            return None
-
-        # Busca organização ativa
-        slug = DashboardService._get_user_org_slug(request.user)
-
-        # Tem org → manda pra rota com slug
-        if slug:
-            return reverse('tenant:dashboard', kwargs={'org_slug': slug})
-
-        # Não tem org → segue o fluxo (renderiza sem slug)
-        return None
-
-    @staticmethod
-    def _get_user_org_slug(user) -> str | None:
-        membership = (
-            OrganizationMember.objects
-            .filter(user=user, is_active=True, organization__is_active=True)
-            .select_related('organization')
-            .first()
-        )
-        return membership.organization.slug if membership else None

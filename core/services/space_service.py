@@ -1,23 +1,6 @@
-"""
-Service responsável por descobrir os "espaços" disponíveis para um usuário.
-
-Conceito:
-    Um "espaço" é um modo de uso do sistema. Existem 3 tipos:
-      - 🟦 personal → Minha Área (universal, todo user tem)
-      - 🟩 org      → Uma organização que o user é membro ativo
-      - 🟥 saas     → Painel SaaS Admin (equipe interna Lia Linda)
-
-Este service NÃO toma decisões de redirecionamento — só lista o que o user TEM.
-Quem decide pra onde mandar é o `resolve_space_destination` (Etapa 2).
-"""
 from __future__ import annotations
 
-
 from django.urls import reverse, NoReverseMatch
-
-
-
-from django.urls import reverse
 
 from account.models import OrganizationMember
 from core.services.permission_service import is_saas_staff
@@ -53,7 +36,6 @@ def get_user_spaces(user) -> list[dict]:
     Returns:
         list[dict]: lista de espaços. Vazia se user não autenticado.
     """
-    # Defensive: user anônimo nunca tem espaços.
     if not user or not user.is_authenticated:
         return []
 
@@ -119,6 +101,18 @@ def _build_org_spaces(user) -> list[dict]:
         for m in memberships
     ]
 
+
+def _build_saas_space() -> dict:
+    """Constrói o card do painel SaaS Admin (equipe interna)."""
+    return {
+        "kind": KIND_SAAS,
+        "key": KIND_SAAS,
+        "name": "Admin SaaS",
+        "icon": "server",
+        "url": _safe_reverse("saas_admin:dashboard", fallback="/painel/"),
+    }
+
+
 def _safe_reverse(viewname: str, fallback: str = "#") -> str:
     """Resolve URL ou retorna fallback se a rota não existir.
 
@@ -131,13 +125,21 @@ def _safe_reverse(viewname: str, fallback: str = "#") -> str:
         return fallback
 
 
+# ----------------------------------------------------------------------
+# Resolução de destino pós-login
+# ----------------------------------------------------------------------
 
-def _build_saas_space() -> dict:
-    """Constrói o card do painel SaaS Admin (equipe interna)."""
-    return {
-        "kind": KIND_SAAS,
-        "key": KIND_SAAS,
-        "name": "Admin SaaS",
-        "icon": "server",
-        "url": _safe_reverse("saas_admin:dashboard", fallback="/painel/"),
-    }
+def resolve_space_destination(user) -> str | None:
+    """
+    Decide a URL de destino após o login.
+
+    Sempre retorna /dashboard/. A DashboardView é quem decide
+    se redireciona, mostra cards ou renderiza dashboard vazio.
+
+    Returns:
+        URL string ou None se user inválido.
+    """
+    if not user or not user.is_authenticated:
+        return None
+
+    return reverse("dashboard")

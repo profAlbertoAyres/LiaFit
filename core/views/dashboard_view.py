@@ -2,6 +2,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from core.services.dashboard_service import DashboardService
+from core.services.space_service import get_user_spaces
 from core.views.base_view import BaseAuthMixin, TenantContextMixin
 
 
@@ -16,7 +17,7 @@ class DashboardView(TenantContextMixin, BaseAuthMixin, TemplateView):
         if redirect_url:
             return redirect(redirect_url)
 
-        # Service disse que não → segue o fluxo normal
+        # Service disse que não → segue o fluxo normal (renderiza template)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -31,6 +32,9 @@ class DashboardView(TenantContextMixin, BaseAuthMixin, TemplateView):
             membership=membership,
         )
 
+        # Espaços disponíveis (pra renderizar cards quando 2+)
+        spaces = get_user_spaces(self.request.user)
+
         context.update({
             'organization': organization,
             'membership': membership,
@@ -38,5 +42,7 @@ class DashboardView(TenantContextMixin, BaseAuthMixin, TemplateView):
             'modules': getattr(ctx, 'modules', []) if ctx else [],
             'metrics': dashboard_data.get('metrics'),
             'recent_clients': dashboard_data.get('recent_clients'),
+            'spaces': spaces,
+            'has_multiple_spaces': len(spaces) >= 2,
         })
         return context

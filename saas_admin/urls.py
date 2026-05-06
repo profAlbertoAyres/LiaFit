@@ -11,6 +11,7 @@ Uso em templates: {% url 'saas_admin:dashboard' %}
 from django.urls import path
 
 from account.views.organization_view import OrganizationDetailView
+from saas_admin.views.dashboard_view import DashboardView
 from saas_admin.views.organization_views import OrganizationListView, OrganizationCreateView, \
     OrganizationToggleStatusView
 from saas_admin.views.specialty_view import SpecialtyListView, SpecialtyCreateView, SpecialtyUpdateView
@@ -19,7 +20,7 @@ app_name = "saas_admin"
 
 urlpatterns = [
     # Painel inicial → /admin-saas/
-    # path("", DashboardView.as_view(), name="dashboard",),
+    path("", DashboardView.as_view(), name="dashboard"),
 
     # Organizações → /admin-saas/orgs/
     path("organizations/", OrganizationListView.as_view(), name="organization_list",),
