@@ -1,0 +1,232 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Painel | Admin SaaS{% endblock %}
+
+{% block page_content %}
+
+    <!-- CABEÇALHO DA PÁGINA -->
+    <div class="lia-page-header">
+        <div>
+            <h1 class="lia-page-header__title">
+                Olá, {{ request.user.get_short_name|default:request.user.email }} 👋
+            </h1>
+            <p class="lia-page-header__subtitle">
+                Visão geral da plataforma LiaFit.
+            </p>
+        </div>
+        <div class="lia-page-header__actions">
+            <div class="lia-flex lia-gap-2">
+                <a href="{% url 'saas_admin:organization_create' %}" class="lia-btn lia-btn--primary"
+                   title="Cadastrar nova organização">
+                    <i data-lucide="plus" class="lucide-sm"></i>
+                    <span>Nova Organização</span>
+                </a>
+                <a href="{% url 'saas_admin:specialty_create' %}" class="lia-btn lia-btn--secondary"
+                   title="Cadastrar nova especialidade">
+                    <i data-lucide="plus" class="lucide-sm"></i>
+                    <span>Nova Especialidade</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARDS DE MÉTRICAS -->
+    <div class="lia-form-row lia-mb-3">
+
+        <!-- Card 1: Organizações Ativas -->
+        <div class="lia-form-group">
+            <div class="lia-card">
+                <div class="lia-card__body">
+                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                        <span class="lia-text-sm lia-text-muted">Organizações Ativas</span>
+                        <i data-lucide="building-2" class="lucide-sm lia-text-success"></i>
+                    </div>
+                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        {{ metrics.active_organizations }}
+                    </div>
+                    <div class="lia-text-xs lia-text-muted lia-mt-2">
+                        de {{ metrics.total_organizations }} no total
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Organizações Inativas -->
+        <div class="lia-form-group">
+            <div class="lia-card">
+                <div class="lia-card__body">
+                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                        <span class="lia-text-sm lia-text-muted">Organizações Inativas</span>
+                        <i data-lucide="building" class="lucide-sm lia-text-muted"></i>
+                    </div>
+                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        {{ metrics.inactive_organizations }}
+                    </div>
+                    <div class="lia-text-xs lia-text-muted lia-mt-2">
+                        Aguardando ativação
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Usuários Ativos -->
+        <div class="lia-form-group">
+            <div class="lia-card">
+                <div class="lia-card__body">
+                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                        <span class="lia-text-sm lia-text-muted">Usuários Ativos</span>
+                        <i data-lucide="users" class="lucide-sm lia-text-success"></i>
+                    </div>
+                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        {{ metrics.total_users }}
+                    </div>
+                    <div class="lia-text-xs lia-text-muted lia-mt-2">
+                        Em toda a plataforma
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Especialidades -->
+        <div class="lia-form-group">
+            <div class="lia-card">
+                <div class="lia-card__body">
+                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                        <span class="lia-text-sm lia-text-muted">Especialidades Ativas</span>
+                        <i data-lucide="stethoscope" class="lucide-sm lia-text-success"></i>
+                    </div>
+                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        {{ metrics.total_specialties }}
+                    </div>
+                    <div class="lia-text-xs lia-text-muted lia-mt-2">
+                        Disponíveis no sistema
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CARD DESTAQUE: NOVAS ORGS NO PERÍODO -->
+    <div class="lia-card lia-mb-3">
+        <div class="lia-card__body lia-py-4">
+            <div class="lia-flex lia-items-center lia-justify-between">
+                <div class="lia-flex lia-items-center lia-gap-3">
+                    <div class="lia-avatar lia-avatar--sm lia-bg-secondary lia-text-muted lia-flex lia-items-center lia-justify-center">
+                        <i data-lucide="trending-up" class="lucide-sm"></i>
+                    </div>
+                    <div>
+                        <div class="lia-font-medium">Crescimento Recente</div>
+                        <div class="lia-text-xs lia-text-muted">Novas organizações nos últimos 30 dias</div>
+                    </div>
+                </div>
+                <div class="lia-font-bold" style="font-size: 1.75rem; line-height: 1;">
+                    {{ metrics.new_orgs_last_30_days }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABELA: ÚLTIMAS ORGANIZAÇÕES CADASTRADAS -->
+    <div class="lia-page-header lia-mb-2">
+        <div>
+            <h2 class="lia-page-header__title" style="font-size: 1.25rem;">Últimas Organizações Cadastradas</h2>
+            <p class="lia-page-header__subtitle">As 5 organizações mais recentes da plataforma.</p>
+        </div>
+        <div class="lia-page-header__actions">
+            <a href="{% url 'saas_admin:organization_list' %}" class="lia-btn lia-btn--ghost lia-btn--sm">
+                <span>Ver todas</span>
+                <i data-lucide="arrow-right" class="lucide-sm"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="lia-table-container">
+        <table class="lia-table">
+            <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>Acesso (URL)</th>
+                <th>Status</th>
+                <th class="text-center">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for org in metrics.recent_organizations %}
+                <tr>
+                    <!-- Coluna 1: Nome (CLICÁVEL) -->
+                    <td>
+                        <a href="{% url 'saas_admin:organization_detail' org.pk %}"
+                           class="lia-flex lia-items-center lia-gap-3 lia-link-reset"
+                           title="Ver detalhes de {{ org.company_name }}">
+                            {% if org.logo %}
+                                <img src="{{ org.logo.url }}" alt="Logo {{ org.company_name }}"
+                                     class="lia-avatar lia-avatar--sm" style="object-fit: cover;">
+                            {% else %}
+                                <div class="lia-avatar lia-avatar--sm lia-bg-secondary lia-text-muted lia-flex lia-items-center lia-justify-center lia-font-bold">
+                                    {{ org.company_name|slice:":1"|upper }}
+                                </div>
+                            {% endif %}
+
+                            <div>
+                                <div class="lia-font-medium">{{ org.company_name }}</div>
+                                <div class="lia-text-xs lia-text-muted">
+                                    Cadastrado em {{ org.created_at|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                        </a>
+                    </td>
+
+                    <!-- Coluna 2: URL / Slug -->
+                    <td>
+                        <div class="lia-text-sm">
+                            <span class="lia-font-medium">{{ org.slug }}</span>.liafit.com.br
+                        </div>
+                    </td>
+
+                    <!-- Coluna 3: Status -->
+                    <td>
+                        {% if org.is_active %}
+                            <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold">Ativa</span>
+                        {% else %}
+                            <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Inativa</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Coluna 4: Ações -->
+                    <td class="lia-text-center">
+                        <div class="lia-table__actions lia-justify-center">
+                            <a href="{% url 'saas_admin:organization_detail' org.pk %}"
+                               class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
+                               title="Ver detalhes do tenant">
+                                <i data-lucide="eye" class="lucide-sm"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="lia-p-0">
+                        <div class="lia-table-empty">
+                            <i data-lucide="building" class="lia-table-empty__icon"></i>
+                            <div class="lia-table-empty__text">Nenhuma organização cadastrada ainda.</div>
+                            <p class="lia-text-sm lia-text-muted lia-mt-2">
+                                Comece cadastrando a primeira clínica da plataforma.
+                            </p>
+
+                            <div class="lia-flex lia-justify-center lia-gap-3 lia-mt-4">
+                                <a href="{% url 'saas_admin:organization_create' %}"
+                                   class="lia-btn lia-btn--primary">
+                                    <i data-lucide="plus" class="lucide-sm"></i> Cadastrar Organização
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

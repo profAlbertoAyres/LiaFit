@@ -1,0 +1,85 @@
+{% extends 'base_auth.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% translate "Meus Espaços" %} · {{ APP_NAME }}{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{% static 'css/components/space-selection.css' %}">
+{% endblock %}
+
+{% block page_content %}
+<div class="lia-space-hub">
+
+    {# ============================================================ #}
+    {# CASO 1: Usuário tem 2+ espaços → cards de seleção             #}
+    {# ============================================================ #}
+    {% if has_multiple_spaces %}
+        <header class="lia-space-hub__header">
+            <h1 class="lia-space-hub__title">
+                {% blocktranslate with name=request.user.get_short_name|default:request.user.email %}
+                    Olá, {{ name }} 👋
+                {% endblocktranslate %}
+            </h1>
+            <p class="lia-space-hub__subtitle">
+                {% translate "Escolha onde você quer trabalhar agora:" %}
+            </p>
+        </header>
+
+        <ul class="lia-space-hub__grid" role="list">
+            {% for space in spaces %}
+                <li>
+                    <a href="{{ space.url }}"
+                       class="lia-space-card lia-space-card--{{ space.kind }}"
+                       data-space-key="{{ space.key }}"
+                       aria-label="{{ space.name }}">
+
+                        <span class="lia-space-card__icon" aria-hidden="true">
+                            <i data-lucide="{{ space.icon }}"></i>
+                        </span>
+
+                        <span class="lia-space-card__body">
+                            <span class="lia-space-card__name">{{ space.name }}</span>
+                            <span class="lia-space-card__kind">
+                                {% if space.kind == 'personal' %}
+                                    {% translate "Espaço pessoal" %}
+                                {% elif space.kind == 'org' %}
+                                    {% translate "Organização" %}
+                                {% elif space.kind == 'saas' %}
+                                    {% translate "Painel administrativo" %}
+                                {% else %}
+                                    {{ space.kind|title }}
+                                {% endif %}
+                            </span>
+                        </span>
+
+                        <span class="lia-space-card__arrow" aria-hidden="true">
+                            <i data-lucide="arrow-right"></i>
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+    {# ============================================================ #}
+    {# CASO 2: Fallback raríssimo — 0 espaços                        #}
+    {# ============================================================ #}
+    {% else %}
+        <div class="lia-space-hub__empty">
+            <div class="lia-space-hub__empty-icon" aria-hidden="true">
+                <i data-lucide="inbox"></i>
+            </div>
+            <h2 class="lia-space-hub__empty-title">
+                {% translate "Nenhum espaço disponível" %}
+            </h2>
+            <p class="lia-space-hub__empty-text">
+                {% translate "Sua conta ainda não está vinculada a nenhuma organização. Entre em contato com o suporte." %}
+            </p>
+            <a href="{% url 'website:index' %}" class="lia-btn lia-btn--primary lia-mt-4">
+                {% translate "Voltar para o site" %}
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
