@@ -5,7 +5,7 @@ from core.views.base_view import BaseAuthMixin, TenantContextMixin
 
 
 class DashboardView(TenantContextMixin, BaseAuthMixin, TemplateView):
-    template_name = 'core/dashboard/dashboard.html'
+    template_name = 'core/tenant/dashboard.html'
     permission_required = None
     require_tenant = False
 

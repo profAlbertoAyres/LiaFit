@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from core.views.space_hub_view import SpaceHubView
+from core.views.shared.space_hub_view import SpaceHubView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
