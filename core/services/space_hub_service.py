@@ -15,6 +15,8 @@ from typing import Optional
 from django.http import HttpRequest
 
 from core.services.space_service import get_user_spaces
+from core.services.space_constants_service import SESSION_LAST_SPACE_KEY
+
 
 
 class SpaceHubService:
@@ -45,6 +47,12 @@ class SpaceHubService:
         # Atalho: usuário com 1 espaço só vai direto pra ele
         if len(spaces) == 1:
             return spaces[0]['url']
+
+        last_key = request.session.get(SESSION_LAST_SPACE_KEY)
+        if last_key:
+            match = next((s for s in spaces if s['key'] == last_key), None)
+            if match:
+                return match['url']
 
         # 0 ou 2+ → renderiza a tela hub
         return None

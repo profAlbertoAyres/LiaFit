@@ -9,7 +9,7 @@ from core.services.permission_service import is_saas_staff
 # ----------------------------------------------------------------------
 # Constantes de "kind" — usadas como discriminador nos dicts e na session
 # ----------------------------------------------------------------------
-KIND_PERSONAL = "personal"
+KIND_GLOBAL = "global"
 KIND_ORG = "org"
 KIND_SAAS = "saas"
 
@@ -24,8 +24,8 @@ def get_user_spaces(user) -> list[dict]:
       3. Admin SaaS (sempre por último, se aplicável)
 
     Cada espaço é um dict com:
-      - kind: 'personal' | 'org' | 'saas'
-      - key:  chave única pra session ('personal', 'org:<slug>', 'saas')
+      - kind: 'global' | 'org' | 'saas'
+      - key:  chave única para session ('global', 'org:<slug>', 'saas')
       - name: nome exibido no card
       - icon: nome do ícone Lucide
       - url:  URL home do espaço (já resolvida)
@@ -42,7 +42,7 @@ def get_user_spaces(user) -> list[dict]:
     spaces: list[dict] = []
 
     # 1️⃣ Minha Área — universal, todo user autenticado tem.
-    spaces.append(_build_personal_space())
+    spaces.append(_build_global_space())
 
     # 2️⃣ Organizações — memberships ativos em orgs ativas.
     spaces.extend(_build_org_spaces(user))
@@ -58,14 +58,14 @@ def get_user_spaces(user) -> list[dict]:
 # Builders privados — um por tipo de espaço
 # ----------------------------------------------------------------------
 
-def _build_personal_space() -> dict:
-    """Constrói o card da Minha Área (espaço pessoal/universal)."""
+def _build_global_space() -> dict:
+    """Constrói o card do espaço Global — universal, todo User tem."""
     return {
-        "kind": KIND_PERSONAL,
-        "key": KIND_PERSONAL,
+        "kind": KIND_GLOBAL,
+        "key": KIND_GLOBAL,
         "name": "Minha Área",
         "icon": "home",
-        "url": reverse("master:dashboard"),
+        "url": reverse("global:dashboard"),
     }
 
 

@@ -41,7 +41,7 @@
                         <span class="lia-space-card__body">
                             <span class="lia-space-card__name">{{ space.name }}</span>
                             <span class="lia-space-card__kind">
-                                {% if space.kind == 'personal' %}
+                                {% if space.kind == 'global' %}
                                     {% translate "Espaço pessoal" %}
                                 {% elif space.kind == 'org' %}
                                     {% translate "Organização" %}

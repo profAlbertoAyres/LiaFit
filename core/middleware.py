@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from core.models import OrganizationModule, Permission
 from core.services.context_service import ContextService, MemberContext
-from core.services.permission_service import is_saas_staff  # 🆕
+from core.services.permission_service import is_saas_staff
 from account.models import Organization, OrganizationMember
 
 ORG_SLUG_PATTERN = re.compile(r'^/org/(?P<org_slug>[\w-]+)/')
@@ -42,7 +42,7 @@ class SaaSContextMiddleware:
 
         request.tenant = org
         request.context = ctx
-        request.session['last_org_slug'] = org_slug
+        # request.session['last_org_slug'] = org_slug
 
         if ctx.membership:
             request.user_role = ctx.membership.roles.order_by('-level').first()
@@ -54,8 +54,7 @@ class SaaSContextMiddleware:
         return match.group('org_slug') if match else None
 
     def _build_context(self, user, org):
-        # 🆕 SaaS staff (você + equipe interna) entra em qualquer org
-        # para dar suporte técnico, com TODAS as permissões.
+
         if is_saas_staff(user):
             return MemberContext(
                 user=user,

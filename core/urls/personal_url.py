@@ -1,4 +1,4 @@
-# core/urls/master_url.py
+# core/urls/personal_url.py
 from django.urls import path
 
 from core.views import DashboardView
@@ -6,7 +6,7 @@ from core.views.master_view import (
     ModuleListView, ModuleCreateView,
     PermissionListView, PermissionCreateView,)
 
-app_name = 'master'
+app_name = 'global'
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
