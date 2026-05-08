@@ -8,5 +8,5 @@ from .base_view import (
     BaseDetailView,
     BaseDeleteView,
 )
-from .dashboard_view import DashboardView
+from core.views.tenant.dashboard_view import DashboardView
 from .errors_view import ratelimited_view

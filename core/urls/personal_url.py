@@ -6,7 +6,7 @@ from core.views.master_view import (
     ModuleListView, ModuleCreateView,
     PermissionListView, PermissionCreateView,)
 
-app_name = 'global'
+app_name = 'personal'
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
