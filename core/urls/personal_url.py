@@ -1,22 +1,16 @@
 # core/urls/personal_url.py
 from django.urls import path
 
-from core.views import DashboardView
 from core.views.master_view import (
     ModuleListView, ModuleCreateView,
     PermissionListView, PermissionCreateView,)
+from core.views.personal.dashboard_view import PersonalDashboardView
 
 app_name = 'personal'
 
 urlpatterns = [
-    path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('dashboard/', PersonalDashboardView.as_view(), name='dashboard'),
 
     # ── MÓDULOS ──
-    path('modules/', ModuleListView.as_view(), name='module_list'),
-    path('modules/create/', ModuleCreateView.as_view(), name='module_create'),
-
-    # ── PERMISSÕES GLOBAIS ──
-    path('permissions/', PermissionListView.as_view(), name='permission_list'),
-    path('permissions/create/', PermissionCreateView.as_view(), name='permission_create'),
 
     ]

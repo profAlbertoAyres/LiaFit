@@ -9,77 +9,94 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="lia-space-hub">
+<div class="lia-space-select">
+    <div class="lia-space-select__container">
 
-    {# ============================================================ #}
-    {# CASO 1: Usuário tem 2+ espaços → cards de seleção             #}
-    {# ============================================================ #}
-    {% if has_multiple_spaces %}
-        <header class="lia-space-hub__header">
-            <h1 class="lia-space-hub__title">
-                {% blocktranslate with name=request.user.get_short_name|default:request.user.email %}
-                    Olá, {{ name }} 👋
-                {% endblocktranslate %}
-            </h1>
-            <p class="lia-space-hub__subtitle">
-                {% translate "Escolha onde você quer trabalhar agora:" %}
-            </p>
-        </header>
+        {% if has_multiple_spaces %}
+            <header class="lia-space-select__header">
+                <!-- Avatar do Usuário Logado -->
+                <div class="lia-space-select__user-avatar">
+                    {% if request.user.photo %}
+                        <img src="{{ request.user.photo.url }}" alt="{{ request.user.fullname }}" class="lia-avatar-img">
+                    {% else %}
+                        <div class="lia-avatar-initials">
+                            {{ request.user.fullname|default:request.user.email|first|upper }}
+                        </div>
+                    {% endif %}
+                </div>
 
-        <ul class="lia-space-hub__grid" role="list">
-            {% for space in spaces %}
-                <li>
-                    <a href="{{ space.url }}"
-                       class="lia-space-card lia-space-card--{{ space.kind }}"
-                       data-space-key="{{ space.key }}"
-                       aria-label="{{ space.name }}">
+                <h1 class="lia-space-select__title">
+                    {% blocktranslate with name=request.user.get_short_name|default:request.user.email %}
+                        Onde vamos trabalhar hoje, {{ name }}?
+                    {% endblocktranslate %}
+                </h1>
+                <p class="lia-space-select__subtitle">
+                    {% translate "Selecione um perfil para acessar" %}
+                </p>
+            </header>
 
-                        <span class="lia-space-card__icon" aria-hidden="true">
-                            <i data-lucide="{{ space.icon }}"></i>
-                        </span>
+            <ul class="lia-netflix-grid" role="list">
+                {% for space in spaces %}
+                    <li>
+                        <a href="{{ space.url }}"
+                           class="lia-netflix-card lia-netflix-card--{{ space.kind }}"
+                           data-space-key="{{ space.key }}"
+                           aria-label="{{ space.name }}">
 
-                        <span class="lia-space-card__body">
-                            <span class="lia-space-card__name">{{ space.name }}</span>
-                            <span class="lia-space-card__kind">
-                                {% if space.kind == 'global' %}
-                                    {% translate "Espaço pessoal" %}
+                            <!-- Quadrado da Logo ou Iniciais -->
+                            <div class="lia-netflix-card__box">
+                                {% if space.logo_url %}
+                                    <img src="{{ space.logo_url }}" alt="Logo {{ space.name }}" class="lia-netflix-card__logo">
+                                {% else %}
+                                    <div class="lia-netflix-card__fallback">
+                                        <!-- Se tiver um ícone definido (ex: para Admin), exibe. Senão, mostra a letra -->
+                                        {% if space.icon and space.kind != 'org' %}
+                                            <i data-lucide="{{ space.icon }}"></i>
+                                        {% else %}
+                                            {{ space.name|first|upper }}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Textos -->
+                            <span class="lia-netflix-card__name">{{ space.name }}</span>
+                            <span class="lia-netflix-card__kind">
+                                {% if space.kind == 'personal' %}
+                                    {% translate "Espaço Pessoal" %}
                                 {% elif space.kind == 'org' %}
                                     {% translate "Organização" %}
                                 {% elif space.kind == 'saas' %}
-                                    {% translate "Painel administrativo" %}
+                                    {% translate "Painel Admin" %}
                                 {% else %}
                                     {{ space.kind|title }}
                                 {% endif %}
                             </span>
-                        </span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
 
-                        <span class="lia-space-card__arrow" aria-hidden="true">
-                            <i data-lucide="arrow-right"></i>
-                        </span>
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-
-    {# ============================================================ #}
-    {# CASO 2: Fallback raríssimo — 0 espaços                        #}
-    {# ============================================================ #}
-    {% else %}
-        <div class="lia-space-hub__empty">
-            <div class="lia-space-hub__empty-icon" aria-hidden="true">
-                <i data-lucide="inbox"></i>
+        {# ============================================================ #}
+        {# Fallback: 0 espaços                                          #}
+        {# ============================================================ #}
+        {% else %}
+            <div class="lia-card lia-p-6 lia-text-center lia-mx-auto" style="max-width: 480px;">
+                <div class="lia-empty-icon lia-mx-auto lia-w-16 lia-h-16 lia-bg-gray-50 lia-text-gray-400 lia-rounded-full lia-flex lia-items-center lia-justify-center lia-mb-4" aria-hidden="true">
+                    <i data-lucide="inbox" class="lia-w-8 lia-h-8"></i>
+                </div>
+                <h2 class="lia-card__title lia-mb-2">
+                    {% translate "Nenhum espaço disponível" %}
+                </h2>
+                <p class="lia-card__subtitle lia-mb-6">
+                    {% translate "Sua conta ainda não está vinculada a nenhuma organização. Entre em contato com o suporte." %}
+                </p>
+                <a href="{% url 'website:index' %}" class="lia-btn lia-btn--primary lia-w-full">
+                    {% translate "Voltar para o site" %}
+                </a>
             </div>
-            <h2 class="lia-space-hub__empty-title">
-                {% translate "Nenhum espaço disponível" %}
-            </h2>
-            <p class="lia-space-hub__empty-text">
-                {% translate "Sua conta ainda não está vinculada a nenhuma organização. Entre em contato com o suporte." %}
-            </p>
-            <a href="{% url 'website:index' %}" class="lia-btn lia-btn--primary lia-mt-4">
-                {% translate "Voltar para o site" %}
-            </a>
-        </div>
-    {% endif %}
+        {% endif %}
 
+    </div>
 </div>
 {% endblock %}

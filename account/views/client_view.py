@@ -213,4 +213,4 @@ class AcceptClientInviteView(View):
             request,
             f"Bem-vindo(a) à {token_obj.organization.company_name}! 🎉",
         )
-        return redirect("global:dashboard")
+        return redirect("personal:dashboard")

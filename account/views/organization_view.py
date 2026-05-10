@@ -74,7 +74,7 @@ class ActivateOrganizationView(View):
             request,
             f"Empresa '{organization.company_name}' ativada com sucesso! 🎉"
         )
-        return redirect("master:dashboard")
+        return redirect("personal:dashboard")
 
 @method_decorator(never_cache, name='dispatch')
 class SetupPasswordView(View):
@@ -138,7 +138,7 @@ class SetupPasswordView(View):
                 {'error_message': 'Token inválido.'}, status=400)
 
         messages.success(request, f"Bem-vindo(a), {user.email}!")
-        return redirect("master:dashboard")
+        return redirect("personal:dashboard")
 
 class RegisterSuccess(TemplateView):
     template_name = 'accounts/auth/register_success.html'
@@ -208,7 +208,7 @@ class PasswordResetConfirmView(View):
             )
 
         messages.success(request, "Senha redefinida com sucesso! 🎉")
-        return redirect("master:dashboard")
+        return redirect("personal:dashboard")
 
 
 
@@ -291,7 +291,7 @@ class AcceptInviteView(View):
             request,
             f"Bem-vindo(a) à {token_obj.organization.company_name}! 🎉"
         )
-        return redirect("master:dashboard")
+        return redirect("personal:dashboard")
 
 
 @method_decorator(never_cache, name='dispatch')

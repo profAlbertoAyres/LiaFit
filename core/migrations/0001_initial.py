@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True, default='', verbose_name='descrição')),
                 ('icon', models.CharField(blank=True, default='', max_length=50, verbose_name='ícone')),
                 ('order', models.PositiveIntegerField(default=0, verbose_name='ordem')),
-                ('scope', models.CharField(choices=[('superuser', 'Superusuário'), ('global', 'Global (Cliente)'), ('tenant', 'Organização')], default='tenant', help_text='Define em qual contexto o módulo aparece: área admin (superuser), área do cliente (global) ou dentro de uma organização (tenant).', max_length=20, verbose_name='escopo')),
+                ('scope', models.CharField(choices=[('superuser', 'Superusuário'), ('personal', 'Pessoal (Cliente)'), ('tenant', 'Organização')], default='tenant', help_text='Define em qual contexto o módulo aparece: área admin (superuser), área do cliente (personal) ou dentro de uma organização (tenant).', max_length=20, verbose_name='escopo')),
                 ('is_active', models.BooleanField(default=True, verbose_name='ativo')),
                 ('is_universal', models.BooleanField(default=False, help_text='Permissões deste módulo são INALIENÁVEIS — concedidas automaticamente a todos os roles e não podem ser revogadas. Ex: Minha Área (perfil pessoal, dashboard do usuário).', verbose_name='módulo universal')),
                 ('is_core', models.BooleanField(default=False, help_text='Módulos core são ativados automaticamente em toda organização nova.', verbose_name='módulo essencial')),

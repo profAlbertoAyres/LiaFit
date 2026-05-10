@@ -19,18 +19,14 @@ const LiaSidebar = {
 
         if (!this.sidebar || !this.toggleBtn) return;
 
-        // Restaura estado salvo (desktop)
         this.restoreState();
 
-        // Botão toggle
         this.toggleBtn.addEventListener('click', () => this.toggle());
 
-        // Overlay fecha sidebar no mobile
         if (this.overlay) {
             this.overlay.addEventListener('click', () => this.closeMobile());
         }
 
-        // Redimensionamento da janela
         window.addEventListener('resize', () => this.handleResize());
     },
 
@@ -83,44 +79,7 @@ const LiaSidebar = {
 };
 
 
-// ─── 2. CONTROLE DO SELETOR DE CLÍNICAS (HEADER) ─────────────────────────────
-const LiaOrgSelector = {
-    toggleBtn: null,
-    dropdown: null,
-
-    init() {
-        this.toggleBtn = document.getElementById('org-selector-toggle');
-        this.dropdown = document.getElementById('org-selector-dropdown');
-
-        // Se o usuário não tiver mais de uma clínica, esses elementos não existirão no HTML
-        if (!this.toggleBtn || !this.dropdown) return;
-
-        // Botão de abrir/fechar o dropdown
-        this.toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita que o clique feche imediatamente
-            this.toggle();
-        });
-
-        // Clicar fora do dropdown faz ele fechar
-        document.addEventListener('click', (e) => this.closeIfOutside(e));
-    },
-
-    toggle() {
-        const isVisible = this.dropdown.style.display === 'block';
-        this.dropdown.style.display = isVisible ? 'none' : 'block';
-    },
-
-    closeIfOutside(e) {
-        // Se o clique não foi no botão nem dentro do dropdown, esconde o dropdown
-        if (!this.toggleBtn.contains(e.target) && !this.dropdown.contains(e.target)) {
-            this.dropdown.style.display = 'none';
-        }
-    }
-};
-
-
-// ─── 3. INICIALIZAÇÃO GLOBAL ─────────────────────────────────────────────────
+// ─── 2. INICIALIZAÇÃO GLOBAL ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     LiaSidebar.init();
-    LiaOrgSelector.init();
 });

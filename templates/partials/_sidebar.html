@@ -51,6 +51,16 @@
                 </div>
             </div>
         </div>
+        {% if user_has_multiple_spaces %}
+        <a href="{% url 'space_switch' %}"
+           class="lia-sidebar__link lia-mt-2"
+           data-tooltip="Trocar Espaço">
+            <span class="lia-sidebar__icon">
+                <i data-lucide="arrow-left-right"></i>
+            </span>
+            <span class="lia-sidebar__text">Trocar Espaço</span>
+        </a>
+    {% endif %}
 
         <a href="{% url 'auth:logout' %}"
            class="lia-sidebar__link lia-mt-2"

@@ -18,7 +18,7 @@ CATALOG = [
         "name": "Minha Área",
         "icon": "home",
         "order": 1,
-        "scope": "global",
+        "scope": "personal",
         "is_core": True,
         "is_universal": True,
         "show_in_menu": True,

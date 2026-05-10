@@ -9,7 +9,7 @@ from core.services.permission_service import is_saas_staff
 # ----------------------------------------------------------------------
 # Constantes de "kind" — usadas como discriminador nos dicts e na session
 # ----------------------------------------------------------------------
-KIND_GLOBAL = "global"
+KIND_PERSONAL = "personal"
 KIND_ORG = "org"
 KIND_SAAS = "saas"
 
@@ -24,8 +24,8 @@ def get_user_spaces(user) -> list[dict]:
       3. Admin SaaS (sempre por último, se aplicável)
 
     Cada espaço é um dict com:
-      - kind: 'global' | 'org' | 'saas'
-      - key:  chave única para session ('global', 'org:<slug>', 'saas')
+      - kind: 'personal' | 'org' | 'saas'
+      - key:  chave única para session ('personal', 'org:<slug>', 'saas')
       - name: nome exibido no card
       - icon: nome do ícone Lucide
       - url:  URL home do espaço (já resolvida)
@@ -42,7 +42,7 @@ def get_user_spaces(user) -> list[dict]:
     spaces: list[dict] = []
 
     # 1️⃣ Minha Área — universal, todo user autenticado tem.
-    spaces.append(_build_global_space())
+    spaces.append(_build_personal_space())
 
     # 2️⃣ Organizações — memberships ativos em orgs ativas.
     spaces.extend(_build_org_spaces(user))
@@ -58,14 +58,15 @@ def get_user_spaces(user) -> list[dict]:
 # Builders privados — um por tipo de espaço
 # ----------------------------------------------------------------------
 
-def _build_global_space() -> dict:
-    """Constrói o card do espaço Global — universal, todo User tem."""
+def _build_personal_space() -> dict:
+    """Constrói o card do espaço pessoal — universal, todo User tem."""
     return {
-        "kind": KIND_GLOBAL,
-        "key": KIND_GLOBAL,
+        "kind": KIND_PERSONAL,
+        "key": KIND_PERSONAL,
         "name": "Minha Área",
         "icon": "home",
-        "url": reverse("global:dashboard"),
+        "url": reverse("personal:dashboard"),
+        "select_url": reverse("space_select_personal"),
     }
 
 
@@ -97,6 +98,7 @@ def _build_org_spaces(user) -> list[dict]:
             "name": m.organization.company_name,
             "icon": "building-2",
             "url": reverse("tenant:dashboard", kwargs={"org_slug": m.organization.slug}),
+            "select_url": reverse("space_select_org", kwargs={"org_slug": m.organization.slug}),
         }
         for m in memberships
     ]
@@ -110,7 +112,9 @@ def _build_saas_space() -> dict:
         "name": "Admin SaaS",
         "icon": "server",
         "url": _safe_reverse("saas_admin:dashboard", fallback="/painel/"),
+        "select_url": reverse("space_select_saas"),
     }
+
 
 
 def _safe_reverse(viewname: str, fallback: str = "#") -> str:

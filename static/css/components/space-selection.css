@@ -1,6 +1,6 @@
 /* =============================================================================
-   LIAFIT — TELA DE SELEÇÃO DE ESPAÇO
-   Cards clicáveis para escolher Minha Área / Organização / Admin SaaS.
+   LIAFIT — TELA DE SELEÇÃO DE ESPAÇO (ESTILO NETFLIX)
+   Cards focados no Logo/Avatar, centralizados, com hover de scale.
    ============================================================================= */
 
 .lia-space-select {
@@ -14,175 +14,180 @@
 
 .lia-space-select__container {
     width: 100%;
-    max-width: 880px;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .lia-space-select__header {
     text-align: center;
     margin-bottom: var(--space-10);
+    animation: liaAlertSlideIn 0.5s ease-out; /* Reutilizando sua animação! */
+}
+
+/* Avatar do Usuário Logado (Topo) */
+.lia-space-select__user-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: var(--radius-full);
+    margin: 0 auto var(--space-4) auto;
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    border: 3px solid var(--color-surface);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.lia-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.lia-avatar-initials {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
 }
 
 .lia-space-select__title {
     font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
     margin-bottom: var(--space-2);
 }
 
 .lia-space-select__subtitle {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     color: var(--color-text-secondary);
 }
 
 /* -------------------------------------------------------------------------
-   GRID DE CARDS
+   GRID DE ESPAÇOS (PERFIS)
    ------------------------------------------------------------------------- */
-.lia-space-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--space-5);
-    margin-bottom: var(--space-8);
-}
-
-/* -------------------------------------------------------------------------
-   CARD DE ESPAÇO
-   ------------------------------------------------------------------------- */
-.lia-space-card {
-    position: relative;
+.lia-netflix-grid {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-8);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Link/Cartão inteiro */
+.lia-netflix-card {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    width: 160px; /* Tamanho exato para ficar como um "perfil" */
     cursor: pointer;
-    text-align: left;
-    transition: all var(--transition-fast);
-    width: 100%;
-    font-family: inherit;
+    transition: transform var(--transition-base);
 }
 
-.lia-space-card:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+/* O pulo/escala igual ao da Netflix */
+.lia-netflix-card:hover {
+    transform: scale(1.05);
 }
 
-.lia-space-card:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
-    border-color: var(--color-primary);
-}
-
-/* Ícone à esquerda */
-.lia-space-card__icon {
-    flex-shrink: 0;
-    width: 56px;
-    height: 56px;
+/* O Quadrado do Espaço (Logo ou Iniciais) */
+.lia-netflix-card__box {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    border: 3px solid transparent;
+    transition: box-shadow var(--transition-base), border-color var(--transition-base);
+    margin-bottom: var(--space-4);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-lg);
+}
+
+/* O que acontece com o quadrado no Hover */
+.lia-netflix-card:hover .lia-netflix-card__box {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.lia-netflix-card:focus-visible .lia-netflix-card__box {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-focus-ring);
+}
+
+.lia-netflix-card__logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Fallback para organizações sem logo (Usa as suas cores Info/Warning) */
+.lia-netflix-card__fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    font-weight: var(--font-weight-bold);
     background-color: var(--color-primary-light);
     color: var(--color-primary);
 }
 
-.lia-space-card__icon svg {
-    width: 28px;
-    height: 28px;
-    stroke-width: 2;
-}
-
-/* Corpo */
-.lia-space-card__body {
-    flex: 1;
-    min-width: 0;
-}
-
-.lia-space-card__name {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-1);
-}
-
-.lia-space-card__desc {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    margin: 0;
-    line-height: var(--line-height-normal);
-}
-
-/* Seta */
-.lia-space-card__arrow {
-    flex-shrink: 0;
-    color: var(--color-text-muted);
-    opacity: 0;
-    transform: translateX(-8px);
-    transition: all var(--transition-fast);
-}
-
-.lia-space-card:hover .lia-space-card__arrow {
-    opacity: 1;
-    transform: translateX(0);
-    color: var(--color-primary);
-}
-
-/* -------------------------------------------------------------------------
-   VARIANTES POR TIPO
-   ------------------------------------------------------------------------- */
-.lia-space-card--saas .lia-space-card__icon {
+/* Cores por tipo de painel */
+.lia-netflix-card--saas .lia-netflix-card__fallback {
     background-color: var(--color-warning-light);
     color: var(--color-warning);
 }
-
-.lia-space-card--personal .lia-space-card__icon {
+.lia-netflix-card--personal .lia-netflix-card__fallback {
     background-color: var(--color-info-light);
     color: var(--color-info);
 }
 
-/* -------------------------------------------------------------------------
-   LOADING (HTMX)
-   ------------------------------------------------------------------------- */
-.lia-space-card__spinner {
-    position: absolute;
-    top: var(--space-3);
-    right: var(--space-3);
-    color: var(--color-primary);
+.lia-netflix-card__fallback svg,
+.lia-netflix-card__fallback i {
+    width: 64px !important;
+    height: 64px !important;
+    stroke-width: 1.5;
 }
 
-.lia-space-card__spinner svg {
-    width: 18px;
-    height: 18px;
-    animation: lia-spin 0.8s linear infinite;
-}
-
-@keyframes lia-spin {
-    to { transform: rotate(360deg); }
-}
-
-/* -------------------------------------------------------------------------
-   FOOTER
-   ------------------------------------------------------------------------- */
-.lia-space-select__footer {
+/* Nome do Perfil */
+.lia-netflix-card__name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
     text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color var(--transition-fast);
 }
 
-/* -------------------------------------------------------------------------
-   RESPONSIVO
-   ------------------------------------------------------------------------- */
+/* O nome "acende" no hover */
+.lia-netflix-card:hover .lia-netflix-card__name {
+    color: var(--color-text-primary);
+}
+
+.lia-netflix-card__kind {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* Responsividade Mobile */
 @media (max-width: 640px) {
-    .lia-space-select__title {
-        font-size: var(--font-size-2xl);
-    }
-
-    .lia-space-card {
-        padding: var(--space-4);
-    }
-
-    .lia-space-card__icon {
-        width: 48px;
-        height: 48px;
-    }
+    .lia-space-select__title { font-size: var(--font-size-2xl); }
+    .lia-netflix-grid { gap: var(--space-5); }
+    .lia-netflix-card { width: 130px; }
+    .lia-netflix-card__box { width: 130px; height: 130px; }
+    .lia-netflix-card__fallback { font-size: 3rem; }
+    .lia-netflix-card__fallback svg { width: 48px !important; height: 48px !important; }
 }

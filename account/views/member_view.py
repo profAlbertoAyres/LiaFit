@@ -118,15 +118,15 @@ class _RoleHTMXBase(LoginRequiredMixin, View):
         ctx = getattr(request, "context", None)
         if not ctx or not getattr(ctx, "organization", None):
             messages.error(request, "Organização não encontrada.")
-            return redirect("master:dashboard")
+            return redirect("personal:dashboard")
 
         if not request.user.is_superuser:
             if not getattr(ctx, "membership", None):
                 messages.error(request, "Acesso negado.")
-                return redirect("master:dashboard")
+                return redirect("personal:dashboard")
             if not ctx.has_permission(self.permission_required):
                 messages.error(request, "Você não tem permissão para esta ação.")
-                return redirect("master:dashboard")
+                return redirect("personal:dashboard")
 
         self.tenant = ctx.organization
         self.actor_membership = ctx.membership

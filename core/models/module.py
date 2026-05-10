@@ -8,7 +8,7 @@ from core.models.base import BaseModel
 class Module(BaseModel):
     class Scope(models.TextChoices):
         SAAS_ADMIN = "superuser", "Admin SaaS"
-        GLOBAL = "global", "Global (Cliente)"
+        GLOBAL = "personal", "Usuários"
         TENANT = "tenant", "Organização"
 
     name = models.CharField("nome", max_length=100, unique=True)
@@ -22,7 +22,7 @@ class Module(BaseModel):
         choices=Scope.choices,
         default=Scope.TENANT,
         help_text="Define em qual contexto o módulo aparece: área admin (superuser), "
-                  "área do cliente (global) ou dentro de uma organização (tenant).",
+                  "área do cliente (personal) ou dentro de uma organização (tenant).",
     )
     is_active = models.BooleanField("ativo", default=True)
     is_universal = models.BooleanField(

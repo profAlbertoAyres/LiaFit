@@ -7,7 +7,7 @@ from core.models.base import BaseModel
 class SystemRole(BaseModel):
 
     class Scope(models.TextChoices):
-        GLOBAL = "global", "Global (Cliente)"
+        PERSONAL = "personal", "Pessoal (Cliente)"
         SUPERUSER = "superuser", "Superusuário"
 
     scope = models.CharField(

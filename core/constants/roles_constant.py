@@ -6,7 +6,7 @@ Estrutura de cada role:
     - slug:        identificador único (string lowercase)
     - name:        nome amigável (exibição)
     - description: descrição curta
-    - scope:       "tenant" | "global" | "superuser"
+    - scope:       "tenant" | "personal" | "superuser"
     - level:       inteiro pra hierarquia (maior = mais poder)
     - permissions: "*" (tudo do scope) ou lista de specs:
         • {"module": <slug>}                       → todas actions do módulo

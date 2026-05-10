@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 _SCOPE_NAMESPACE_MAP = {
     Module.Scope.TENANT: "tenant",
-    Module.Scope.GLOBAL: "master",
+    Module.Scope.GLOBAL: "personal",
     Module.Scope.SAAS_ADMIN: "saas_admin",
 }
 
@@ -71,7 +71,7 @@ class ModuleItem(BaseModel):
         return self.owner or self.module
 
     def url_name(self, action: str = "list") -> str:
-        namespace = _SCOPE_NAMESPACE_MAP.get(self.module.scope, "master")
+        namespace = _SCOPE_NAMESPACE_MAP.get(self.module.scope, "personal")
         return f"{namespace}:{self.route_base}_{action}"
 
     def permission_codename(self, action: str = "view") -> str:

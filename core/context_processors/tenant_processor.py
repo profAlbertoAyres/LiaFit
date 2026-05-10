@@ -11,6 +11,7 @@ Injeta no template:
 Depende de `request.context` populado pelo SaaSContextMiddleware.
 """
 from account.models import OrganizationMember
+from core.services.space_service import get_user_spaces
 
 
 def tenant_context(request):
@@ -23,6 +24,8 @@ def tenant_context(request):
     # Org e membership vindos do middleware
     current_org = getattr(request.context, 'organization', None)
     current_membership = getattr(request.context, 'membership', None)
+    spaces = get_user_spaces(request.user)
+
 
     # Busca todas as orgs ativas do usuário (para o seletor)
     user_memberships = (
@@ -38,15 +41,9 @@ def tenant_context(request):
         )
     )
 
-    user_organizations = [
-        m.organization
-        for m in user_memberships
-        if m.organization.is_active
-    ]
-
     return {
         'current_organization': current_org,
         'current_membership': current_membership,
-        'user_organizations': user_organizations,
-        'show_org_selector': len(user_organizations) > 1,
+        'user_has_multiple_spaces': len(spaces) >= 2,
+
     }

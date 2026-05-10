@@ -67,7 +67,7 @@ class BaseAuthMixin(LoginRequiredMixin):
 
     def _deny(self, message):
         messages.error(self.request, message)
-        return redirect("master:dashboard")
+        return redirect("personal:dashboard")
 
 
 # ─── CONTEXTO DE TENANT ──────────────────────────────────────

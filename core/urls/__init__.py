@@ -2,7 +2,7 @@
 Pacote de roteamento do app `core`.
 
 Submódulos:
-    - master_url: rotas do painel administrativo SaaS (tenant master)
+    - personal_url: rotas do painel administrativo SaaS (tenant master)
     - tenant_url: rotas dos tenants (personal trainers e seus clientes)
 
 As rotas são incluídas em `config/urls.py` via caminho completo, por exemplo:

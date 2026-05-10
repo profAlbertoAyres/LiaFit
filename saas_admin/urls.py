@@ -11,6 +11,7 @@ Uso em templates: {% url 'saas_admin:dashboard' %}
 from django.urls import path
 
 from account.views.organization_view import OrganizationDetailView
+from core.views.master_view import ModuleListView, ModuleCreateView, PermissionListView, PermissionCreateView
 from saas_admin.views.dashboard_view import DashboardView
 from saas_admin.views.organization_views import OrganizationListView, OrganizationCreateView, \
     OrganizationToggleStatusView
@@ -36,4 +37,11 @@ urlpatterns = [
     path("specialties/create/", SpecialtyCreateView.as_view(), name="specialty_create",),
     path("specialties/<int:pk>/edit/", SpecialtyUpdateView.as_view(), name="specialty_update",
     ),
+
+    path('modules/', ModuleListView.as_view(), name='module_list'),
+    path('modules/create/', ModuleCreateView.as_view(), name='module_create'),
+
+    # ── PERMISSÕES GLOBAIS ──
+    path('permissions/', PermissionListView.as_view(), name='permission_list'),
+    path('permissions/create/', PermissionCreateView.as_view(), name='permission_create'),
 ]

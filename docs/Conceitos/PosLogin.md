@@ -18,9 +18,9 @@
 
 🗺️ ROTEIRO:
    [x] 0. Auditar arquivos existentes
-   [ ] 1. Roteamento pós-login (dispatcher)
-   [ ] 2. Salvar escolha na sessão (ao clicar no card)
-   [ ] 3. Criar Área do Cliente (model Client já existe)
+   [X] 1. Roteamento pós-login (dispatcher)
+   [X] 2. Salvar escolha na sessão (ao clicar no card)
+   [X] 3. Criar Área do Cliente (model Client já existe)
    [ ] 4. Botão "Trocar Espaço"
 
 ⏭️ PRÓXIMO PASSO: 
@@ -38,7 +38,7 @@
 | 8 | Model Client (universal) | ✅ Pronto | account/models/client.py | OneToOne com User |
 | 9 | Model OrganizationClient | ✅ Pronto | account/models/client.py | Vínculo org↔client |
 | 10 | Model OrganizationMember | ✅ Pronto | account/models/member.py | Vínculo org↔staff |
-| 11 | Card "Minha Área" (Cliente) | ⚠️ Parcial | _build_personal_space() | aponta pra master:dashboard (rota master, não cliente) |
+| 11 | Card "Minha Área" (Cliente) | ⚠️ Parcial | _build_personal_space() | aponta pra personal:dashboard (rota master, não cliente) |
 | 12 | Salvar última escolha na sessão | ❌ Não existe | — | Hub não persiste escolha |
 | 13 | Ler escolha salva no redirect | ❌ Não existe | get_redirect_url só trata caso de 1 espaço |  |
 | 14 | Caso "só cliente" → Área do Cliente direto | ❌ Não existe | — | Hoje cai no Hub mesmo sendo só cliente |

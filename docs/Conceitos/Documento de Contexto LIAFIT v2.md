@@ -24,7 +24,7 @@ Uma mesma pessoa física (`User`) pode acumular papéis ortogonais:
 
 | Entidade | Papel |
 | --- | --- |
-| User | Usuário global. Não pertence a org diretamente. Pode ser superuser, profissional, assistente ou cliente. |
+| User | Usuário personal. Não pertence a org diretamente. Pode ser superuser, profissional, assistente ou cliente. |
 | Organization | Empresa que contrata o LiaFit. Tem owner (dono) e members. |
 | OrganizationMember | Vínculo de trabalho: usuário trabalha em uma org. N:N com Role. Um usuário pode ter múltiplos vínculos (várias orgs) e múltiplos papéis na mesma org. |
 | Professional | Perfil profissional atrelado a um OrganizationMember (CREF, CRP, CRN, etc.). |
@@ -34,7 +34,7 @@ Uma mesma pessoa física (`User`) pode acumular papéis ortogonais:
 | OnboardingToken | Tokens para onboarding, reset senha, magic link, convite, etc. |
 
 ### Regras-chave
-- Cliente é global: um cliente pode ser atendido por várias orgs ao mesmo tempo e vê tudo dele agregado.
+- Cliente é personal: um cliente pode ser atendido por várias orgs ao mesmo tempo e vê tudo dele agregado.
 - Organização só enxerga clientes vinculados via OrganizationClient.
 - Profissional pode trabalhar em várias orgs e ter vários papéis na mesma org.
 - Admin SaaS **transcende organizações** — não tem `current_organization` no contexto.
@@ -56,7 +56,7 @@ Uma mesma pessoa física (`User`) pode acumular papéis ortogonais:
 ### Campo `scope` em Module
 Define o "mundo" em que o módulo aparece:
 - `superuser` → área admin global do LiaFit
-- `global` → área do cliente (menu pessoal, vê tudo dele agregado)
+- `personal` → área do cliente (menu personal, vê tudo dele agregado)
 - `tenant` → dentro de uma organização (profissionais/assistentes)
 
 ### Campo `owner` em ModuleItem
@@ -77,13 +77,13 @@ FK opcional pra Module. Permite desacoplar grupo visual da regra de contrataçã
 | RolePermission | Permissões atribuídas a um papel. |
 | OrganizationMember.roles | N:N — papéis do membro naquela org. |
 | UserPermission | Override individual por usuário (allow/deny). |
-| SystemRole | Papel global ou superuser (fora do tenant). Permissions M2M direto. |
+| SystemRole | Papel personal ou superuser (fora do tenant). Permissions M2M direto. |
 | UserSystemRole | Atribuição user ↔ system_role com timestamps. |
 
 ### Resolução de permissões
 `User.get_permission_codenames(organization)` retorna o set final de codenames.
-- Superuser → todas
-- Sem org → set vazio
+- Superuser → saas_admim
+- Sem org → somente minha area
 - Com org → codenames via roles ativas do membership
 - (UserPermission ainda não está integrado à resolução — TODO)
 
@@ -108,7 +108,7 @@ FK opcional pra Module. Permite desacoplar grupo visual da regra de contrataçã
 
 ## 📋 Regra de Visibilidade do Menu
 Para cada ModuleItem, ele aparece se todas as condições baterem:
-1. Scope bate com o contexto atual (superuser / global / tenant)
+1. Scope bate com o contexto atual (superuser / personal / tenant)
 2. Módulo e item ativos (`is_active` e `show_in_menu` em ambos)
 3. Disponibilidade do módulo (só scope tenant):
    - controlador = `item.owner OR item.module`
@@ -116,7 +116,7 @@ Para cada ModuleItem, ele aparece se todas as condições baterem:
 4. Permissão do usuário:
    - Superuser → libera
    - Scope tenant → checa `view_<route_base>` em `get_permission_codenames(org)`
-   - Scope global (cliente) → sem checagem de permissão (visibilidade implícita). Segurança dos dados fica nas queries das views, filtrando por `OrganizationClient.user`.
+   - Scope personal (cliente) → sem checagem de permissão (visibilidade implícita). Segurança dos dados fica nas queries das views, filtrando por `OrganizationClient.user`.
    - Scope superuser → só `is_superuser`
 
 ---
@@ -166,14 +166,14 @@ core/
 │   ├── role.py                  ← tenant only
 │   ├── role_permission.py
 │   ├── user_permission.py
-│   ├── system_role.py           🆕 global/superuser
+│   ├── system_role.py           🆕 personal/superuser
 │   └── user_system_role.py      🆕 atribuição
 └── bootstrap.py
 ```
 
 ### bootstrap.py — 3 funções
 - `sync_system_catalog()` — modules + items + perms (com owner em 2ª passada)
-- `sync_system_roles()` — cria SystemRoles (global + superuser)
+- `sync_system_roles()` — cria SystemRoles (personal + superuser)
 - `bootstrap_organization(org)` — só tenant (módulos core + roles + owner)
 - `_resolve_permissions()` com `scope_filter` pra isolar permissões por escopo
 
@@ -205,7 +205,7 @@ base.html (avô — head, fontes, CSS/JS globais)
 - `{% block page_content %}` → conteúdo da página
 - `{% block page_css %}` / `{% block page_js %}` → assets específicos
 
-### Sidebar global (`partials/_sidebar.html`)
+### Sidebar personal (`partials/_sidebar.html`)
 - Menu **dinâmico** via `sidebar_menu` no context
 - Estrutura: `[{label, items: [{url, label, icon}]}]`
 - Footer lê `request.context.membership.highest_role_name`
@@ -228,8 +228,8 @@ base.html (avô — head, fontes, CSS/JS globais)
 ---
 
 ## 🚨 Pontos de Atenção
-- Cliente nunca vê dados de outro cliente. Filtro por `OrganizationClient.user = request.user.client_profile` em toda query do scope global.
-- Cliente vê dados agregados de todas as orgs que o atendem — não filtrar por org no scope global.
+- Cliente nunca vê dados de outro cliente. Filtro por `OrganizationClient.user = request.user.client_profile` em toda query do scope personal.
+- Cliente vê dados agregados de todas as orgs que o atendem — não filtrar por org no scope personal.
 - `owner` pode ser null — nesse caso o próprio `module` controla disponibilidade.
 - Soft-delete em `OrganizationClient` via `archived_at` — usar `all_objects` para incluir arquivados.
 
@@ -277,7 +277,7 @@ Essa área é o ponto de partida para o fluxo de **suporte técnico controlado**
 
 ## 🧠 Conceito reforçado
 - **Admin SaaS = operador da plataforma**, não dono de empresa
-- A mesma pessoa pode ser: admin SaaS + membro de org + cliente global (papéis ortogonais)
+- A mesma pessoa pode ser: admin SaaS + membro de org + cliente personal (papéis ortogonais)
 - Sistema de permissões: `SystemRole`/`UserSystemRole` com `scope = "superuser"` (catálogo `saas-admin`)
 - O acesso à área é via system role; permissões finas dentro dela podem ser refinadas via `SystemRole` futuramente
 
@@ -387,7 +387,7 @@ Na Fase 0 o SaaS Admin usa o **mesmo design system** do tenant, com diferenciaç
 ---
 
 ## 🎓 Modo de trabalho com a IA
-- 👨‍🏫 **Contexto pessoal**: Alberto é professor e usa o projeto pra aprender/ensinar
+- 👨‍🏫 **Contexto personal**: Alberto é professor e usa o projeto pra aprender/ensinar
 - 🐢 **Ritmo**: um arquivo por vez, sem pressa
 - 📚 **Didática**: explicação curta do "porquê" antes do código
 - 📄 **Entrega**: arquivo inteiro no final, com indicação clara de onde colocar
