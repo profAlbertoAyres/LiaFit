@@ -10,7 +10,6 @@ class MenuRegistry:
         self._groups = []
 
     def register(self, group):
-        """Legacy. Menu agora vem do catálogo via DB."""
         self._groups.append(group)
 
     def clear(self):
@@ -36,13 +35,11 @@ class MenuRegistry:
         ).prefetch_related(active_items_prefetch)
 
         # ── Filtros de scope ──
-        scope_filter = Q(scope=Module.Scope.GLOBAL)
+        scope_filter = Q(scope=Module.Scope.PERSONAL)
 
         if request.user.is_superuser:
             scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN) | Q(scope=Module.Scope.TENANT)
         else:
-            # 🔧 Antes usava "platform_admin" (slug fantasma).
-            # Agora usa SystemRoleSlug.SUPERADMIN, que é o que o ContextService popula.
             if SystemRoleSlug.SUPERADMIN.value in system_roles:
                 scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN)
 

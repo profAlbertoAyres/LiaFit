@@ -8,7 +8,7 @@ from core.models.base import BaseModel
 class Module(BaseModel):
     class Scope(models.TextChoices):
         SAAS_ADMIN = "superuser", "Admin SaaS"
-        GLOBAL = "personal", "Usuários"
+        PERSONAL = "personal", "Usuários"
         TENANT = "tenant", "Organização"
 
     name = models.CharField("nome", max_length=100, unique=True)

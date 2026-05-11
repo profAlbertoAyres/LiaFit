@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 _SCOPE_NAMESPACE_MAP = {
     Module.Scope.TENANT: "tenant",
-    Module.Scope.GLOBAL: "personal",
+    Module.Scope.PERSONAL: "personal",
     Module.Scope.SAAS_ADMIN: "saas_admin",
 }
 
