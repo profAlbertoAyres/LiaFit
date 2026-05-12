@@ -21,14 +21,6 @@ from core.services.space_service import get_user_spaces
 
 
 class SpaceHubView(LoginRequiredMixin, TemplateView):
-    """
-    Renderiza a tela hub de seleção de espaços.
-
-    Comportamento:
-    - Usuário com 1 espaço → redireciona automaticamente (sem renderizar)
-    - Usuário com 2+ espaços → mostra cards de seleção
-    - Usuário com 0 espaços → mostra estado vazio (caso raro)
-    """
 
     template_name = 'core/space_hub/space_hub.html'
 

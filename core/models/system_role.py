@@ -8,7 +8,7 @@ class SystemRole(BaseModel):
 
     class Scope(models.TextChoices):
         PERSONAL = "personal", "Pessoal (Cliente)"
-        SUPERUSER = "superuser", "Superusuário"
+        SAAS_ADMIN = "saas_admin", "SaaS Administrador"
 
     scope = models.CharField(
         "escopo",

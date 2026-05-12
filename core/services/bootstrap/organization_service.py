@@ -124,7 +124,7 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
     """
     Propaga módulos core E permissões universais para TODAS as orgs.
 
-    🛡️ AUTO-LIMPEZA: remove OrganizationModule de scope=superuser
+    🛡️ AUTO-LIMPEZA: remove OrganizationModule de scope=saas_admin
     que possam ter sido criados por engano em versões antigas.
 
     Idempotente.
@@ -146,7 +146,7 @@ def propagate_core_modules_to_all_orgs(*, verbose: bool = False) -> dict:
     invalid_count = invalid_oms.count()
     if invalid_count > 0:
         if verbose:
-            print(f"  [🧹] Limpando {invalid_count} módulo(s) superuser ativados em tenants...")
+            print(f"  [🧹] Limpando {invalid_count} módulo(s) saas-admin ativados em tenants...")
             for om in invalid_oms:
                 print(f"      ❌ {om.organization} → {om.module.slug}")
         invalid_oms.delete()

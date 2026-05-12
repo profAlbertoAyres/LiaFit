@@ -56,10 +56,8 @@ class SpaceSelectView(LoginRequiredMixin, View):
         if match is None:
             raise PermissionDenied("Você não tem acesso a este espaço.")
 
-        # Persiste a escolha — usado pelo SpaceHubService nos próximos logins.
         request.session[SESSION_LAST_SPACE_KEY] = space_key
 
-        # Respeita ?next= se for seguro (mesmo host/scheme).
         next_url = request.GET.get("next")
         if next_url and url_has_allowed_host_and_scheme(
             url=next_url,
@@ -68,15 +66,12 @@ class SpaceSelectView(LoginRequiredMixin, View):
         ):
             return redirect(next_url)
 
-        # Caso padrão: vai pra home do espaço.
         return redirect(match["url"])
 
     @staticmethod
     def _build_space_key(kind: str, org_slug: str | None) -> str:
-        """Reproduz o formato de `key` usado em get_user_spaces."""
         if kind == KIND_ORG:
             return f"{KIND_ORG}:{org_slug}"
         if kind in (KIND_PERSONAL, KIND_SAAS):
             return kind
-        # Kind desconhecido — não deveria chegar aqui (urlpatterns controla).
         raise PermissionDenied("Tipo de espaço inválido.")

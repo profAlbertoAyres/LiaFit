@@ -6,7 +6,7 @@ Estrutura de cada role:
     - slug:        identificador único (string lowercase)
     - name:        nome amigável (exibição)
     - description: descrição curta
-    - scope:       "tenant" | "personal" | "superuser"
+    - scope:       "tenant" | "personal" | "saas_admin"
     - level:       inteiro pra hierarquia (maior = mais poder)
     - permissions: "*" (tudo do scope) ou lista de specs:
         • {"module": <slug>}                       → todas actions do módulo
@@ -15,7 +15,7 @@ Estrutura de cada role:
         • {"item": (<mod>, <item>), "actions": []} → actions específicas do item
         • "<codename>"                             → permission direta por codename
 """
-from core.constants import ItemSlug, ActionSlug
+from core.constants import ItemSlug, ActionSlug, SystemRoleSlug
 from core.constants.catalog_constant import CRUD, RO, RW
 from core.constants.permissions_constant import ModuleSlug
 
@@ -67,10 +67,10 @@ ROLES = [
 
     # ─────────────── SUPERUSER ───────────────
     {
-        "slug": "superadmin",
+        "slug": SystemRoleSlug.SAAS_ADMIN.value,
         "name": "Super Administrador",
         "description": "Administrador da plataforma SaaS. Acesso total ao admin.",
-        "scope": "superuser",
+        "scope": "saas_admin",
         "level": 999,
         "permissions": "*",
     },

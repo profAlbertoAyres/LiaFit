@@ -4,7 +4,7 @@ Helpers centralizados de checagem de permissão de alto nível.
 Filosofia:
   - is_superuser → ULTRA RARO (você, Alberto). Bypassa tudo.
   - SaaS Staff   → Equipe interna (devs, suporte). Identificada por
-                   UserSystemRole com scope=superuser.
+                   UserSystemRole com scope=saas_admin.
   - Tenant Owner → Dono de UMA organização. Manda na ORG dele.
 """
 
@@ -17,7 +17,7 @@ def is_saas_staff(user) -> bool:
 
     Critérios (qualquer um basta):
       1. user.is_superuser → chave-mestra
-      2. UserSystemRole ativo com scope='superuser'
+      2. UserSystemRole ativo com scope='saas_admin'
 
     ⚠️ Use SEMPRE este helper em vez de `user.is_superuser` direto
     quando a intenção for "é alguém da equipe Lia Linda?".
@@ -31,7 +31,7 @@ def is_saas_staff(user) -> bool:
     return UserSystemRole.objects.filter(
         user=user,
         is_active=True,
-        system_role__scope=SystemRole.Scope.SUPERUSER,
+        system_role__scope=SystemRole.Scope.SAAS_ADMIN,
         system_role__is_active=True,
     ).exists()
 

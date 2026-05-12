@@ -85,7 +85,7 @@ class BaseModelForm(TenantKwargsMixin, LiaLindaStyleMixin, forms.ModelForm):
         if not self.tenant:
             return
 
-        is_superuser = False  # forms não têm request; segurança máxima por padrão
+        is_superuser = False
 
         for field in self.fields.values():
             if not (hasattr(field, 'queryset') and isinstance(field.queryset, QuerySet)):

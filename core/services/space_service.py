@@ -66,7 +66,7 @@ def _build_personal_space() -> dict:
         "name": "Minha Área",
         "icon": "home",
         "url": reverse("personal:dashboard"),
-        "select_url": reverse("space_select_personal"),
+        "select_url": reverse("personal:space_select_personal"),
     }
 
 
@@ -98,7 +98,7 @@ def _build_org_spaces(user) -> list[dict]:
             "name": m.organization.company_name,
             "icon": "building-2",
             "url": reverse("tenant:dashboard", kwargs={"org_slug": m.organization.slug}),
-            "select_url": reverse("space_select_org", kwargs={"org_slug": m.organization.slug}),
+            "select_url": reverse("tenant:space_select_org", kwargs={"org_slug": m.organization.slug}),
         }
         for m in memberships
     ]
@@ -112,17 +112,12 @@ def _build_saas_space() -> dict:
         "name": "Admin SaaS",
         "icon": "server",
         "url": _safe_reverse("saas_admin:dashboard", fallback="/painel/"),
-        "select_url": reverse("space_select_saas"),
+        "select_url": reverse("saas_admin:space_select_saas"),
     }
 
 
 
 def _safe_reverse(viewname: str, fallback: str = "#") -> str:
-    """Resolve URL ou retorna fallback se a rota não existir.
-
-    Útil para serviços de navegação que não devem quebrar caso
-    uma URL esteja temporariamente desabilitada/comentada.
-    """
     try:
         return reverse(viewname)
     except NoReverseMatch:

@@ -7,7 +7,7 @@ from core.models.base import BaseModel
 
 class Module(BaseModel):
     class Scope(models.TextChoices):
-        SAAS_ADMIN = "superuser", "Admin SaaS"
+        SAAS_ADMIN = "saas_admin", "Admin SaaS"
         PERSONAL = "personal", "Usuários"
         TENANT = "tenant", "Organização"
 
@@ -21,7 +21,7 @@ class Module(BaseModel):
         max_length=20,
         choices=Scope.choices,
         default=Scope.TENANT,
-        help_text="Define em qual contexto o módulo aparece: área admin (superuser), "
+        help_text="Define em qual contexto o módulo aparece: área admin (saas admin), "
                   "área do cliente (personal) ou dentro de uma organização (tenant).",
     )
     is_active = models.BooleanField("ativo", default=True)

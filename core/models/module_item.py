@@ -37,7 +37,7 @@ class ModuleItem(BaseModel):
         max_length=120,
         blank=True,
         default="",
-        help_text="Ex: 'settings:client_list' ou 'master:billing'. Se vazio, "
+        help_text="Ex: 'settings:client_list' ou 'personal:billing'. Se vazio, "
                   "cai no fallback derivado do slug.",
     )
 

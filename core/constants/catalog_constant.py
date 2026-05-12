@@ -37,7 +37,7 @@ CATALOG = [
                 "name": "Meu Perfil",
                 "icon": "user-circle",
                 "order": 20,
-                "route": "tenant:profile",
+                "route": "personal:profile",
                 "show_in_menu": True,
                 "actions": RW,
             },
@@ -112,7 +112,7 @@ CATALOG = [
         "name": "Admin SaaS",
         "icon": "server",
         "order": 100,
-        "scope": "superuser",
+        "scope": "saas_admin",
         "is_core": True,
         "show_in_menu": True,
         "items": [
@@ -125,7 +125,7 @@ CATALOG = [
                 "show_in_menu": True,
                 "actions": CRUD,
             },
-{
+            {
                 "slug": ItemSlug.SPECIALTY,
                 "name": "Especialidades",
                 "icon": "graduation-cap",
@@ -139,7 +139,7 @@ CATALOG = [
                 "slug": ItemSlug.USERS_ADMIN,
                 "name": "Usuários",
                 "icon": "users",
-                "order": 20,
+                "order": 30,
                 "route": "saas_admin:user_list",
                 "show_in_menu": True,
                 "actions": CRUD,

@@ -37,5 +37,5 @@ class ActionSlug(models.TextChoices):
     INVITE = "invite", "Convidar" 
 
 class SystemRoleSlug(models.TextChoices):
-    SUPERADMIN = "saas-admin", "Admin SaaS"
+    SAAS_ADMIN = "saas-admin", "Admin SaaS"
     CLIENT     = "client",     "Cliente" 

@@ -16,7 +16,6 @@ from core.services.space_constants_service import SESSION_LAST_SPACE_KEY
 
 
 class SpaceSwitchView(LoginRequiredMixin, View):
-    """Limpa o último espaço escolhido e volta pro Hub."""
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         request.session.pop(SESSION_LAST_SPACE_KEY, None)

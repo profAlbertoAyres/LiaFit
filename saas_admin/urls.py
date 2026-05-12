@@ -12,6 +12,7 @@ from django.urls import path
 
 from account.views.organization_view import OrganizationDetailView
 from core.views.master_view import ModuleListView, ModuleCreateView, PermissionListView, PermissionCreateView
+from core.views.shared.space_select_view import SpaceSelectView
 from saas_admin.views.dashboard_view import DashboardView
 from saas_admin.views.organization_views import OrganizationListView, OrganizationCreateView, \
     OrganizationToggleStatusView
@@ -22,6 +23,7 @@ app_name = "saas_admin"
 urlpatterns = [
     # Painel inicial → /admin-saas/
     path("", DashboardView.as_view(), name="dashboard"),
+    path('space/select/saas/', SpaceSelectView.as_view(), {'kind': 'saas'}, name='space_select_saas',),
 
     # Organizações → /admin-saas/orgs/
     path("organizations/", OrganizationListView.as_view(), name="organization_list",),
