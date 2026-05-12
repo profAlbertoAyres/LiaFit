@@ -4,7 +4,7 @@ API pública do pacote bootstrap.
 
 Funções expostas:
 - sync_system_catalog:    sincroniza Module, ModuleItem e Permission
-- sync_system_roles:      sincroniza SystemRoles (escopo global)
+- sync_system_roles:      sincroniza SystemRoles (escopo personal)
 - bootstrap_organization: ativa módulos core + cria roles + permissions
                           padrões para uma nova Organization
 """

@@ -19,7 +19,7 @@ class MenuNode:
         if self.scope == "tenant":
             return bool(ctx and getattr(ctx, "organization", None))
 
-        if self.scope == "global":
+        if self.scope == "personal":
             return request.user.is_authenticated
 
         return True
