@@ -1,0 +1,225 @@
+{% extends 'base_app.html' %}
+{% load static %}
+
+{% block title %}Editar Perfil{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-1">Editar Perfil</h1>
+            <p class="text-muted mb-0">Atualize suas informações pessoais e foto de perfil</p>
+        </div>
+        <a href="{% url 'personal:profile' %}" class="lia-btn lia-btn--outline">
+            <i data-lucide="arrow-left"></i>
+            Voltar
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="row g-4">
+
+            <!-- ==========================================
+                 COLUNA FOTO DE PERFIL
+                 ========================================== -->
+            <div class="col-lg-4">
+                <div class="lia-card h-100">
+                    <div class="lia-card__header">
+                        <div>
+                            <h2 class="lia-card__title">Sua Foto</h2>
+                            <p class="lia-card__subtitle">Imagem pública do perfil</p>
+                        </div>
+                    </div>
+
+                    <div class="lia-card__body d-flex flex-column align-items-center justify-content-center">
+                        <!-- Wrapper da imagem com botão flutuante -->
+                        <div class="position-relative mb-4">
+                            {% if user_obj.photo %}
+                                <img id="photo-preview"
+                                     src="{{ user_obj.photo.url }}"
+                                     alt="Foto atual"
+                                     class="rounded-circle shadow-sm"
+                                     style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--color-surface);">
+                            {% else %}
+                                <div id="photo-preview-placeholder"
+                                     class="rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                     style="width: 150px; height: 150px; font-size: 3.5rem; background-color: var(--color-primary-light); color: var(--color-primary); border: 4px solid var(--color-surface);">
+                                    {{ user_obj.get_short_name|first|upper }}
+                                </div>
+                                <img id="photo-preview"
+                                     src=""
+                                     alt=""
+                                     class="rounded-circle shadow-sm d-none"
+                                     style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--color-surface);">
+                            {% endif %}
+
+                            <!-- Gatilho para o input file (botão de câmera) -->
+                            <label for="{{ form.photo.id_for_label }}" class="lia-btn lia-btn--primary lia-btn--icon position-absolute rounded-circle shadow" style="bottom: 0; right: 5px; cursor: pointer;">
+                                <i data-lucide="camera"></i>
+                            </label>
+                        </div>
+
+                        <!-- Esconde o input original para ficar mais limpo -->
+                        <div class="d-none">
+                            {{ form.photo }}
+                        </div>
+
+                        {% if form.photo.errors %}
+                            <div class="lia-form-error mb-2 text-center">
+                                {{ form.photo.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                        <span class="lia-form-help text-center">
+                            Formatos aceitos: JPG, PNG ou WEBP.<br>Tamanho máximo: 5MB.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 COLUNA DADOS PESSOAIS
+                 ========================================== -->
+            <div class="col-lg-8">
+                <div class="lia-card">
+                    <div class="lia-card__header">
+                        <div>
+                            <h2 class="lia-card__title">Informações Pessoais</h2>
+                            <p class="lia-card__subtitle">Dados básicos de cadastro</p>
+                        </div>
+                    </div>
+
+                    <div class="lia-card__body">
+
+                        <!-- Campos somente-leitura com ícones -->
+                        <div class="row g-4 mb-4 pb-4 border-bottom">
+                            <div class="col-md-6">
+                                <div class="lia-form-group mb-0">
+                                    <label class="lia-form-label">Email</label>
+                                    <div class="lia-input-group">
+                                        <span class="lia-input-group__text"><i data-lucide="mail"></i></span>
+                                        <input type="email" class="lia-form-control" value="{{ user_obj.email }}" readonly disabled>
+                                    </div>
+                                    <span class="lia-form-help">Para alterar o email, contate o suporte.</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="lia-form-group mb-0">
+                                    <label class="lia-form-label">CPF</label>
+                                    <div class="lia-input-group">
+                                        <span class="lia-input-group__text"><i data-lucide="credit-card"></i></span>
+                                        <input type="text" class="lia-form-control" value="{{ user_obj.cpf|default:'—' }}" readonly disabled>
+                                    </div>
+                                    <span class="lia-form-help">Documento não editável.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campos editáveis do Django -->
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="lia-form-group mb-0">
+                                    <label for="{{ form.fullname.id_for_label }}" class="lia-form-label lia-form-label--required">
+                                        {{ form.fullname.label }}
+                                    </label>
+                                    {{ form.fullname }}
+                                    {% if form.fullname.errors %}
+                                        <span class="lia-form-error">{{ form.fullname.errors|join:", " }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="lia-form-group mb-0">
+                                    <label for="{{ form.phone.id_for_label }}" class="lia-form-label">
+                                        {{ form.phone.label }}
+                                    </label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <span class="lia-form-error">{{ form.phone.errors|join:", " }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="lia-form-group mb-0">
+                                    <label for="{{ form.birth_date.id_for_label }}" class="lia-form-label">
+                                        {{ form.birth_date.label }}
+                                    </label>
+                                    <div class="lia-input-group">
+                                        <span class="lia-input-group__text"><i data-lucide="calendar"></i></span>
+                                        {{ form.birth_date }}
+                                    </div>
+                                    {% if form.birth_date.errors %}
+                                        <span class="lia-form-error">{{ form.birth_date.errors|join:", " }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="lia-form-group mb-0">
+                                    <label for="{{ form.gender.id_for_label }}" class="lia-form-label">
+                                        {{ form.gender.label }}
+                                    </label>
+                                    {{ form.gender }}
+                                    {% if form.gender.errors %}
+                                        <span class="lia-form-error">{{ form.gender.errors|join:", " }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tratamento de erros gerais do formulário -->
+                        {% if form.non_field_errors %}
+                            <div class="lia-alert lia-alert--danger lia-alert--inline mt-4 mb-0">
+                                <i data-lucide="alert-circle" class="lia-alert__icon"></i>
+                                <div class="lia-alert__content">
+                                    <div class="lia-alert__title">Atenção</div>
+                                    <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="lia-card__footer">
+                        <a href="{% url 'personal:profile' %}" class="lia-btn lia-btn--ghost">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="lia-btn lia-btn--primary">
+                            <i data-lucide="save"></i>
+                            Salvar alterações
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- O script de preview se mantém igualzinho! Ele vai funcionar perfeitamente com a nova estrutura -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('{{ form.photo.id_for_label }}');
+        const preview = document.getElementById('photo-preview');
+        const placeholder = document.getElementById('photo-preview-placeholder');
+
+        if (input && preview) {
+            input.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    preview.src = ev.target.result;
+                    preview.classList.remove('d-none');
+                    if (placeholder) placeholder.classList.add('d-none');
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    });
+</script>
+{% endblock %}

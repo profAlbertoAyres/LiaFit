@@ -6,7 +6,6 @@ from account.views.client_view import ClientListView, ClientCreateView, ClientDe
 from account.views.organization_view import OrganizationDetailView
 from core.views.shared.space_select_view import SpaceSelectView
 from core.views.tenant.dashboard_view import DashboardView
-from account.views.profile_view import ProfileView
 from account.views.member_view import (
     MemberListView,
     MemberCreateView,
@@ -29,7 +28,6 @@ app_name = 'tenant'
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('space/select/org/<slug:org_slug>/', SpaceSelectView.as_view(), {'kind': 'org'}, name='space_select_org',),
-    path('profile/', ProfileView.as_view(), name='profile'),
     path('members/', MemberListView.as_view(), name='member_list'),
     path('members/create/', MemberCreateView.as_view(), name='member_create'),
     path('members/<int:pk>/', MemberDetailView.as_view(), name='member_detail'),

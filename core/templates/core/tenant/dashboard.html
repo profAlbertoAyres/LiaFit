@@ -10,7 +10,7 @@
     <div class="lia-flex lia-items-center lia-justify-between lia-mb-8">
         <div>
             <h1 class="lia-text-2xl lia-font-semibold">
-                {% blocktranslate with name=request.user.get_short_name|default:request.user.email %}
+                {% blocktranslate with name=request.user.fullname|default:request.user.email %}
                     Olá, {{ name }}! 👋
                 {% endblocktranslate %}
             </h1>

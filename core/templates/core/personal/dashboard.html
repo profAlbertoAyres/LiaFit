@@ -9,9 +9,10 @@
     <div class="lia-page-header">
         <div>
             <h1 class="lia-page-header__title">
-                {% blocktrans with name=user.get_full_name|default:user.username %}
-                    Olá, {{ name }} 👋
-                {% endblocktrans %}
+                {% blocktranslate with name=request.user.get_full_name %}
+                    Olá, {{ name }}! 👋
+                {% endblocktranslate %}
+
             </h1>
             <p class="lia-page-header__subtitle">{% trans "Este é o seu espaço pessoal." %}</p>
         </div>
@@ -19,54 +20,54 @@
 
     <!-- CARDS DE MÉTRICAS RÁPIDAS -->
     {% if quick_stats %}
-    <div class="lia-form-row lia-mb-6">
+        <div class="lia-form-row lia-mb-6">
 
-        <!-- Card 1: Organizações -->
-        <div class="lia-form-group">
-            <div class="lia-card">
-                <div class="lia-card__body">
-                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
-                        <span class="lia-text-sm lia-text-muted">{% trans "Organizações" %}</span>
-                        <i data-lucide="building-2" class="lucide-sm lia-text-primary"></i>
-                    </div>
-                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
-                        {{ quick_stats.total_organizations|default:0 }}
+            <!-- Card 1: Organizações -->
+            <div class="lia-form-group">
+                <div class="lia-card">
+                    <div class="lia-card__body">
+                        <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                            <span class="lia-text-sm lia-text-muted">{% trans "Organizações" %}</span>
+                            <i data-lucide="building-2" class="lucide-sm lia-text-primary"></i>
+                        </div>
+                        <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                            {{ quick_stats.total_organizations|default:0 }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Card 2: Convites Pendentes -->
-        <div class="lia-form-group">
-            <div class="lia-card">
-                <div class="lia-card__body">
-                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
-                        <span class="lia-text-sm lia-text-muted">{% trans "Convites pendentes" %}</span>
-                        <i data-lucide="mail-warning" class="lucide-sm lia-text-warning"></i>
-                    </div>
-                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
-                        {{ quick_stats.pending_invites_count|default:0 }}
+            <!-- Card 2: Convites Pendentes -->
+            <div class="lia-form-group">
+                <div class="lia-card">
+                    <div class="lia-card__body">
+                        <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                            <span class="lia-text-sm lia-text-muted">{% trans "Convites pendentes" %}</span>
+                            <i data-lucide="mail-warning" class="lucide-sm lia-text-warning"></i>
+                        </div>
+                        <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                            {{ quick_stats.pending_invites_count|default:0 }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Card 3: Notificações -->
-        <div class="lia-form-group">
-            <div class="lia-card">
-                <div class="lia-card__body">
-                    <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
-                        <span class="lia-text-sm lia-text-muted">{% trans "Notificações" %}</span>
-                        <i data-lucide="bell" class="lucide-sm lia-text-info"></i>
-                    </div>
-                    <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
-                        {{ quick_stats.unread_notifications|default:0 }}
+            <!-- Card 3: Notificações -->
+            <div class="lia-form-group">
+                <div class="lia-card">
+                    <div class="lia-card__body">
+                        <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
+                            <span class="lia-text-sm lia-text-muted">{% trans "Notificações" %}</span>
+                            <i data-lucide="bell" class="lucide-sm lia-text-info"></i>
+                        </div>
+                        <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                            {{ quick_stats.unread_notifications|default:0 }}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+        </div>
     {% endif %}
 
     <!-- MINHAS ORGANIZAÇÕES (Cards em Grid) -->
@@ -138,9 +139,11 @@
 
                     <div class="lia-flex lia-gap-2">
                         <button class="lia-btn lia-btn--success lia-btn--sm" title="Aceitar">
-                            <i data-lucide="check" class="lucide-sm"></i> <span class="d-none d-sm-inline">Aceitar</span>
+                            <i data-lucide="check" class="lucide-sm"></i> <span
+                                class="d-none d-sm-inline">Aceitar</span>
                         </button>
-                        <button class="lia-btn lia-btn--outline lia-btn--sm" title="Recusar" style="color: var(--color-danger); border-color: var(--color-danger-border);">
+                        <button class="lia-btn lia-btn--outline lia-btn--sm" title="Recusar"
+                                style="color: var(--color-danger); border-color: var(--color-danger-border);">
                             <i data-lucide="x" class="lucide-sm"></i> <span class="d-none d-sm-inline">Recusar</span>
                         </button>
                     </div>
@@ -162,10 +165,10 @@
     <div class="lia-table-container">
         <table class="lia-table">
             <thead>
-                <tr>
-                    <th style="width: 220px;">{% trans "Data e Hora" %}</th>
-                    <th>{% trans "Descrição" %}</th>
-                </tr>
+            <tr>
+                <th style="width: 220px;">{% trans "Data e Hora" %}</th>
+                <th>{% trans "Descrição" %}</th>
+            </tr>
             </thead>
             <tbody>
             {% for activity in recent_activities %}
