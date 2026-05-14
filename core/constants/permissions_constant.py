@@ -38,4 +38,3 @@ class ActionSlug(models.TextChoices):
 
 class SystemRoleSlug(models.TextChoices):
     SAAS_ADMIN = "saas-admin", "Admin SaaS"
-    CLIENT     = "client",     "Cliente" 

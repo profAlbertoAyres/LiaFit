@@ -47,10 +47,16 @@ class MemberContext:
         return slug in self.system_roles
 
     def is_admin(self) -> bool:
+        """Admin DENTRO da organização (owner/admin do tenant)."""
         return bool(self.roles & ADMIN_ROLE_SLUGS)
 
-    def is_platform_admin(self) -> bool:
-        return SystemRoleSlug.SUPERADMIN in self.system_roles
+    def is_superuser(self) -> bool:
+        """Bypass total. Ignora qualquer regra de permissão."""
+        return bool(self.user.is_superuser)
+
+    def is_saas_admin(self) -> bool:
+        """Equipe interna da plataforma."""
+        return SystemRoleSlug.SAAS_ADMIN in self.system_roles
 
 
 @dataclass
@@ -65,11 +71,11 @@ class SystemContext:
     def has_system_role(self, slug: str) -> bool:
         return slug in self.system_roles
 
-    def is_platform_admin(self) -> bool:
-        return SystemRoleSlug.SUPERADMIN in self.system_roles
+    def is_superuser(self) -> bool:
+        return bool(self.user.is_superuser)
 
-    def is_platform_client(self) -> bool:
-        return SystemRoleSlug.CLIENT in self.system_roles
+    def is_saas_admin(self) -> bool:
+        return SystemRoleSlug.SAAS_ADMIN in self.system_roles
 
 
 @dataclass
