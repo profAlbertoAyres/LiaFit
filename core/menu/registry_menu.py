@@ -37,18 +37,25 @@ class MenuRegistry:
         # ── Filtros de scope ──
         scope_filter = Q(scope=Module.Scope.PERSONAL)
 
-        if request.user.is_superuser:
-            scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN) | Q(scope=Module.Scope.TENANT)
-        else:
-            if SystemRoleSlug.SUPERADMIN.value in system_roles:
-                scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN)
+        is_saas_admin = (
+            request.user.is_superuser
+            or SystemRoleSlug.SAAS_ADMIN.value in system_roles
+        )
 
-            if organization:
-                scope_filter |= Q(
-                    scope=Module.Scope.TENANT,
-                    organization_modules__organization=organization,
-                    organization_modules__is_active=True,
-                )
+        # SAAS_ADMIN e superuser veem módulos administrativos da plataforma
+        if is_saas_admin:
+            scope_filter |= Q(scope=Module.Scope.SAAS_ADMIN)
+
+        # Superuser tem bypass total no scope TENANT (vê todos os módulos tenant)
+        if request.user.is_superuser:
+            scope_filter |= Q(scope=Module.Scope.TENANT)
+        elif organization:
+            # Usuário comum só vê módulos TENANT ativos na sua organização
+            scope_filter |= Q(
+                scope=Module.Scope.TENANT,
+                organization_modules__organization=organization,
+                organization_modules__is_active=True,
+            )
 
         modules = base_qs.filter(scope_filter).distinct()
 
