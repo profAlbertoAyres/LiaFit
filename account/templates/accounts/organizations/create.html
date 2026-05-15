@@ -6,15 +6,15 @@
 
 {% block page_content %}
 <!-- HEADER DA PÁGINA -->
-<div class="lia-flex lia-items-center lia-gap-3 lia-mb-6">
+<div class="d-flex align-items-center gap-3 mb-4">
     <a href="{% url 'master:organization_list' %}" class="lia-btn lia-btn--icon lia-btn--ghost">
         <i data-lucide="arrow-left" class="lucide"></i>
     </a>
     <div>
-        <h2 class="lia-font-bold" style="font-size: var(--font-size-xl); margin: 0;">
+        <h2 class="fw-bold" style="font-size: var(--font-size-xl); margin: 0;">
             {% if object %}Editar Organização{% else %}Nova Organização{% endif %}
         </h2>
-        <p class="lia-text-muted lia-text-sm" style="margin: var(--space-1) 0 0 0;">
+        <p class="text-muted small" style="margin: var(--space-1) 0 0 0;">
             {% if object %}Atualize os dados de {{ object.company_name }}{% else %}Cadastre uma nova empresa e configure o tenant.{% endif %}
         </p>
     </div>

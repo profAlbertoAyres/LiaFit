@@ -13,10 +13,10 @@
                 <input type="hidden" name="confirm_existing" value="1">
 
                 <!-- HEADER -->
-                <div class="lia-flex lia-items-center lia-justify-between lia-p-6" style="padding-bottom: var(--space-4);">
-                    <div class="lia-flex lia-items-center lia-gap-2" style="color: var(--color-info, var(--color-primary));">
+                <div class="d-flex align-items-center justify-content-between p-3" style="padding-bottom: var(--space-4);">
+                    <div class="d-flex align-items-center gap-2" style="color: var(--color-info, var(--color-primary));">
                         <i data-lucide="info" class="lucide"></i>
-                        <h5 class="lia-font-bold" style="font-size: var(--font-size-lg); margin: 0;">
+                        <h5 class="fw-bold" style="font-size: var(--font-size-lg); margin: 0;">
                             E-mail já cadastrado
                         </h5>
                     </div>
@@ -29,8 +29,8 @@
                 </div>
 
                 <!-- BODY -->
-                <div class="lia-px-6" style="padding-bottom: var(--space-6);">
-                    <p class="lia-text-secondary" style="margin-bottom: var(--space-4);">
+                <div class="px-3" style="padding-bottom: var(--space-6);">
+                    <p class="text-secondary" style="margin-bottom: var(--space-4);">
                         O e-mail <strong>{{ form.email.value }}</strong> já está cadastrado no sistema.
                     </p>
 
@@ -44,12 +44,12 @@
                             à sua conta existente?
                         </p>
                         {% if existing_is_active %}
-                            <p class="lia-text-secondary" style="margin-top: var(--space-2); font-size: var(--font-size-sm);">
+                            <p class="text-secondary" style="margin-top: var(--space-2); font-size: var(--font-size-sm);">
                                 <i data-lucide="check-circle" class="lucide-sm"></i>
                                 Você não precisará criar uma nova senha.
                             </p>
                         {% else %}
-                            <p class="lia-text-secondary" style="margin-top: var(--space-2); font-size: var(--font-size-sm);">
+                            <p class="text-secondary" style="margin-top: var(--space-2); font-size: var(--font-size-sm);">
                                 <i data-lucide="key" class="lucide-sm"></i>
                                 Você receberá um e-mail para definir sua senha.
                             </p>

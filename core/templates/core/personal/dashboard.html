@@ -20,17 +20,17 @@
 
     <!-- CARDS DE MÉTRICAS RÁPIDAS -->
     {% if quick_stats %}
-        <div class="lia-form-row lia-mb-6">
+        <div class="lia-form-row mb-4">
 
             <!-- Card 1: Organizações -->
             <div class="lia-form-group">
                 <div class="lia-card">
                     <div class="lia-card__body">
-                        <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
-                            <span class="lia-text-sm lia-text-muted">{% trans "Organizações" %}</span>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small lia-text-muted">{% trans "Organizações" %}</span>
                             <i data-lucide="building-2" class="lucide-sm lia-text-primary"></i>
                         </div>
-                        <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
                             {{ quick_stats.total_organizations|default:0 }}
                         </div>
                     </div>
@@ -41,11 +41,11 @@
             <div class="lia-form-group">
                 <div class="lia-card">
                     <div class="lia-card__body">
-                        <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
-                            <span class="lia-text-sm lia-text-muted">{% trans "Convites pendentes" %}</span>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small lia-text-muted">{% trans "Convites pendentes" %}</span>
                             <i data-lucide="mail-warning" class="lucide-sm lia-text-warning"></i>
                         </div>
-                        <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
                             {{ quick_stats.pending_invites_count|default:0 }}
                         </div>
                     </div>
@@ -56,11 +56,11 @@
             <div class="lia-form-group">
                 <div class="lia-card">
                     <div class="lia-card__body">
-                        <div class="lia-flex lia-items-center lia-justify-between lia-mb-2">
-                            <span class="lia-text-sm lia-text-muted">{% trans "Notificações" %}</span>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small lia-text-muted">{% trans "Notificações" %}</span>
                             <i data-lucide="bell" class="lucide-sm lia-text-info"></i>
                         </div>
-                        <div class="lia-font-bold" style="font-size: 2rem; line-height: 1;">
+                        <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
                             {{ quick_stats.unread_notifications|default:0 }}
                         </div>
                     </div>
@@ -71,7 +71,7 @@
     {% endif %}
 
     <!-- MINHAS ORGANIZAÇÕES (Cards em Grid) -->
-    <div class="lia-page-header lia-mb-4">
+    <div class="lia-page-header mb-3">
         <div>
             <h2 class="lia-page-header__title" style="font-size: 1.25rem;">{% trans "Minhas organizações" %}</h2>
             <p class="lia-page-header__subtitle">Acesse os painéis das empresas em que você atua.</p>
@@ -79,21 +79,21 @@
     </div>
 
     {% if organizations %}
-        <div class="lia-card-grid lia-mb-6">
+        <div class="lia-card-grid mb-4">
             {% for org in organizations %}
                 <!-- Card Clicável -->
                 <a href="{% url 'tenant:dashboard' org_slug=org.slug %}"
-                   class="lia-card lia-p-4 lia-flex lia-items-center lia-gap-4"
+                   class="lia-card p-3 d-flex align-items-center gap-4"
                    style="text-decoration: none; color: inherit;">
 
-                    <div class="lia-flex lia-items-center lia-justify-center lia-font-bold"
+                    <div class="d-flex align-items-center justify-content-center fw-bold"
                          style="width: 48px; height: 48px; border-radius: var(--radius-md); background-color: var(--color-primary-light); color: var(--color-primary); font-size: 1.25rem;">
                         {{ org.name|slice:":1"|upper }}
                     </div>
 
                     <div style="flex: 1;">
-                        <div class="lia-font-bold lia-text-lg lia-text-primary">{{ org.name }}</div>
-                        <div class="lia-text-sm lia-text-muted">Acessar painel</div>
+                        <div class="fw-bold lia-text-lg lia-text-primary">{{ org.name }}</div>
+                        <div class="small lia-text-muted">Acessar painel</div>
                     </div>
 
                     <i data-lucide="chevron-right" class="lucide-sm lia-text-muted"></i>
@@ -102,9 +102,9 @@
         </div>
     {% else %}
         <!-- Empty State de Organizações -->
-        <div class="lia-card lia-p-6 lia-text-center lia-mb-6">
-            <i data-lucide="building" class="lia-text-muted lia-mb-4" style="width: 48px; height: 48px;"></i>
-            <p class="lia-text-muted lia-mb-4">{% trans "Você ainda não participa de nenhuma organização." %}</p>
+        <div class="lia-card p-4 text-center mb-4">
+            <i data-lucide="building" class="lia-text-muted mb-3" style="width: 48px; height: 48px;"></i>
+            <p class="lia-text-muted mb-3">{% trans "Você ainda não participa de nenhuma organização." %}</p>
 
             <button class="lia-btn lia-btn--primary">
                 <i data-lucide="plus" class="lucide-sm"></i>
@@ -116,28 +116,28 @@
 
     <!-- CONVITES PENDENTES (Listagem em Cards) -->
     {% if pending_invites %}
-        <div class="lia-page-header lia-mb-4">
+        <div class="lia-page-header mb-3">
             <div>
                 <h2 class="lia-page-header__title" style="font-size: 1.25rem;">{% trans "Convites pendentes" %}</h2>
             </div>
         </div>
 
-        <div class="lia-flex lia-flex-col lia-gap-3 lia-mb-6">
+        <div class="d-flex flex-column gap-3 mb-4">
             {% for invite in pending_invites %}
-                <div class="lia-card lia-p-4 lia-flex lia-items-center lia-justify-between">
+                <div class="lia-card p-3 d-flex align-items-center justify-content-between">
 
-                    <div class="lia-flex lia-items-center lia-gap-3">
-                        <div class="lia-flex lia-items-center lia-justify-center"
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center justify-content-center"
                              style="width: 40px; height: 40px; border-radius: var(--radius-full); background-color: var(--color-warning-light); color: var(--color-warning);">
                             <i data-lucide="mail" class="lucide-sm"></i>
                         </div>
                         <div>
                             <div class="lia-font-medium">{{ invite.organization.name }}</div>
-                            <div class="lia-text-sm lia-text-muted">{% trans "Convidou você para participar da equipe." %}</div>
+                            <div class="small lia-text-muted">{% trans "Convidou você para participar da equipe." %}</div>
                         </div>
                     </div>
 
-                    <div class="lia-flex lia-gap-2">
+                    <div class="d-flex gap-2">
                         <button class="lia-btn lia-btn--success lia-btn--sm" title="Aceitar">
                             <i data-lucide="check" class="lucide-sm"></i> <span
                                 class="d-none d-sm-inline">Aceitar</span>
@@ -155,7 +155,7 @@
 
 
     <!-- ATIVIDADES RECENTES (Tabela Padrão LIAFIT) -->
-    <div class="lia-page-header lia-mb-2">
+    <div class="lia-page-header mb-2">
         <div>
             <h2 class="lia-page-header__title" style="font-size: 1.25rem;">{% trans "Atividades recentes" %}</h2>
             <p class="lia-page-header__subtitle">Seu histórico de ações na plataforma.</p>
@@ -174,7 +174,7 @@
             {% for activity in recent_activities %}
                 <tr>
                     <td class="lia-text-muted">
-                        <div class="lia-flex lia-items-center lia-gap-2">
+                        <div class="d-flex align-items-center gap-2">
                             <i data-lucide="clock" class="lucide-sm"></i>
                             {{ activity.created_at|date:"d/m/Y H:i" }}
                         </div>
@@ -186,11 +186,11 @@
             {% empty %}
                 <!-- Empty State Integrado na Tabela -->
                 <tr>
-                    <td colspan="2" class="lia-p-0">
+                    <td colspan="2" class="p-0">
                         <div class="lia-table-empty">
                             <i data-lucide="activity" class="lia-table-empty__icon"></i>
                             <div class="lia-table-empty__text">{% trans "Nenhuma atividade recente." %}</div>
-                            <p class="lia-text-sm lia-text-muted lia-mt-2">
+                            <p class="small lia-text-muted mt-2">
                                 Suas próximas ações aparecerão aqui.
                             </p>
                         </div>

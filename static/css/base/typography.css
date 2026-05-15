@@ -1,9 +1,12 @@
 /* =============================================================================
    LIAFIT — TIPOGRAFIA
-   Estilos globais para títulos, parágrafos e textos auxiliares.
+   Complementos ao Bootstrap (apenas o que o Bootstrap não cobre).
    ============================================================================= */
 
-/* Títulos */
+/* -------------------------------------------------------------------------
+   TÍTULOS
+   ------------------------------------------------------------------------- */
+
 h1, h2, h3, h4, h5, h6 {
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-tight);
@@ -17,7 +20,10 @@ h4 { font-size: var(--font-size-lg); }
 h5 { font-size: var(--font-size-base); }
 h6 { font-size: var(--font-size-sm); }
 
-/* Parágrafos */
+/* -------------------------------------------------------------------------
+   PARÁGRAFOS
+   ------------------------------------------------------------------------- */
+
 p {
     margin-bottom: var(--space-4);
     color: var(--color-text-secondary);
@@ -28,98 +34,33 @@ p:last-child {
     margin-bottom: 0;
 }
 
-/* Textos auxiliares */
-small,
-.lia-text-sm {
-    font-size: var(--font-size-sm);
-}
+/* -------------------------------------------------------------------------
+   TAMANHOS DE TEXTO CUSTOMIZADOS (não cobertos pelo Bootstrap)
+   ------------------------------------------------------------------------- */
 
-.lia-text-xs {
-    font-size: var(--font-size-xs);
-}
+.lia-text-xs { font-size: var(--font-size-xs); }
+.lia-text-xl { font-size: var(--font-size-xl); }
 
-.lia-text-lg {
-    font-size: var(--font-size-lg);
-}
+/* -------------------------------------------------------------------------
+   TEXTO ESTILO RÓTULO (overline)
+   ------------------------------------------------------------------------- */
 
-.lia-text-muted {
-    color: var(--color-text-muted);
-}
-
-.lia-text-secondary {
-    color: var(--color-text-secondary);
-}
-
-/* Peso da fonte */
-.lia-font-medium {
-    font-weight: var(--font-weight-medium);
-}
-
-.lia-font-semibold {
-    font-weight: var(--font-weight-semibold);
-}
-
-.lia-font-bold {
-    font-weight: var(--font-weight-bold);
-}
-
-/* Alinhamento */
-.lia-text-center  { text-align: center; }
-.lia-text-right   { text-align: right; }
-.lia-text-left    { text-align: left; }
-
-/* Truncar texto com reticências */
-.lia-text-truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-}
-
-/* ==========================================================================
-   ÍCONES (Lucide Icons)
-   ========================================================================== */
-
-.lucide {
-    width: 1.25rem;
-    height: 1.25rem;
-    vertical-align: middle;
-    stroke-width: 2; /* Deixa o traço do ícone com uma espessura moderna */
-}
-
-/* Tamanho pequeno (ideal para dentro de botões normais ou textos pequenos) */
-.lucide-sm {
-    width: 1rem;
-    height: 1rem;
-}
-
-/* Tamanho grande (ideal para títulos ou botões maiores) */
-.lucide-lg {
-    width: 1.5rem;
-    height: 1.5rem;
-}
-
-/* Tamanho extra grande (ideal para os cards da página inicial ou dashboards) */
-.lucide-xl {
-    width: 3rem;
-    height: 3rem;
-}
-
-/* ==========================================================================
-   UTILITÁRIOS DE TEXTO E CORES
-   ========================================================================== */
-
-/* Texto em estilo de rótulo (maiúsculo e espaçado) */
 .lia-text-overline {
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-/* Cores de texto utilitárias adicionais */
-.lia-text-primary { color: var(--color-primary); }
-.lia-text-info { color: var(--color-info); }
-.lia-text-success { color: var(--color-success); }
-.lia-text-danger { color: var(--color-danger); }
+/* =============================================================================
+   ÍCONES (Lucide Icons)
+   ============================================================================= */
 
-/* Tamanho extra de texto, caso precise forçar um tamanho em elementos normais */
-.lia-text-xl { font-size: var(--font-size-xl); }
+.lucide {
+    width: 1.25rem;
+    height: 1.25rem;
+    vertical-align: middle;
+    stroke-width: 2;
+}
+
+.lucide-sm { width: 1rem;   height: 1rem;   }
+.lucide-lg { width: 1.5rem; height: 1.5rem; }
+.lucide-xl { width: 3rem;   height: 3rem;   }

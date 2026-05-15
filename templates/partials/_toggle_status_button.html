@@ -35,14 +35,14 @@
 
     {% if obj.is_active %}
         <button type="submit"
-                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-text-danger {{ extra_class }}"
+                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-danger {{ extra_class }}"
                 title="Desativar">
             <i data-lucide="power-off" class="lucide-sm"></i>
             {% if show_label %}<span>Desativar</span>{% endif %}
         </button>
     {% else %}
         <button type="submit"
-                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-text-success {{ extra_class }}"
+                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-success {{ extra_class }}"
                 title="Reativar">
             <i data-lucide="power" class="lucide-sm"></i>
             {% if show_label %}<span>Reativar</span>{% endif %}

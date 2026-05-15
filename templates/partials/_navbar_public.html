@@ -2,7 +2,7 @@
     <div class="lia-container lia-navbar__inner">
         <div class="lia-navbar__brand">
             <a href="{% url 'website:index' %}" class="lia-navbar__logo">
-                <span class="lia-font-bold lia-text-xl">{{ APP_NAME }}</span>
+                <span class="fw-bold lia-text-xl">{{ APP_NAME }}</span>
             </a>
         </div>
 
@@ -10,7 +10,7 @@
             <a href="#funcionalidades" class="lia-navbar__link">Funcionalidades</a>
             <a href="#precos" class="lia-navbar__link">Planos</a>
         </nav>
-        <div class="lia-navbar__actions lia-flex lia-items-center lia-gap-4">
+        <div class="lia-navbar__actions d-flex align-items-center gap-4">
             {% if user.is_authenticated %}
 
                 <!-- Se o usuário está logado, ele sempre tem o painel dele -->
@@ -20,7 +20,7 @@
 
                 <!-- Futuramente, podemos checar se ele JÁ É dono de empresa.
                      Se não for, mostramos o botão de Upsell (Registre sua empresa) -->
-                <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline lia-hidden-mobile">
+                <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline d-none-mobile">
                     Registre sua Empresa
                 </a>
 

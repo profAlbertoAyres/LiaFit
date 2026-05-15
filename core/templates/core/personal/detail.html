@@ -9,73 +9,71 @@
   <div class="row">
     <div class="col-lg-10 mx-auto">
 
-      {# ─── Cabeçalho com avatar ─────────────────────────── #}
+      {# ─── Cabeçalho com avatar (Sem CSS inline!) ──────────────── #}
       <div class="d-flex align-items-center mb-4">
         {% if user.photo %}
           <img src="{{ user.photo.url }}"
                alt="{{ user.get_full_name }}"
-               class="rounded-circle"
-               style="width: 64px; height: 64px; object-fit: cover;">
+               class="lia-avatar lia-avatar--md shadow-sm">
         {% else %}
-          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
-               style="width: 64px; height: 64px; font-size: 1.5rem;">
+          <div class="lia-avatar lia-avatar--md lia-avatar--placeholder-primary shadow-sm">
             {{ user.fullname|first|default:user.email|first|upper }}
           </div>
         {% endif %}
 
         <div class="ms-3">
-          <h2 class="mb-0">{{ user.get_full_name|default:user.email }}</h2>
+          <h2 class="mb-0 h4">{{ user.get_full_name|default:user.email }}</h2>
           <small class="text-muted">{{ user.email }}</small>
         </div>
       </div>
 
-      {# ─── Card: Informações da conta ───────────────────── #}
-      <div class="lia-card shadow-sm mb-4 lia-p-4">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-          <h5 class="mb-0 lia-flex">
-            <i data-lucide="user" class="me-2"></i>Informações da conta
+      {# ─── Card: Informações da conta ──────────────────────────── #}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i data-lucide="user" class="me-2 lucide-sm"></i>Informações da conta
           </h5>
-           <a href="{% url 'personal:profile_edit' %}" class="lia-btn lia-btn--primary lia-btn--sm">Editar</a>
+           <a href="{% url 'personal:profile_edit' %}" class="btn btn-primary btn-sm">Editar</a>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
           <dl class="row mb-0">
-            <dt class="col-sm-4 text-muted">Nome</dt>
+            <dt class="col-sm-4 text-muted fw-normal">Nome</dt>
             <dd class="col-sm-8">{{ user.fullname|default:"—" }}</dd>
 
-            <dt class="col-sm-4 text-muted">E-mail</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">E-mail</dt>
             <dd class="col-sm-8">{{ user.email }}</dd>
 
-            <dt class="col-sm-4 text-muted">CPF</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">CPF</dt>
             <dd class="col-sm-8">{{ user.cpf|default:"—" }}</dd>
 
-            <dt class="col-sm-4 text-muted">Telefone</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Telefone</dt>
             <dd class="col-sm-8">{{ user.phone|default:"—" }}</dd>
 
-            <dt class="col-sm-4 text-muted">Data de nascimento</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Data de nascimento</dt>
             <dd class="col-sm-8">{{ user.birth_date|date:"d/m/Y"|default:"—" }}</dd>
 
-            <dt class="col-sm-4 text-muted">Gênero</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Gênero</dt>
             <dd class="col-sm-8">{{ user.get_gender_display|default:"—" }}</dd>
           </dl>
         </div>
       </div>
 
-      {# ─── Card: Atividade da conta ─────────────────────── #}
+      {# ─── Card: Atividade da conta ────────────────────────────── #}
       <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white">
-          <h5 class="mb-0">
-            <i data-lucide="activity" class="me-2"></i>Atividade
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i data-lucide="activity" class="me-2 lucide-sm"></i>Atividade
           </h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
           <dl class="row mb-0">
-            <dt class="col-sm-4 text-muted">Último acesso</dt>
+            <dt class="col-sm-4 text-muted fw-normal">Último acesso</dt>
             <dd class="col-sm-8">{{ user.last_login|date:"d/m/Y H:i"|default:"—" }}</dd>
 
-            <dt class="col-sm-4 text-muted">Conta criada em</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Conta criada em</dt>
             <dd class="col-sm-8">{{ user.date_joined|date:"d/m/Y" }}</dd>
 
-            <dt class="col-sm-4 text-muted">E-mail verificado</dt>
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">E-mail verificado</dt>
             <dd class="col-sm-8">
               {% if user.is_email_verified %}
                 <span class="badge bg-success">Sim</span>
@@ -88,22 +86,7 @@
         </div>
       </div>
 
-      {# ─── Aviso de evolução ───────────────────────────── #}
-      <div class="alert alert-info d-flex align-items-center" role="alert">
-        <i data-lucide="info" class="me-2"></i>
-        <div>
-          <strong>Em breve:</strong> edição de dados, alteração de senha e foto de perfil.
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block page_js %}
-<script>
-  // Renderiza os ícones lucide
-  if (window.lucide) lucide.createIcons();
-</script>
 {% endblock %}

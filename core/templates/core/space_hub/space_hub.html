@@ -17,9 +17,9 @@
                 <!-- Avatar do Usuário Logado -->
                 <div class="lia-space-select__user-avatar">
                     {% if request.user.photo %}
-                        <img src="{{ request.user.photo.url }}" alt="{{ request.user.fullname }}" class="lia-avatar-img">
+                        <img src="{{ request.user.photo.url }}" alt="{{ request.user.fullname }}" class="lia-avatar__img">
                     {% else %}
-                        <div class="lia-avatar-initials">
+                        <div class="lia-avatar__initials">
                             {{ request.user.fullname|default:request.user.email|first|upper }}
                         </div>
                     {% endif %}
@@ -81,17 +81,17 @@
         {# Fallback: 0 espaços                                          #}
         {# ============================================================ #}
         {% else %}
-            <div class="lia-card lia-p-6 lia-text-center lia-mx-auto" style="max-width: 480px;">
-                <div class="lia-empty-icon lia-mx-auto lia-w-16 lia-h-16 lia-bg-gray-50 lia-text-gray-400 lia-rounded-full lia-flex lia-items-center lia-justify-center lia-mb-4" aria-hidden="true">
+            <div class="lia-card p-4 text-center lia-mx-auto" style="max-width: 480px;">
+                <div class="lia-empty-icon lia-mx-auto lia-w-16 lia-h-16 lia-bg-gray-50 lia-text-gray-400 lia-rounded-full d-flex align-items-center justify-content-center mb-3" aria-hidden="true">
                     <i data-lucide="inbox" class="lia-w-8 lia-h-8"></i>
                 </div>
-                <h2 class="lia-card__title lia-mb-2">
+                <h2 class="lia-card__title mb-2">
                     {% translate "Nenhum espaço disponível" %}
                 </h2>
-                <p class="lia-card__subtitle lia-mb-6">
+                <p class="lia-card__subtitle mb-4">
                     {% translate "Sua conta ainda não está vinculada a nenhuma organização. Entre em contato com o suporte." %}
                 </p>
-                <a href="{% url 'website:index' %}" class="lia-btn lia-btn--primary lia-w-full">
+                <a href="{% url 'website:index' %}" class="lia-btn lia-btn--primary w-100">
                     {% translate "Voltar para o site" %}
                 </a>
             </div>

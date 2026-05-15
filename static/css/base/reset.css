@@ -3,32 +3,17 @@
    Normalização filters para comportamento consistente entre navegadores.
    ============================================================================= */
 
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 html {
-    font-size: 16px;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
 }
 
 body {
-    font-family: var(--font-family);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
-    color: var(--color-text-primary);
-    background-color: var(--color-bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-    color: var(--color-primary);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
@@ -44,15 +29,6 @@ svg {
     height: auto;
 }
 
-button,
-input,
-select,
-textarea {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-}
-
 button {
     cursor: pointer;
     border: none;
@@ -61,9 +37,4 @@ button {
 
 ul, ol {
     list-style: none;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
 }

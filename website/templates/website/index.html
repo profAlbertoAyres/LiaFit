@@ -4,13 +4,13 @@
 {% block website_content %}
     <!-- Sessão Hero (Focada no Cliente Final / Marketplace) -->
     <section class="lia-hero">
-        <div class="lia-container lia-hero__inner lia-text-center">
+        <div class="lia-container lia-hero__inner text-center">
 
-            <h1 class="lia-hero__title lia-mb-4">
+            <h1 class="lia-hero__title mb-3">
                 Encontre os melhores serviços de <br>
                 <span class="lia-text-primary">saúde e bem-estar</span>
             </h1>
-            <p class="lia-hero__subtitle lia-text-muted lia-mb-8">
+            <p class="lia-hero__subtitle text-muted mb-5">
                 Agende horários com personais, nutricionistas, clínicas e academias perto de você.
             </p>
 
@@ -29,8 +29,8 @@
             </div>
 
             <!-- Tags Rápidas -->
-            <div class="lia-mt-6 lia-flex lia-justify-center lia-gap-4 lia-flex-wrap">
-                <span class="lia-text-sm lia-text-muted">Buscas populares:</span>
+            <div class="mt-5 d-flex justify-content-center gap-4 flex-wrap">
+                <span class="small text-muted">Buscas populares:</span>
                 <a href="#" class="badge bg-light text-dark text-decoration-none border">Musculação</a>
                 <a href="#" class="badge bg-light text-dark text-decoration-none border">Fisioterapia</a>
                 <a href="#" class="badge bg-light text-dark text-decoration-none border">Yoga</a>
@@ -41,9 +41,9 @@
 
     <!-- Sessão "Para Empresas" (A isca B2B escondida na home B2C) -->
     <section class="lia-features" style="background-color: var(--color-bg);">
-        <div class="lia-container lia-text-center">
-            <h2 class="lia-section-title lia-mb-2">Você é um profissional da área?</h2>
-            <p class="lia-text-muted lia-mb-6">Junte-se a milhares de profissionais que usam o {{ APP_NAME }} para gerenciar e crescer seus negócios.</p>
+        <div class="lia-container text-center">
+            <h2 class="lia-section-title mb-2">Você é um profissional da área?</h2>
+            <p class="text-muted mb-4">Junte-se a milhares de profissionais que usam o {{ APP_NAME }} para gerenciar e crescer seus negócios.</p>
             <a href="{% url 'auth:register' %}" class="lia-btn lia-btn--outline lia-btn--lg">
                 Conheça nossa plataforma para Empresas
             </a>

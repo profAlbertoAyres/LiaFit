@@ -9,10 +9,10 @@
                 {% csrf_token %}
 
                 <!-- HEADER -->
-                <div class="lia-flex lia-items-center lia-justify-between lia-p-6" style="padding-bottom: var(--space-4);">
-                    <div class="lia-flex lia-items-center lia-gap-2" style="color: var(--color-danger);">
+                <div class="d-flex align-items-center justify-content-between p-4" style="padding-bottom: var(--space-4);">
+                    <div class="d-flex align-items-center gap-2" style="color: var(--color-danger);">
                         <i data-lucide="alert-triangle" class="lucide"></i>
-                        <h5 class="lia-font-bold" style="font-size: var(--font-size-lg); margin: 0;">Confirmar Exclusão</h5>
+                        <h5 class="fw-bold" style="font-size: var(--font-size-lg); margin: 0;">Confirmar Exclusão</h5>
                     </div>
 
                     <!-- Botão de fechar nativo do Lia Linda -->
@@ -22,8 +22,8 @@
                 </div>
 
                 <!-- BODY -->
-                <div class="lia-px-6" style="padding-bottom: var(--space-6);">
-                    <p class="lia-text-secondary" style="margin-bottom: var(--space-6);">
+                <div class="px-3" style="padding-bottom: var(--space-6);">
+                    <p class="text-secondary" style="margin-bottom: var(--space-6);">
                         Tem certeza que deseja excluir <strong>{{ name }}</strong>? Esta ação não pode ser desfeita.
                     </p>
 

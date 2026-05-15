@@ -1,58 +1,58 @@
-<footer class="lia-footer lia-pt-6">
+<footer class="lia-footer pt-4">
     <div class="lia-container">
         <!-- Usando o grid do Bootstrap que já temos, mas com as cores e fontes do Lia Linda -->
-        <div class="row lia-mb-6">
+        <div class="row mb-4">
 
             <!-- Coluna 1: Marca e Propósito -->
             <div class="col-12 col-md-4 mb-4 mb-md-0">
-                <h6 class="lia-font-bold lia-text-xl lia-mb-4">{{ APP_NAME }}</h6>
-                <p class="lia-text-muted lia-text-sm lia-mb-4" style="max-width: 90%;">
+                <h6 class="fw-bold lia-text-xl mb-3">{{ APP_NAME }}</h6>
+                <p class="text-muted small mb-3" style="max-width: 90%;">
                     O maior ecossistema de saúde e movimento. Encontre os melhores profissionais para cuidar de você, ou impulsione a gestão do seu negócio.
                 </p>
-                <div class="lia-flex lia-gap-4">
-                    <a href="#" class="lia-text-muted"><i data-lucide="instagram" class="lucide-sm"></i></a>
-                    <a href="#" class="lia-text-muted"><i data-lucide="facebook" class="lucide-sm"></i></a>
-                    <a href="#" class="lia-text-muted"><i data-lucide="linkedin" class="lucide-sm"></i></a>
+                <div class="d-flex gap-4">
+                    <a href="#" class="text-muted"><i data-lucide="instagram" class="lucide-sm"></i></a>
+                    <a href="#" class="text-muted"><i data-lucide="facebook" class="lucide-sm"></i></a>
+                    <a href="#" class="text-muted"><i data-lucide="linkedin" class="lucide-sm"></i></a>
                 </div>
             </div>
 
             <!-- Coluna 2: Para Clientes (B2C) -->
             <div class="col-12 col-md-2 mb-4 mb-md-0">
-                <h6 class="lia-font-bold lia-text-sm text-uppercase lia-mb-4">Para Clientes</h6>
-                <ul class="lia-flex lia-flex-col lia-gap-2 p-0 m-0">
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Buscar Profissionais</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Academias e Studios</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Como Funciona</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Central de Ajuda</a></li>
+                <h6 class="fw-bold small text-uppercase mb-3">Para Clientes</h6>
+                <ul class="d-flex flex-column gap-2 p-0 m-0">
+                    <li><a href="#" class="text-muted small text-decoration-none">Buscar Profissionais</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Academias e Studios</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Como Funciona</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Central de Ajuda</a></li>
                 </ul>
             </div>
 
             <!-- Coluna 3: Para Empresas (B2B) -->
             <div class="col-12 col-md-3 mb-4 mb-md-0">
-                <h6 class="lia-font-bold lia-text-sm text-uppercase lia-mb-4">Para Profissionais</h6>
-                <ul class="lia-flex lia-flex-col lia-gap-2 p-0 m-0">
-                    <li><a href="{% url 'auth:register' %}" class="lia-text-muted lia-text-sm text-decoration-none">Cadastre seu Negócio</a></li>
-                    <li><a href="#precos" class="lia-text-muted lia-text-sm text-decoration-none">Planos e Preços</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Recursos do Sistema</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Suporte para Parceiros</a></li>
+                <h6 class="fw-bold small text-uppercase mb-3">Para Profissionais</h6>
+                <ul class="d-flex flex-column gap-2 p-0 m-0">
+                    <li><a href="{% url 'auth:register' %}" class="text-muted small text-decoration-none">Cadastre seu Negócio</a></li>
+                    <li><a href="#precos" class="text-muted small text-decoration-none">Planos e Preços</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Recursos do Sistema</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Suporte para Parceiros</a></li>
                 </ul>
             </div>
 
             <!-- Coluna 4: Institucional -->
             <div class="col-12 col-md-3">
-                <h6 class="lia-font-bold lia-text-sm text-uppercase lia-mb-4">{{ APP_NAME }}</h6>
-                <ul class="lia-flex lia-flex-col lia-gap-2 p-0 m-0">
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Sobre Nós</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Termos de Uso</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Privacidade</a></li>
-                    <li><a href="#" class="lia-text-muted lia-text-sm text-decoration-none">Trabalhe Conosco</a></li>
+                <h6 class="fw-bold small text-uppercase mb-3">{{ APP_NAME }}</h6>
+                <ul class="d-flex flex-column gap-2 p-0 m-0">
+                    <li><a href="#" class="text-muted small text-decoration-none">Sobre Nós</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Termos de Uso</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Privacidade</a></li>
+                    <li><a href="#" class="text-muted small text-decoration-none">Trabalhe Conosco</a></li>
                 </ul>
             </div>
         </div>
 
         <!-- Linha de Copyright -->
-        <div class="lia-text-center lia-pt-4" style="border-top: 1px solid var(--color-border);">
-            <p class="lia-text-sm lia-text-muted m-0">
+        <div class="text-center pt-3" style="border-top: 1px solid var(--color-border);">
+            <p class="small text-muted m-0">
                 &copy; {% now "Y" %} {{ APP_NAME }}. Todos os direitos reservados.
             </p>
         </div>

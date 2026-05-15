@@ -10,7 +10,7 @@
             <p class="lia-page-header__subtitle">Gerencie as especialidades médicas disponíveis na plataforma.</p>
         </div>
         <div class="lia-page-header__actions">
-            <div class="lia-flex lia-gap-2">
+            <div class="d-flex gap-2">
                 <a href="{% url 'saas_admin:specialty_create' %}" class="lia-btn lia-btn--primary"
                    title="Cadastrar nova especialidade">
                     <i data-lucide="plus" class="lucide-sm"></i>
@@ -21,11 +21,11 @@
     </div>
 
     <!-- ÁREA DE FILTROS -->
-    <div class="lia-card lia-mb-3">
-        <div class="lia-card__body lia-py-4">
+    <div class="lia-card mb-2">
+        <div class="lia-card__body py-3">
             <form method="get" class="lia-filter-form">
 
-                <div class="lia-form-row lia-items-center">
+                <div class="lia-form-row align-items-center">
                     <!-- Busca Geral (Nome, Descrição) -->
                     <div class="lia-form-group">
                         <label class="lia-form-label">Buscar especialidade</label>
@@ -44,7 +44,7 @@
                         {{ filter.form.created_at }}
                     </div>
 
-                    <div class="lia-flex lia-justify-start lia-gap-2">
+                    <div class="d-flex justify-content-start gap-2">
                         <button type="submit" class="lia-btn lia-btn--secondary">
                             <i data-lucide="search" class="lucide-sm"></i>
                             <span>Filtrar</span>
@@ -80,15 +80,15 @@
                 <tr>
                     <!-- Coluna 1: Nome -->
                     <td>
-                        <div class="lia-flex lia-items-center lia-gap-3">
+                        <div class="d-flex align-items-center gap-3">
                             <!-- Ícone fixo com inicial -->
-                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary lia-text-muted lia-flex lia-items-center lia-justify-center lia-font-bold">
+                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary text-muted d-flex align-items-center justify-content-center fw-bold">
                                 {{ specialty.name|slice:":1"|upper }}
                             </div>
 
                             <div>
                                 <div class="lia-font-medium">{{ specialty.name }}</div>
-                                <div class="lia-text-xs lia-text-muted">
+                                <div class="lia-text-xs text-muted">
                                     Cadastrada em {{ specialty.created_at|date:"d/m/Y" }}
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
 
                     <!-- Coluna 2: Descrição -->
                     <td>
-                        <div class="lia-text-sm lia-text-muted">
+                        <div class="small text-muted">
                             {{ specialty.description|default:"—"|truncatechars:80 }}
                         </div>
                     </td>
@@ -105,15 +105,15 @@
                     <!-- Coluna 3: Status -->
                     <td>
                         {% if specialty.is_active %}
-                            <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold">Ativa</span>
+                            <span class="lia-badge lia-badge--success lia-text-xs fw-bold">Ativa</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Inativa</span>
+                            <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Inativa</span>
                         {% endif %}
                     </td>
 
                     <!-- Coluna 4: Ações -->
-                    <td class="lia-text-center">
-                        <div class="lia-table__actions lia-justify-center">
+                    <td class="text-center">
+                        <div class="lia-table__actions justify-content-center">
 
                             <!-- Botão: Editar -->
                             <a href="{% url 'saas_admin:specialty_update' specialty.pk %}"
@@ -124,13 +124,13 @@
 
                             <!-- Botão: Toggle Ativar/Desativar -->
                             {% if specialty.is_active %}
-                                <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-text-danger"
+                                <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-danger"
                                    title="Desativar especialidade"
                                    onclick="return confirm('Desativar esta especialidade? Ela deixará de aparecer para os usuários.');">
                                     <i data-lucide="power" class="lucide-sm"></i>
                                 </a>
                             {% else %}
-                                <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-text-success"
+                                <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-success"
                                    title="Reativar especialidade"
                                    onclick="return confirm('Reativar esta especialidade?');">
                                     <i data-lucide="power" class="lucide-sm"></i>
@@ -145,15 +145,15 @@
             {% empty %}
                 <!-- STATE: TABELA VAZIA -->
                 <tr>
-                    <td colspan="4" class="lia-p-0">
+                    <td colspan="4" class="p-0">
                         <div class="lia-table-empty">
                             <i data-lucide="stethoscope" class="lia-table-empty__icon"></i>
                             <div class="lia-table-empty__text">Nenhuma especialidade encontrada.</div>
-                            <p class="lia-text-sm lia-text-muted lia-mt-2">
+                            <p class="small text-muted mt-2">
                                 Use o botão acima para cadastrar a primeira especialidade do sistema.
                             </p>
 
-                            <div class="lia-flex lia-justify-center lia-gap-3 lia-mt-4">
+                            <div class="d-flex justify-content-center gap-3 mt-4">
                                 {% if request.GET %}
                                     <a href="{% url 'saas_admin:specialty_list' %}"
                                        class="lia-btn lia-btn--secondary">
@@ -176,11 +176,11 @@
 
     <!-- PAGINAÇÃO -->
     {% if page_obj.has_other_pages %}
-        <div class="lia-flex lia-justify-between lia-items-center lia-mt-6">
-            <div class="lia-text-sm lia-text-muted">
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <div class="small text-muted">
                 Página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong>
             </div>
-            <div class="lia-flex lia-gap-2">
+            <div class="d-flex gap-2">
                 {% if page_obj.has_previous %}
                     <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
                        class="lia-btn lia-btn--outline lia-btn--sm">Anterior</a>

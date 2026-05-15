@@ -14,7 +14,7 @@
         <div class="lia-page-header__actions">
             <!-- CONTROLE DE PERMISSÃO: Adicionar Membro -->
             {#        {% if request.context.has_permission("settings.member.add") %}#}
-            <div class="lia-flex lia-gap-2">
+            <div class="d-flex gap-2">
                 <!-- Botão 1: Cadastro Manual -->
                 <a href="{% url 'tenant:member_create' org_slug=request.context.organization.slug %}"
                    class="lia-btn lia-btn--primary" title="Cadastrar membro">
@@ -26,12 +26,12 @@
         </div>
     </div>
 
-    <div class="lia-card lia-mb-3">
-        <div class="lia-card__body lia-py-4">
+    <div class="lia-card mb-2">
+        <div class="lia-card__body py-3">
             <form method="get" class="lia-filter-form">
 
                 {# ─── LINHA PRINCIPAL (sempre visível) ─── #}
-                <div class="lia-form-row lia-items-center">
+                <div class="lia-form-row align-items-center">
                     <div class="lia-form-group">
                         <label class="lia-form-label">Buscar membro</label>
                         {{ filter.form.search }}
@@ -47,7 +47,7 @@
                         {{ filter.form.order_by }}
                     </div>
 
-                    <div class="lia-flex lia-gap-2">
+                    <div class="d-flex gap-2">
                         <button type="submit" class="lia-btn lia-btn--secondary">
                             <i data-lucide="search" class="lucide-sm"></i>
                             {% if not request.GET %}
@@ -62,7 +62,7 @@
                             </a>
                         {% endif %}
                         <button type="button" class="lia-btn lia-btn--outline-primary"
-                                onclick="document.getElementById('advancedFilters').classList.toggle('lia-hidden')">
+                                onclick="document.getElementById('advancedFilters').classList.toggle('d-none')">
                             <i data-lucide="sliders-horizontal" class="lucide-sm"></i>
                             <span>Avançado</span>
                         </button>
@@ -71,7 +71,7 @@
                 </div>
 
                 {# ─── FILTROS AVANÇADOS (colapsável) ─── #}
-                <div id="advancedFilters" class="lia-form-row lia-items-end lia-mt-3">
+                <div id="advancedFilters" class="lia-form-row align-items-end mt-3">
                     <div class="lia-form-group">
                         <label class="lia-form-label">Situação</label>
                         {{ filter.form.has_left }}
@@ -124,25 +124,25 @@
                 <tr>
                     <!-- Coluna 1: Nome e Email -->
                     <td>
-                        <div class="lia-flex lia-items-center lia-gap-3">
+                        <div class="d-flex align-items-center gap-3">
                             <!-- Avatar / Ícone -->
-                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary lia-text-muted">
+                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary text-muted">
                                 <i data-lucide="user" class="lucide-sm"></i>
                             </div>
                             <div>
                                 <div class="lia-font-medium">{{ member.user.get_full_name|default:"Usuário Convidado" }}</div>
-                                <div class="lia-text-xs lia-text-muted">{{ member.user.email }}</div>
+                                <div class="lia-text-xs text-muted">{{ member.user.email }}</div>
                             </div>
                         </div>
                     </td>
 
                     <!-- Coluna 2: Papéis (Roles) -->
                     <td>
-                        <div class="lia-flex lia-flex-wrap lia-gap-1">
+                        <div class="d-flex flex-wrap gap-1">
                             {% for role in member.roles.all %}
                                 <span class="lia-badge lia-badge--outline lia-text-xs">{{ member.user.p }}</span>
                             {% empty %}
-                                <span class="lia-text-xs lia-text-muted">Sem papel definido</span>
+                                <span class="lia-text-xs text-muted">Sem papel definido</span>
                             {% endfor %}
                         </div>
                     </td>
@@ -151,16 +151,16 @@
                     <td>
                         <!-- Verificação fictícia (ajuste conforme seu model de Member/User) -->
                         {% if member.user.is_active %}
-                            <span class="lia-badge lia-badge--success lia-text-xs lia-font-bold">Ativo</span>
+                            <span class="lia-badge lia-badge--success lia-text-xs fw-bold">Ativo</span>
                         {% elif member.invite_pending %}
-                            <span class="lia-badge lia-badge--warning lia-text-xs lia-font-bold">Pendente</span>
+                            <span class="lia-badge lia-badge--warning lia-text-xs fw-bold">Pendente</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--danger lia-text-xs lia-font-bold">Inativo</span>
+                            <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Inativo</span>
                         {% endif %}
                     </td>
 
                     <td>
-                        <div class="lia-table__actions lia-justify-end">
+                        <div class="lia-table__actions justify-content-end">
                             <a href="{% url 'tenant:member_detail' org_slug=request.context.organization.slug pk=member.pk %}"
                                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" title="Ver Perfil">
                                 <i data-lucide="eye" class="lucide-sm"></i>
@@ -187,14 +187,14 @@
             {% empty %}
                 <!-- STATE: TABELA VAZIA -->
                 <tr>
-                    <td colspan="4" class="lia-p-0">
+                    <td colspan="4" class="p-0">
                         <div class="lia-table-empty">
                             <i data-lucide="users" class="lia-table-empty__icon"></i>
                             <div class="lia-table-empty__text">Nenhum membro encontrado.</div>
-                            <p class="lia-text-sm lia-text-muted lia-mt-2">Comece convidando ou cadastrando pessoas na
+                            <p class="small text-muted mt-2">Comece convidando ou cadastrando pessoas na
                                 sua equipe.</p>
 
-                            <div class="lia-flex lia-justify-center lia-gap-3 lia-mt-4">
+                            <div class="d-flex justify-content-center gap-3 mt-4">
                                 {#                            {% if request.GET.search %}#}
                                 <a href="{% url 'tenant:member_list' org_slug=request.context.organization.slug %}"
                                    class="lia-btn lia-btn--secondary">
@@ -218,11 +218,11 @@
 
     <!-- PAGINAÇÃO -->
     {% if page_obj.has_other_pages %}
-        <div class="lia-flex lia-justify-between lia-items-center lia-mt-6">
-            <div class="lia-text-sm lia-text-muted">
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <div class="small text-muted">
                 Página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong>
             </div>
-            <div class="lia-flex lia-gap-2">
+            <div class="d-flex gap-2">
                 {% if page_obj.has_previous %}
                     <a href="?page=
 

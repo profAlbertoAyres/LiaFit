@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/components/avatar.css' %}">
     <!-- Flatpickr (Calendário) específico do sistema logado -->
     <link rel="stylesheet" href="{% static 'css/vendor/flatpickr/flatpickr.min.css' %}">
 
@@ -18,11 +19,11 @@
 
             <!-- HEADER DA APLICAÇÃO -->
             <header class="lia-header">
-                <div class="lia-flex lia-items-center lia-gap-4">
+                <div class="d-flex align-items-center gap-4">
                     <button class="lia-btn--ghost lia-btn--icon" id="sidebar-toggle" aria-label="Menu">
                         <i data-lucide="menu" class="lucide"></i>
                     </button>
-                    <span class="lia-font-semibold">{% block header_title %}{{ APP_NAME }}{% endblock %}</span>
+                    <span class="fw-semibold">{% block header_title %}{{ APP_NAME }}{% endblock %}</span>
                 </div>
 
             </header>

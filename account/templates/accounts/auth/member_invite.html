@@ -6,15 +6,15 @@
 
 {% block page_content %}
 <!-- HEADER DA PÁGINA -->
-<div class="lia-flex lia-items-center lia-gap-3 lia-mb-6">
+<div class="d-flex align-items-center gap-3 mb-4">
     <a href="javascript:history.back()" class="lia-btn lia-btn--icon lia-btn--ghost">
         <i data-lucide="arrow-left" class="lucide"></i>
     </a>
     <div>
-        <h2 class="lia-font-bold lia-text-xl lia-m-0">
+        <h2 class="fw-bold lia-text-xl m-00">
             Convidar Novo Membro
         </h2>
-        <p class="lia-text-muted lia-text-sm lia-mt-1">
+        <p class="text-muted small mt-1">
             Envie um convite por e-mail para que um novo colaborador acesse o sistema.
         </p>
     </div>
@@ -35,7 +35,7 @@
         </div>
         {% endif %}
 
-        <div class="lia-card__header lia-border-b-0 lia-pb-0">
+        <div class="lia-card__header border-bottom-0 pb-0">
             <div>
                 <h3 class="lia-card__title">Dados do Convite</h3>
                 <p class="lia-card__subtitle">O usuário receberá um link seguro para definir sua senha.</p>
@@ -44,7 +44,7 @@
 
         <div class="lia-card__body">
             <!-- LINHA 1: E-mail -->
-            <div class="row lia-mb-4">
+            <div class="row mb-3">
                 {% include "components/form_field.html" with field=form.email col="col-md-12" %}
             </div>
 
@@ -52,7 +52,7 @@
             <div class="row">
                 {% include "components/form_field.html" with field=form.roles col="col-md-12" %}
                 <div class="col-md-12">
-                    <div class="lia-alert lia-alert--info lia-alert--inline lia-mt-2">
+                    <div class="lia-alert lia-alert--info lia-alert--inline mt-2">
                         <i data-lucide="info" class="lia-alert__icon"></i>
                         <div class="lia-alert__content">
                             <div class="lia-alert__message">
@@ -65,8 +65,8 @@
         </div>
 
         <!-- AÇÕES NO FOOTER NATIVO DO CARD -->
-        <div class="lia-card__footer lia-flex lia-justify-end">
-            <a href="javascript:history.back()" class="lia-btn lia-btn--outline lia-mr-2">
+        <div class="lia-card__footer d-flex justify-content-end">
+            <a href="javascript:history.back()" class="lia-btn lia-btn--outline me-2">
                 Cancelar
             </a>
             <button type="submit" class="lia-btn lia-btn--primary">
