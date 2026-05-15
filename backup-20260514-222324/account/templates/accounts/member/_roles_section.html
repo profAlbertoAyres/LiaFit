@@ -3,7 +3,7 @@
     <div class="lia-card__header d-flex align-items-center justify-content-between">
         <div>
             <h3 class="lia-card__title">Papéis Atribuídos</h3>
-            <p class="small text-muted mt-1">
+            <p class="small lia-text-muted mt-1">
                 Clique em um papel para atribuí-lo ou removê-lo deste membro.
             </p>
         </div>
@@ -17,7 +17,7 @@
             {% for role in available_roles %}
                 {% include "accounts/member/_role_toggle_card.html" with membership=member role=role is_assigned=role.is_assigned last_log=None %}
             {% empty %}
-                <div class="text-muted small">
+                <div class="lia-text-muted small">
                     Nenhum papel disponível para atribuir nesta organização.
                 </div>
             {% endfor %}

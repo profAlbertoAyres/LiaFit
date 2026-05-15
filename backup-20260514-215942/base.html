@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block meta %} {% endblock %}
+    <title>{% block title %}{{ APP_NAME }}{% endblock %}</title>
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Vendor (Terceiros) -->
+    <link rel="stylesheet" href="{% static 'css/vendor/bootstrap/bootstrap.min.css' %}">
+
+    <!-- CSS Base Lia Linda -->
+    <link rel="stylesheet" href="{% static 'css/base/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/typography.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base/layout.css' %}">
+
+    <!-- CSS Componentes Lia Linda -->
+    <link rel="stylesheet" href="{% static 'css/components/alerts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/toggle-cards.css' %}">
+
+    <!-- CSS Específico da página (se houver) -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Alertas Globais -->
+    {% include 'partials/_alerts.html' %}
+
+    <!-- Conteúdo Principal -->
+    {% block content %}
+
+    {% endblock %}
+
+    <!-- JS Vendor -->
+    <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/vendor/lucide/lucide.min.js' %}"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- JS Customizado Lia Linda -->
+    <script src="{% static 'js/modules/forms.js' %}"></script>
+    <script src="{% static 'js/modules/utils.js' %}"></script>
+    <script src="{% static 'js/modules/alerts.js' %}"></script>
+
+    <!-- JS Específico da página (se houver) -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -126,7 +126,7 @@
                         {% if client.created_by %}
                             {{ client.created_by.get_full_name|default:client.created_by.email }}
                         {% else %}
-                            <span class="text-muted">Sistema</span>
+                            <span class="lia-text-muted">Sistema</span>
                         {% endif %}
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                         {% if client.first_service_at %}
                             {{ client.first_service_at|date:"d/m/Y" }}
                         {% else %}
-                            <span class="text-muted">Ainda não realizado</span>
+                            <span class="lia-text-muted">Ainda não realizado</span>
                         {% endif %}
                     </div>
                 </div>
@@ -177,7 +177,7 @@
             {% if client.objective %}
                 <p class="small mb-0">{{ client.objective|linebreaksbr }}</p>
             {% else %}
-                <p class="small text-muted mb-0">Nenhum objetivo registrado.</p>
+                <p class="small lia-text-muted mb-0">Nenhum objetivo registrado.</p>
             {% endif %}
         </div>
     </div>
@@ -188,14 +188,14 @@
             <div class="d-flex align-items-center gap-2">
                 <i data-lucide="file-text" class="lucide-sm"></i>
                 <h2 class="lia-card__title mb-0">Observações Internas</h2>
-                <span class="lia-text-xs text-muted">(visível apenas para a equipe)</span>
+                <span class="lia-text-xs lia-text-muted">(visível apenas para a equipe)</span>
             </div>
         </div>
         <div class="lia-card__body">
             {% if client.notes %}
                 <p class="small mb-0">{{ client.notes|linebreaksbr }}</p>
             {% else %}
-                <p class="small text-muted mb-0">Nenhuma observação registrada.</p>
+                <p class="small lia-text-muted mb-0">Nenhuma observação registrada.</p>
             {% endif %}
         </div>
     </div>

@@ -27,7 +27,7 @@
                 <div class="lia-card">
                     <div class="lia-card__body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="small text-muted">{% trans "Organizações" %}</span>
+                            <span class="small lia-text-muted">{% trans "Organizações" %}</span>
                             <i data-lucide="building-2" class="lucide-sm lia-text-primary"></i>
                         </div>
                         <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
@@ -42,7 +42,7 @@
                 <div class="lia-card">
                     <div class="lia-card__body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="small text-muted">{% trans "Convites pendentes" %}</span>
+                            <span class="small lia-text-muted">{% trans "Convites pendentes" %}</span>
                             <i data-lucide="mail-warning" class="lucide-sm lia-text-warning"></i>
                         </div>
                         <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
@@ -57,7 +57,7 @@
                 <div class="lia-card">
                     <div class="lia-card__body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="small text-muted">{% trans "Notificações" %}</span>
+                            <span class="small lia-text-muted">{% trans "Notificações" %}</span>
                             <i data-lucide="bell" class="lucide-sm lia-text-info"></i>
                         </div>
                         <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
@@ -93,18 +93,18 @@
 
                     <div style="flex: 1;">
                         <div class="fw-bold lia-text-lg lia-text-primary">{{ org.name }}</div>
-                        <div class="small text-muted">Acessar painel</div>
+                        <div class="small lia-text-muted">Acessar painel</div>
                     </div>
 
-                    <i data-lucide="chevron-right" class="lucide-sm text-muted"></i>
+                    <i data-lucide="chevron-right" class="lucide-sm lia-text-muted"></i>
                 </a>
             {% endfor %}
         </div>
     {% else %}
         <!-- Empty State de Organizações -->
         <div class="lia-card p-4 text-center mb-4">
-            <i data-lucide="building" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
-            <p class="text-muted mb-3">{% trans "Você ainda não participa de nenhuma organização." %}</p>
+            <i data-lucide="building" class="lia-text-muted mb-3" style="width: 48px; height: 48px;"></i>
+            <p class="lia-text-muted mb-3">{% trans "Você ainda não participa de nenhuma organização." %}</p>
 
             <button class="lia-btn lia-btn--primary">
                 <i data-lucide="plus" class="lucide-sm"></i>
@@ -133,7 +133,7 @@
                         </div>
                         <div>
                             <div class="lia-font-medium">{{ invite.organization.name }}</div>
-                            <div class="small text-muted">{% trans "Convidou você para participar da equipe." %}</div>
+                            <div class="small lia-text-muted">{% trans "Convidou você para participar da equipe." %}</div>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
             <tbody>
             {% for activity in recent_activities %}
                 <tr>
-                    <td class="text-muted">
+                    <td class="lia-text-muted">
                         <div class="d-flex align-items-center gap-2">
                             <i data-lucide="clock" class="lucide-sm"></i>
                             {{ activity.created_at|date:"d/m/Y H:i" }}
@@ -190,7 +190,7 @@
                         <div class="lia-table-empty">
                             <i data-lucide="activity" class="lia-table-empty__icon"></i>
                             <div class="lia-table-empty__text">{% trans "Nenhuma atividade recente." %}</div>
-                            <p class="small text-muted mt-2">
+                            <p class="small lia-text-muted mt-2">
                                 Suas próximas ações aparecerão aqui.
                             </p>
                         </div>

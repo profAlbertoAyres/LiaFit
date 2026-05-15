@@ -190,14 +190,14 @@
         </div>
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">E-mail de Login</span>
+                <span class="lia-text-xs lia-text-muted fw-semibold lia-text-overline">E-mail de Login</span>
                 <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
                     <i data-lucide="mail" class="lucide-sm lia-text-primary"></i>
                     {{ object.user.email }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Status do Usuário</span>
+                <span class="lia-text-xs lia-text-muted fw-semibold lia-text-overline">Status do Usuário</span>
                 <p class="lia-font-medium lia-text-lg mt-1">
                     {% if object.user.is_shadow %}
                         <span class="lia-badge lia-badge--warning">Convite Pendente</span>
@@ -209,9 +209,9 @@
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Último Login</span>
+                <span class="lia-text-xs lia-text-muted fw-semibold lia-text-overline">Último Login</span>
                 <p class="small text-secondary mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="clock" class="lucide-sm text-muted"></i>
+                    <i data-lucide="clock" class="lucide-sm lia-text-muted"></i>
                     {% if object.user.last_login %}
                         {{ object.user.last_login|date:"d/m/Y às H:i" }}
                     {% else %}
