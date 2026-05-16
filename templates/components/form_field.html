@@ -3,6 +3,8 @@
 {# Auto-detecta se é campo de senha #}
 {% with auto_is_password=field.field.widget.input_type|stringformat:"s" %}
 {% with is_pwd=is_password|default:False %}
+{# Fallback: se template não recebeu 'icon', usa o lia_icon setado pelo mixin #}
+{% with icon=icon|default:field.field.widget.attrs.lia_icon %}
 
 <div class="{{ col|default:'col-md-12' }} {{ extra_class|default:'' }} mb-3">
 
@@ -15,10 +17,10 @@
 
     {% if icon or is_pwd or auto_is_password == 'password' %}
         <div class="position-relative
-                    {% if icon %}lia-input-has-icon{% endif %}
+                    {% if icon and icon != 'none' %}lia-input-has-icon{% endif %}
                     {% if is_pwd or auto_is_password == 'password' %}lia-input-has-password{% endif %}">
 
-            {% if icon %}
+            {% if icon and icon != 'none' %}
                 <div class="position-absolute d-flex align-items-center justify-content-center text-muted"
                      style="left: 12px; top: 0; bottom: 0; pointer-events: none;">
                     <i data-lucide="{{ icon }}" style="width: 18px; height: 18px;"></i>
@@ -40,7 +42,7 @@
         </div>
 
         <style>
-            {% if icon %}
+            {% if icon and icon != 'none' %}
             .lia-input-has-icon .lia-form-control { padding-left: 2.5rem !important; }
             {% endif %}
             {% if is_pwd or auto_is_password == 'password' %}
@@ -65,5 +67,6 @@
     {% endif %}
 </div>
 
+{% endwith %}
 {% endwith %}
 {% endwith %}

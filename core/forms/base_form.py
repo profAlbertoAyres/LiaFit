@@ -3,9 +3,9 @@ from django.db.models import QuerySet
 
 
 class LiaLindaStyleMixin:
-    # 🆕 Mapa de ícones default por tipo de input
-    # Pode ser sobrescrito via widget.attrs['data-icon'] = 'outro-icone'
-    # Ou desligado via widget.attrs['data-icon'] = 'none'
+    # Mapa de ícones default por tipo de input
+    # Pode ser sobrescrito via widget.attrs['lia_icon'] = 'outro-icone'
+    # Ou desligado via widget.attrs['lia_icon'] = 'none'
     ICON_DEFAULTS = {
         'email': 'mail',
         'password': 'lock',
@@ -75,26 +75,24 @@ class LiaLindaStyleMixin:
             if field_name == 'email':
                 field.widget.attrs['autocomplete'] = 'email'
 
-            # 🆕 Aplica ícone default se o dev não definiu manualmente
+            # Aplica ícone default se o dev não definiu manualmente
             self._apply_default_icon(field)
 
     def _apply_default_icon(self, field):
         """
-        Define data-icon no widget baseado no input_type, se ainda não foi definido.
-        O template form_field.html lê esse data-icon como fallback.
+        Define lia_icon no widget baseado no input_type, se ainda não foi definido.
+        O template form_field.html lê esse lia_icon como fallback.
         """
-        # Se já tem data-icon definido manualmente, respeita
-        if 'data-icon' in field.widget.attrs:
+        if 'lia_icon' in field.widget.attrs:
             return
 
-        # Pega o input_type do widget (ex: 'email', 'password', 'date', etc)
         input_type = getattr(field.widget, 'input_type', None)
         if not input_type:
             return
 
         default_icon = self.ICON_DEFAULTS.get(input_type)
         if default_icon:
-            field.widget.attrs['data-icon'] = default_icon
+            field.widget.attrs['lia_icon'] = default_icon
 
 
 class TenantKwargsMixin:
@@ -130,11 +128,9 @@ class BaseModelForm(TenantKwargsMixin, LiaLindaStyleMixin, forms.ModelForm):
             model = field.queryset.model
             qs = field.queryset
 
-            # Filtro por organização
             if any(f.name == 'organization' for f in model._meta.fields):
                 qs = qs.filter(organization=self.tenant)
 
-            # Filtro por membership (consistente com ContextMixin da view)
             if (
                 self.membership
                 and not is_superuser

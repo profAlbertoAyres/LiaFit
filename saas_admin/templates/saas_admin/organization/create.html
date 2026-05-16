@@ -49,7 +49,7 @@
     <div class="lia-card__body">
         <div class="row">
             {% include "components/form_field.html" with field=form.user_fullname col="col-md-6" icon="user-star" %}
-            {% include "components/form_field.html" with field=form.user_email    col="col-md-6" icon="mail" %}
+            {% include "components/form_field.html" with field=form.user_email    col="col-md-6"  %}
         </div>
     </div>
 
@@ -64,8 +64,8 @@
         <div class="row">
             {% include "components/form_field.html" with field=form.company_name     col="col-md-12" icon="building-2" %}
             {% include "components/form_field.html" with field=form.company_document col="col-md-4" icon="book-open-text" %}
-            {% include "components/form_field.html" with field=form.company_phone    col="col-md-4" icon="phone" %}
-            {% include "components/form_field.html" with field=form.company_email    col="col-md-4" icon="mail" %}
+            {% include "components/form_field.html" with field=form.company_phone    col="col-md-4"  %}
+            {% include "components/form_field.html" with field=form.company_email    col="col-md-4"  %}
         </div>
     </div>
 {# ─────────── ENDEREÇO ─────────── #}
@@ -80,12 +80,12 @@
 
     <div class="lia-card__body">
         <div class="row">
-            {% include "components/form_field.html" with field=form.zip_code     col="col-md-2" icon="Mailbox" %}
-            {% include "components/form_field.html" with field=form.address      col="col-md-8" icon="Milestone" %}
-            {% include "components/form_field.html" with field=form.number      col="col-md-2" icon="Hash" %}
-            {% include "components/form_field.html" with field=form.neighborhood col="col-md-4" icon="Building2" %}
-            {% include "components/form_field.html" with field=form.city         col="col-md-6" icon="Building" %}
-            {% include "components/form_select.html" with field=form.state        col="col-md-2" icon="Map" %}
+            {% include "components/form_field.html" with field=form.zip_code     col="col-md-2" icon="mailbox" %}
+            {% include "components/form_field.html" with field=form.address      col="col-md-8" icon="milestone" %}
+            {% include "components/form_field.html" with field=form.number      col="col-md-2" icon="hash" %}
+            {% include "components/form_field.html" with field=form.neighborhood col="col-md-4" icon="building2" %}
+            {% include "components/form_field.html" with field=form.city         col="col-md-6" icon="building" %}
+            {% include "components/form_select.html" with field=form.state        col="col-md-2" icon="map" %}
         </div>
     </div>
 

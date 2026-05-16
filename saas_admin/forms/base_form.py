@@ -2,7 +2,6 @@ from django import forms
 
 
 class LiaLindaStyleMixin:
-    # 🆕 Mapa de ícones default por tipo de input
     ICON_DEFAULTS = {
         'email': 'mail',
         'password': 'lock',
@@ -67,14 +66,10 @@ class LiaLindaStyleMixin:
             if field_name == 'email':
                 field.widget.attrs['autocomplete'] = 'email'
 
-            # 🆕 Aplica ícone default se o dev não definiu manualmente
             self._apply_default_icon(field)
 
     def _apply_default_icon(self, field):
-        """
-        Define data-icon no widget baseado no input_type, se ainda não foi definido.
-        """
-        if 'data-icon' in field.widget.attrs:
+        if 'lia_icon' in field.widget.attrs:
             return
 
         input_type = getattr(field.widget, 'input_type', None)
@@ -83,7 +78,7 @@ class LiaLindaStyleMixin:
 
         default_icon = self.ICON_DEFAULTS.get(input_type)
         if default_icon:
-            field.widget.attrs['data-icon'] = default_icon
+            field.widget.attrs['lia_icon'] = default_icon
 
 
 class SaaSBaseForm(LiaLindaStyleMixin, forms.Form):
