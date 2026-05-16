@@ -28,7 +28,7 @@
                     <div class="lia-card__body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-muted">{% trans "Organizações" %}</span>
-                            <i data-lucide="building-2" class="lucide-sm lia-text-primary"></i>
+                            <i data-lucide="building-2" class="lucide-sm text-primary"></i>
                         </div>
                         <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
                             {{ quick_stats.total_organizations|default:0 }}
@@ -43,7 +43,7 @@
                     <div class="lia-card__body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-muted">{% trans "Convites pendentes" %}</span>
-                            <i data-lucide="mail-warning" class="lucide-sm lia-text-warning"></i>
+                            <i data-lucide="mail-warning" class="lucide-sm text-warning"></i>
                         </div>
                         <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
                             {{ quick_stats.pending_invites_count|default:0 }}
@@ -58,7 +58,7 @@
                     <div class="lia-card__body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="small text-muted">{% trans "Notificações" %}</span>
-                            <i data-lucide="bell" class="lucide-sm lia-text-info"></i>
+                            <i data-lucide="bell" class="lucide-sm text-info"></i>
                         </div>
                         <div class="fw-bold" style="font-size: 2rem; line-height: 1;">
                             {{ quick_stats.unread_notifications|default:0 }}
@@ -92,7 +92,7 @@
                     </div>
 
                     <div style="flex: 1;">
-                        <div class="fw-bold lia-text-lg lia-text-primary">{{ org.name }}</div>
+                        <div class="fw-bold fs-5 text-primary">{{ org.name }}</div>
                         <div class="small text-muted">Acessar painel</div>
                     </div>
 

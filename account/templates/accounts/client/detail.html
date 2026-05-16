@@ -33,13 +33,13 @@
             <h1 class="lia-page-header__title">
                 {{ client.user.user.get_full_name|default:"Cliente" }}
                 {% if client.archived_at %}
-                    <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Arquivado</span>
+                    <span class="lia-badge lia-badge--danger fs-6 fw-bold">Arquivado</span>
                 {% elif not client.user.user.has_usable_password %}
-                    <span class="lia-badge lia-badge--warning lia-text-xs fw-bold">Pendente</span>
+                    <span class="lia-badge lia-badge--warning fs-6 fw-bold">Pendente</span>
                 {% elif client.user.user.is_active %}
-                    <span class="lia-badge lia-badge--success lia-text-xs fw-bold">Ativo</span>
+                    <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
                 {% else %}
-                    <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Inativo</span>
+                    <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativo</span>
                 {% endif %}
             </h1>
             <p class="lia-page-header__subtitle">
@@ -146,9 +146,9 @@
                     <label class="lia-form-label">E-mail de boas-vindas</label>
                     <div class="small">
                         {% if client.welcome_email_sent %}
-                            <span class="lia-badge lia-badge--success lia-text-xs">Enviado</span>
+                            <span class="lia-badge lia-badge--success fs-6">Enviado</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--warning lia-text-xs">Não enviado</span>
+                            <span class="lia-badge lia-badge--warning fs-6">Não enviado</span>
                         {% endif %}
                     </div>
                 </div>
@@ -188,7 +188,7 @@
             <div class="d-flex align-items-center gap-2">
                 <i data-lucide="file-text" class="lucide-sm"></i>
                 <h2 class="lia-card__title mb-0">Observações Internas</h2>
-                <span class="lia-text-xs text-muted">(visível apenas para a equipe)</span>
+                <span class="fs-6 text-muted">(visível apenas para a equipe)</span>
             </div>
         </div>
         <div class="lia-card__body">

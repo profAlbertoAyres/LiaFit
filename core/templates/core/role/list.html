@@ -73,7 +73,7 @@
                 <th>Nome do Papel</th>
                 <th>Nível de Acesso</th>
                 <th>Status</th>
-                <th class="lia-text-right">Ações</th>
+                <th class="text-end">Ações</th>
             </tr>
             </thead>
             <tbody>
@@ -82,13 +82,13 @@
                     <!-- Coluna 1: Nome -->
                     <td>
                         <div class="d-flex align-items-center gap-3">
-                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary text-muted">
+                            <div class="lia-avatar lia-avatar--sm bg-secondary text-muted">
                                 <i data-lucide="shield" class="lucide-sm"></i>
                             </div>
                             <div>
                                 <div class="lia-font-medium">{{ role.name }}</div>
                                 {% if role.description %}
-                                    <div class="lia-text-xs text-muted lia-text-truncate">
+                                    <div class="fs-6 text-muted text-truncate">
                                         {{ role.description|truncatechars:60 }}
                                     </div>
                                 {% endif %}
@@ -107,9 +107,9 @@
                     <!-- Coluna 3: Status -->
                     <td>
                         {% if role.is_active %}
-                            <span class="lia-badge lia-badge--success lia-text-xs fw-bold">Ativo</span>
+                            <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Inativo</span>
+                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativo</span>
                         {% endif %}
                     </td>
 

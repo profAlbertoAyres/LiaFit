@@ -27,7 +27,7 @@ app_name = 'tenant'
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
-    path('space/select/org/<slug:org_slug>/', SpaceSelectView.as_view(), {'kind': 'org'}, name='space_select_org',),
+    path('space/select/org/', SpaceSelectView.as_view(), {'kind': 'org'}, name='space_select_org',),
     path('members/', MemberListView.as_view(), name='member_list'),
     path('members/create/', MemberCreateView.as_view(), name='member_create'),
     path('members/<int:pk>/', MemberDetailView.as_view(), name='member_detail'),

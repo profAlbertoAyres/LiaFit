@@ -13,7 +13,7 @@
                      class="lia-avatar lia-avatar--lg"
                      style="object-fit: cover;">
             {% else %}
-                <div class="lia-avatar lia-avatar--lg lia-bg-secondary text-muted d-flex align-items-center justify-content-center fw-bold">
+                <div class="lia-avatar lia-avatar--lg bg-secondary text-muted d-flex align-items-center justify-content-center fw-bold">
                     {{ organization.company_name|slice:":1"|upper }}
                 </div>
             {% endif %}
@@ -22,9 +22,9 @@
                 <h1 class="lia-page-header__title">
                     {{ organization.company_name }}
                     {% if organization.is_active %}
-                        <span class="lia-badge lia-badge--success lia-text-xs fw-bold ms-2">Ativa</span>
+                        <span class="lia-badge lia-badge--success fs-6 fw-bold ms-2">Ativa</span>
                     {% else %}
-                        <span class="lia-badge lia-badge--danger lia-text-xs fw-bold ms-2">Inativa</span>
+                        <span class="lia-badge lia-badge--danger fs-6 fw-bold ms-2">Inativa</span>
                     {% endif %}
                 </h1>
                 <p class="lia-page-header__subtitle">

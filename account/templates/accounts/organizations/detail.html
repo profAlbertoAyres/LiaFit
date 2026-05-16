@@ -52,25 +52,25 @@
         <div class="lia-card__body lia-grid-auto-fit">
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Nome / Razão Social</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="building" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Nome / Razão Social</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="building" class="lucide-sm text-primary"></i>
                     {{ object.company_name }}
                 </p>
             </div>
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">CNPJ / CPF</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="file-text" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">CNPJ / CPF</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="file-text" class="lucide-sm text-primary"></i>
                     {{ object.document|default:"Não informado" }}
                 </p>
             </div>
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Proprietário (Owner)</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="crown" class="lucide-sm lia-text-warning"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Proprietário (Owner)</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="crown" class="lucide-sm text-warning"></i>
                     {% if object.owner %}
                         {{ object.owner.fullname|default:object.owner.email }}
                     {% else %}
@@ -80,9 +80,9 @@
             </div>
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Data de Cadastro</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="calendar" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Data de Cadastro</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="calendar" class="lucide-sm text-primary"></i>
                     {{ object.created_at|date:"d/m/Y"|default:"-" }}
                 </p>
             </div>
@@ -98,33 +98,33 @@
         <div class="lia-card__body lia-grid-auto-fit">
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">E-mail Corporativo</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="mail" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">E-mail Corporativo</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="mail" class="lucide-sm text-primary"></i>
                     {{ object.email|default:"Não informado" }}
                 </p>
             </div>
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Telefone</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="phone" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Telefone</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="phone" class="lucide-sm text-primary"></i>
                     {{ object.phone|default:"Não informado" }}
                 </p>
             </div>
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Cidade</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="map-pin" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Cidade</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="map-pin" class="lucide-sm text-primary"></i>
                     {{ object.city|default:"Não informada" }}
                 </p>
             </div>
 
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Estado (UF)</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="map" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Estado (UF)</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="map" class="lucide-sm text-primary"></i>
                     {{ object.state|default:"-" }}
                 </p>
             </div>
@@ -141,8 +141,8 @@
 
             <!-- Slug do Workspace -->
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Identificador (Slug / Workspace)</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Identificador (Slug / Workspace)</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
                     <i data-lucide="link" class="lucide-sm text-muted"></i>
                     {{ object.slug }}
                 </p>
@@ -150,13 +150,13 @@
 
             <!-- Logo -->
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Logo da Empresa</span>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Logo da Empresa</span>
                 <div class="mt-2">
                     {% if object.logo %}
                         <!-- Classe genérica do framework base que você usa, limitando a altura da logo para não quebrar o layout -->
                         <img src="{{ object.logo.url }}" alt="Logo da Empresa" class="lia-h-12 lia-object-contain" style="max-width: 150px;">
                     {% else %}
-                        <div class="d-flex align-items-center gap-2 text-muted p-2 lia-bg-light rounded" style="width: fit-content;">
+                        <div class="d-flex align-items-center gap-2 text-muted p-2 bg-light rounded" style="width: fit-content;">
                             <i data-lucide="image-off" class="lucide-sm"></i>
                             <span class="small">Sem logo cadastrada</span>
                         </div>

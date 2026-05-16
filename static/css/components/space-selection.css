@@ -130,6 +130,12 @@
 }
 
 /* Cores por tipo de painel */
+
+.lia-netflix-card--org .lia-netflix-card__fallback {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
 .lia-netflix-card--saas .lia-netflix-card__fallback {
     background-color: var(--color-warning-light);
     color: var(--color-warning);

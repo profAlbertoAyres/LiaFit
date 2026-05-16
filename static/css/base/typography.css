@@ -1,10 +1,15 @@
 /* =============================================================================
    LIAFIT — TIPOGRAFIA
-   Complementos ao Bootstrap (apenas o que o Bootstrap não cobre).
+   Estilos de tipografia base (headings, parágrafos) e utilities exclusivas
+   que o Bootstrap não cobre.
+
+   Para tamanhos de fonte → usar fs-1 a fs-6 do Bootstrap (padrão framework).
+   Para cores semânticas  → usar text-primary, text-muted, etc. do Bootstrap
+                            (já mapeadas aos design tokens via variables.css).
    ============================================================================= */
 
 /* -------------------------------------------------------------------------
-   TÍTULOS
+   HEADINGS
    ------------------------------------------------------------------------- */
 
 h1, h2, h3, h4, h5, h6 {
@@ -35,17 +40,14 @@ p:last-child {
 }
 
 /* -------------------------------------------------------------------------
-   TAMANHOS DE TEXTO CUSTOMIZADOS (não cobertos pelo Bootstrap)
-   ------------------------------------------------------------------------- */
-
-.lia-text-xs { font-size: var(--font-size-xs); }
-.lia-text-xl { font-size: var(--font-size-xl); }
-
-/* -------------------------------------------------------------------------
-   TEXTO ESTILO RÓTULO (overline)
+   TEXTO ESTILO RÓTULO (overline / kicker)
+   Não existe equivalente no Bootstrap.
    ------------------------------------------------------------------------- */
 
 .lia-text-overline {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }

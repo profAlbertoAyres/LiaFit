@@ -1,0 +1,171 @@
+/* =============================================================================
+   LIAFIT — MODAL
+   Wrapper visual sobre o modal do Bootstrap.
+   Mantém comportamento (focus trap, ESC, backdrop) e aplica design system.
+   ============================================================================= */
+
+/* -----------------------------------------------------------------
+   BACKDROP
+   ----------------------------------------------------------------- */
+.modal-backdrop.show {
+    opacity: 0.5;
+    background-color: var(--color-secondary);
+}
+
+/* -----------------------------------------------------------------
+   CONTAINER
+   ----------------------------------------------------------------- */
+.lia-modal .modal-dialog {
+    margin: var(--space-8) auto;
+}
+
+.lia-modal .modal-content {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* -----------------------------------------------------------------
+   HEADER
+   ----------------------------------------------------------------- */
+.lia-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.lia-modal__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+}
+
+.lia-modal__subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-1);
+}
+
+.lia-modal__close {
+    background: transparent;
+    border: 0;
+    color: var(--color-text-muted);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lia-modal__close:hover {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+}
+
+/* -----------------------------------------------------------------
+   BODY
+   ----------------------------------------------------------------- */
+.lia-modal__body {
+    padding: var(--space-6);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+}
+
+/* -----------------------------------------------------------------
+   FOOTER
+   ----------------------------------------------------------------- */
+.lia-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+}
+
+/* -----------------------------------------------------------------
+   VARIANTES DE TAMANHO (sobrepõe Bootstrap modal-sm/lg/xl)
+   ----------------------------------------------------------------- */
+.lia-modal--sm .modal-dialog { max-width: 400px; }
+.lia-modal--md .modal-dialog { max-width: 520px; }  /* padrão */
+.lia-modal--lg .modal-dialog { max-width: 720px; }
+.lia-modal--xl .modal-dialog { max-width: 960px; }
+
+/* -----------------------------------------------------------------
+   VARIANTE: CONFIRMAÇÃO PERIGOSA (delete)
+   ----------------------------------------------------------------- */
+.lia-modal--danger .lia-modal__header {
+    background-color: var(--color-danger-light);
+    border-bottom-color: var(--color-danger-border);
+}
+
+.lia-modal--danger .lia-modal__title {
+    color: var(--color-danger);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* -----------------------------------------------------------------
+   VARIANTE: INFORMATIVO (vincular, confirmar dado)
+   ----------------------------------------------------------------- */
+.lia-modal--info .lia-modal__header {
+    background-color: var(--color-info-light);
+    border-bottom-color: var(--color-info-border);
+}
+
+.lia-modal--info .lia-modal__title {
+    color: var(--color-info);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* -----------------------------------------------------------------
+   CALLOUT — Caixa destacada dentro do body do modal
+   (útil para informações adicionais, dicas, alertas suaves)
+   ----------------------------------------------------------------- */
+.lia-modal__callout {
+    background-color: var(--color-info-light);
+    border: 1px solid var(--color-info-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-top: var(--space-3);
+}
+
+.lia-modal__callout--info    { background-color: var(--color-info-light);    border-color: var(--color-info-border); }
+.lia-modal__callout--warning { background-color: var(--color-warning-light); border-color: var(--color-warning-border); }
+.lia-modal__callout--success { background-color: var(--color-success-light); border-color: var(--color-success-border); }
+
+.lia-modal__callout p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.lia-modal__callout p + p {
+    margin-top: var(--space-2);
+}
+
+/* -----------------------------------------------------------------
+   HINT — Texto pequeno informativo abaixo do body
+   ----------------------------------------------------------------- */
+.lia-modal__hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-3);
+    margin-bottom: 0;
+}

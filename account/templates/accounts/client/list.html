@@ -75,7 +75,7 @@
                 <th>Contato</th>
                 <th>Objetivo</th>
                 <th>Status</th>
-                <th class="lia-text-right">Ações</th>
+                <th class="text-end">Ações</th>
             </tr>
             </thead>
             <tbody>
@@ -84,14 +84,14 @@
                     <!-- Coluna 1: Nome e Email -->
                     <td>
                         <div class="d-flex align-items-center gap-3">
-                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary text-muted">
+                            <div class="lia-avatar lia-avatar--sm bg-secondary text-muted">
                                 <i data-lucide="user" class="lucide-sm"></i>
                             </div>
                             <div>
                                 <div class="lia-font-medium">
                                     {{ org_client.user.user.get_full_name|default:"Cliente" }}
                                 </div>
-                                <div class="lia-text-xs text-muted">{{ org_client.user.user.email }}</div>
+                                <div class="fs-6 text-muted">{{ org_client.user.user.email }}</div>
                             </div>
                         </div>
                     </td>
@@ -99,7 +99,7 @@
                     <!-- Coluna 2: Contato -->
                     <td>
                         <div class="small">{{ org_client.user.user.phone|default:"---" }}</div>
-                        <div class="lia-text-xs text-muted">
+                        <div class="fs-6 text-muted">
                             {{ org_client.user.user.cpf|default:"Sem CPF" }}
                         </div>
                     </td>
@@ -114,13 +114,13 @@
                     <!-- Coluna 4: Status -->
                     <td>
                         {% if org_client.archived_at %}
-                            <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Arquivado</span>
+                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Arquivado</span>
                         {% elif not org_client.user.user.has_usable_password %}
-                            <span class="lia-badge lia-badge--warning lia-text-xs fw-bold">Pendente</span>
+                            <span class="lia-badge lia-badge--warning fs-6 fw-bold">Pendente</span>
                         {% elif org_client.user.user.is_active %}
-                            <span class="lia-badge lia-badge--success lia-text-xs fw-bold">Ativo</span>
+                            <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Inativo</span>
+                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativo</span>
                         {% endif %}
                     </td>
 

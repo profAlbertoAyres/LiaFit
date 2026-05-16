@@ -116,7 +116,7 @@
                 <th>Colaborador</th>
                 <th>Celular</th>
                 <th>Status</th>
-                <th class="lia-text-right">Ações</th>
+                <th class="text-end">Ações</th>
             </tr>
             </thead>
             <tbody>
@@ -126,12 +126,12 @@
                     <td>
                         <div class="d-flex align-items-center gap-3">
                             <!-- Avatar / Ícone -->
-                            <div class="lia-avatar lia-avatar--sm lia-bg-secondary text-muted">
+                            <div class="lia-avatar lia-avatar--sm bg-secondary text-muted">
                                 <i data-lucide="user" class="lucide-sm"></i>
                             </div>
                             <div>
                                 <div class="lia-font-medium">{{ member.user.get_full_name|default:"Usuário Convidado" }}</div>
-                                <div class="lia-text-xs text-muted">{{ member.user.email }}</div>
+                                <div class="fs-6 text-muted">{{ member.user.email }}</div>
                             </div>
                         </div>
                     </td>
@@ -140,9 +140,9 @@
                     <td>
                         <div class="d-flex flex-wrap gap-1">
                             {% for role in member.roles.all %}
-                                <span class="lia-badge lia-badge--outline lia-text-xs">{{ member.user.p }}</span>
+                                <span class="lia-badge lia-badge--outline fs-6">{{ member.user.p }}</span>
                             {% empty %}
-                                <span class="lia-text-xs text-muted">Sem papel definido</span>
+                                <span class="fs-6 text-muted">Sem papel definido</span>
                             {% endfor %}
                         </div>
                     </td>
@@ -151,11 +151,11 @@
                     <td>
                         <!-- Verificação fictícia (ajuste conforme seu model de Member/User) -->
                         {% if member.user.is_active %}
-                            <span class="lia-badge lia-badge--success lia-text-xs fw-bold">Ativo</span>
+                            <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
                         {% elif member.invite_pending %}
-                            <span class="lia-badge lia-badge--warning lia-text-xs fw-bold">Pendente</span>
+                            <span class="lia-badge lia-badge--warning fs-6 fw-bold">Pendente</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--danger lia-text-xs fw-bold">Inativo</span>
+                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativo</span>
                         {% endif %}
                     </td>
 

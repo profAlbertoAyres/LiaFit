@@ -1,37 +1,63 @@
 {% load static %}
 
 <div class="{{ col|default:'col-12' }} {{ extra_class|default:'' }} mb-3">
-    <label class="lia-label">
+    <label class="lia-form-label">
         {{ field.label }}
         {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
     </label>
 
-    <div class="lia-card overflow-hidden">
-        <div class="p-3 text-center">
+    <div class="lia-card">
+        <div class="lia-card__body lia-form-file {% if field.value %}lia-form-file--has-image{% endif %}"
+             data-image-upload
+             data-max-size="5"
+             data-accept="image/jpeg,image/png,image/webp,image/gif">
 
-            <div class="mb-3 position-relative">
-                {% if field.value %}
-                    <img src="{{ field.value.url }}" class="img-fluid rounded preview-img shadow-sm" style="max-height: 200px; width: 100%; object-fit: cover;">
-                {% else %}
-                    <img src="{% static 'img/placeholder-eval.png' %}" class="img-fluid rounded preview-img opacity-50" style="max-height: 200px; width: 100%; object-fit: cover;">
-                {% endif %}
+            {# Área de preview clicável (abre o seletor de arquivo) #}
+            <div class="lia-form-file__preview" data-iu-trigger>
+
+                {# Placeholder visível quando NÃO há imagem #}
+                <div class="lia-form-file__placeholder">
+                    <i data-lucide="image-plus" class="lucide-xl"></i>
+                    <span>Clique para escolher uma foto</span>
+                </div>
+
+                {# Imagem do preview — JS atualiza o src via FileReader #}
+                <img class="lia-form-file__image"
+                     data-iu-image
+                     {% if field.value %}
+                         src="{{ field.value.url }}"
+                         data-original-src="{{ field.value.url }}"
+                     {% endif %}
+                     alt="">
+
+                {# Overlay com ícone de câmera no hover #}
+                <div class="lia-form-file__overlay">
+                    <i data-lucide="camera" class="lucide-lg"></i>
+                </div>
             </div>
 
-            <div class="d-flex gap-2 justify-content-center">
-                <label for="{{ field.id_for_label }}" class="lia-btn lia-btn--primary lia-btn--sm cursor-pointer m-0">
-                    <i data-lucide="camera" style="width: 16px; height: 16px;"></i>
-                    <span>{% if field.value %}Trocar{% else %}Escolher Foto{% endif %}</span>
+            {# Botões de ação #}
+            <div class="lia-form-file__actions">
+                <label for="{{ field.id_for_label }}"
+                       class="lia-btn lia-btn--primary lia-btn--sm lia-cursor-pointer m-0">
+                    <i data-lucide="camera" class="lucide-sm"></i>
+                    <span>Escolher foto</span>
                 </label>
 
                 <button type="button"
-                        class="lia-btn lia-btn--danger lia-btn--sm btn-remove-preview {% if not field.value %}d-none{% endif %}"
-                        data-placeholder="{% static 'img/placeholder-eval.png' %}"
+                        class="lia-btn lia-btn--danger lia-btn--sm lia-form-file__remove"
+                        data-iu-remove
                         title="Remover foto">
-                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                    <i data-lucide="trash-2" class="lucide-sm"></i>
+                    <span>Remover</span>
                 </button>
             </div>
 
-            <div class="d-none">
+            {# Mensagem de erro de validação #}
+            <small class="lia-form-file__error" data-iu-error></small>
+
+            {# Input nativo do Django (escondido) — o JS escuta o change dele #}
+            <div class="lia-form-file__input">
                 {{ field }}
             </div>
         </div>

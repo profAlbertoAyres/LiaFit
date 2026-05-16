@@ -49,33 +49,33 @@
         </div>
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Nome Completo</span>
-                <p class="lia-font-medium lia-text-lg mt-1">{{ object.user.fullname|default:"Não informado" }}</p>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Nome Completo</span>
+                <p class="lia-font-medium fs-5 mt-1">{{ object.user.fullname|default:"Não informado" }}</p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">CPF</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="file-text" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">CPF</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="file-text" class="lucide-sm text-primary"></i>
                     {{ object.user.cpf|default:"Não informado" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Telefone</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="phone" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Telefone</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="phone" class="lucide-sm text-primary"></i>
                     {{ object.user.phone|default:"Não informado" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Data de Nascimento</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="calendar" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Data de Nascimento</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="calendar" class="lucide-sm text-primary"></i>
                     {{ object.user.birth_date|date:"d/m/Y"|default:"Não informada" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Gênero</span>
-                <p class="lia-font-medium lia-text-lg mt-1">
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Gênero</span>
+                <p class="lia-font-medium fs-5 mt-1">
                     {{ object.user.get_gender_display|default:"Não informado" }}
                 </p>
             </div>
@@ -89,28 +89,28 @@
         </div>
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Papel Principal (Role)</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="shield" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Papel Principal (Role)</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="shield" class="lucide-sm text-primary"></i>
                     {{ object.highest_role_name|default:"Sem papel atribuído" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Tipo de Remuneração</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="dollar-sign" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Tipo de Remuneração</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="dollar-sign" class="lucide-sm text-primary"></i>
                     {{ object.get_remuneration_type_display }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Data de Admissão</span>
-                <p class="lia-font-medium lia-text-lg mt-1">
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Data de Admissão</span>
+                <p class="lia-font-medium fs-5 mt-1">
                     {{ object.joined_at|date:"d/m/Y"|default:"-" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Data de Desligamento</span>
-                <p class="lia-font-medium lia-text-lg mt-1">
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Data de Desligamento</span>
+                <p class="lia-font-medium fs-5 mt-1">
                     {% if object.left_at %}
                         <span class="text-danger">{{ object.left_at|date:"d/m/Y" }}</span>
                     {% else %}
@@ -129,15 +129,15 @@
         </div>
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Registro Conselho</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="award" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Registro Conselho</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="award" class="lucide-sm text-primary"></i>
                     {{ object.professional_profile.get_registration_type_display|default:"-" }}
                     {{ object.professional_profile.registration_number|default:"" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Especialidades</span>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Especialidades</span>
                 <p class="lia-font-medium small mt-1 d-flex align-items-center gap-2 flex-wrap">
                     {% for especialidade in object.professional_profile.specialties.all %}
                         <span class="lia-badge lia-badge--info">{{ especialidade.name }}</span>
@@ -147,7 +147,7 @@
                 </p>
             </div>
             <div class="lia-col-span-full">
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Bio</span>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Bio</span>
                 <p class="small text-secondary mt-1">
                     {{ object.professional_profile.bio|default:"Nenhuma biografia cadastrada." }}
                 </p>
@@ -164,16 +164,16 @@
         </div>
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Setor / Departamento</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="briefcase" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Setor / Departamento</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="briefcase" class="lucide-sm text-primary"></i>
                     {{ object.assistant_profile.department|default:"Não informado" }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Profissional Vinculado</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="user-check" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Profissional Vinculado</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="user-check" class="lucide-sm text-primary"></i>
                     {{ object.assistant_profile.linked_professional|default:"Sem vínculo específico" }}
                 </p>
             </div>
@@ -190,15 +190,15 @@
         </div>
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">E-mail de Login</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="mail" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">E-mail de Login</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="mail" class="lucide-sm text-primary"></i>
                     {{ object.user.email }}
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Status do Usuário</span>
-                <p class="lia-font-medium lia-text-lg mt-1">
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Status do Usuário</span>
+                <p class="lia-font-medium fs-5 mt-1">
                     {% if object.user.is_shadow %}
                         <span class="lia-badge lia-badge--warning">Convite Pendente</span>
                     {% elif object.user.is_email_verified %}
@@ -209,7 +209,7 @@
                 </p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Último Login</span>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Último Login</span>
                 <p class="small text-secondary mt-1 d-flex align-items-center gap-2">
                     <i data-lucide="clock" class="lucide-sm text-muted"></i>
                     {% if object.user.last_login %}

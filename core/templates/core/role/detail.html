@@ -47,19 +47,19 @@
         <!-- Removido estilo inline de grid e substituído pela nova classe utilitária -->
         <div class="lia-card__body lia-grid-auto-fit">
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Nome do Papel</span>
-                <p class="lia-font-medium lia-text-lg mt-1">{{ object.name }}</p>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Nome do Papel</span>
+                <p class="lia-font-medium fs-5 mt-1">{{ object.name }}</p>
             </div>
             <div>
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Nível de Hierarquia</span>
-                <p class="lia-font-medium lia-text-lg mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="bar-chart-2" class="lucide-sm lia-text-primary"></i>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Nível de Hierarquia</span>
+                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
+                    <i data-lucide="bar-chart-2" class="lucide-sm text-primary"></i>
                     {{ object.level }}
                 </p>
             </div>
             <!-- Removido inline do column span -->
             <div class="lia-col-span-full">
-                <span class="lia-text-xs text-muted fw-semibold lia-text-overline">Descrição</span>
+                <span class="fs-6 text-muted fw-semibold lia-text-overline">Descrição</span>
                 <p class="small text-secondary mt-1">
                     {{ object.description|default:"Nenhuma descrição informada." }}
                 </p>

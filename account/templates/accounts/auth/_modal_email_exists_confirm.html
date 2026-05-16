@@ -1,85 +1,83 @@
-<div class="modal fade" id="emailExistsModal" tabindex="-1" aria-hidden="true">
+
+
+<div class="modal fade lia-modal lia-modal--md lia-modal--info"
+     id="emailExistsModal"
+     tabindex="-1"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
+        <form method="post" class="modal-content">
+            {% csrf_token %}
 
-        <div class="modal-content" style="background-color: transparent; border: none; box-shadow: none;">
+            {# Reposta os mesmos campos do form original #}
+            <input type="hidden" name="company_name" value="{{ form.company_name.value|default:'' }}">
+            <input type="hidden" name="fullname" value="{{ form.fullname.value|default:'' }}">
+            <input type="hidden" name="email" value="{{ form.email.value|default:'' }}">
+            <input type="hidden" name="confirm_existing" value="1">
 
-            <form method="post" class="lia-card" style="box-shadow: var(--shadow-lg);">
-                {% csrf_token %}
+            {# HEADER #}
+            <div class="lia-modal__header">
+                <h2 class="lia-modal__title">
+                    <i data-lucide="info"></i>
+                    E-mail já cadastrado
+                </h2>
+                <button type="button"
+                        class="lia-modal__close"
+                        data-bs-dismiss="modal"
+                        aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
 
-                <!-- Reposta os mesmos campos do form original -->
-                <input type="hidden" name="company_name" value="{{ form.company_name.value|default:'' }}">
-                <input type="hidden" name="fullname" value="{{ form.fullname.value|default:'' }}">
-                <input type="hidden" name="email" value="{{ form.email.value|default:'' }}">
-                <input type="hidden" name="confirm_existing" value="1">
+            {# BODY #}
+            <div class="lia-modal__body">
+                <p>
+                    O e-mail <strong>{{ form.email.value }}</strong>
+                    já está cadastrado no sistema.
+                </p>
 
-                <!-- HEADER -->
-                <div class="d-flex align-items-center justify-content-between p-3" style="padding-bottom: var(--space-4);">
-                    <div class="d-flex align-items-center gap-2" style="color: var(--color-info, var(--color-primary));">
-                        <i data-lucide="info" class="lucide"></i>
-                        <h5 class="fw-bold" style="font-size: var(--font-size-lg); margin: 0;">
-                            E-mail já cadastrado
-                        </h5>
-                    </div>
-
-                    <button type="button" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
-                            data-bs-dismiss="modal" aria-label="Fechar"
-                            style="color: var(--color-text-muted);">
-                        <i data-lucide="x" class="lucide"></i>
-                    </button>
-                </div>
-
-                <!-- BODY -->
-                <div class="px-3" style="padding-bottom: var(--space-6);">
-                    <p class="text-secondary" style="margin-bottom: var(--space-4);">
-                        O e-mail <strong>{{ form.email.value }}</strong> já está cadastrado no sistema.
+                <div class="lia-modal__callout lia-modal__callout--info">
+                    <p>
+                        Deseja vincular esta nova empresa
+                        <strong>{{ form.company_name.value }}</strong>
+                        à sua conta existente?
                     </p>
-
-                    <div style="background-color: var(--color-info-light, #eaf4ff);
-                                border: 1px solid var(--color-info-border, #bcdcff);
-                                border-radius: var(--radius-md);
-                                padding: var(--space-4);">
-                        <p style="margin: 0; color: var(--color-text-muted);">
-                            Deseja vincular esta nova empresa
-                            <strong>{{ form.company_name.value }}</strong>
-                            à sua conta existente?
+                    {% if existing_is_active %}
+                        <p>
+                            <i data-lucide="check-circle"></i>
+                            Você não precisará criar uma nova senha.
                         </p>
-                        {% if existing_is_active %}
-                            <p class="text-secondary" style="margin-top: var(--space-2); font-size: var(--font-size-sm);">
-                                <i data-lucide="check-circle" class="lucide-sm"></i>
-                                Você não precisará criar uma nova senha.
-                            </p>
-                        {% else %}
-                            <p class="text-secondary" style="margin-top: var(--space-2); font-size: var(--font-size-sm);">
-                                <i data-lucide="key" class="lucide-sm"></i>
-                                Você receberá um e-mail para definir sua senha.
-                            </p>
-                        {% endif %}
-                    </div>
+                    {% else %}
+                        <p>
+                            <i data-lucide="key"></i>
+                            Você receberá um e-mail para definir sua senha.
+                        </p>
+                    {% endif %}
                 </div>
+            </div>
 
-                <!-- FOOTER -->
-                <div class="lia-card__footer">
-                    <button type="button" class="lia-btn lia-btn--ghost" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="lia-btn lia-btn--primary">
-                        <i data-lucide="link" class="lucide-sm"></i>
-                        <span>Sim, vincular empresa</span>
-                    </button>
-                </div>
-            </form>
-        </div>
+            {# FOOTER #}
+            <div class="lia-modal__footer">
+                <button type="button"
+                        class="lia-btn lia-btn--ghost"
+                        data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="submit" class="lia-btn lia-btn--primary">
+                    <i data-lucide="link"></i>
+                    <span>Sim, vincular empresa</span>
+                </button>
+            </div>
+
+        </form>
     </div>
 </div>
 
-<!-- Auto-abre o modal quando renderizado -->
+{# Auto-abre o modal quando renderizado #}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var modalEl = document.getElementById('emailExistsModal');
+        const modalEl = document.getElementById('emailExistsModal');
         if (modalEl) {
-            var modal = new bootstrap.Modal(modalEl);
-            modal.show();
-            // Re-renderiza ícones lucide dentro do modal
+            new bootstrap.Modal(modalEl).show();
             if (window.lucide) lucide.createIcons();
         }
     });

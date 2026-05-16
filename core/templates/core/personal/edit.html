@@ -1,204 +1,129 @@
 {% extends 'base_app.html' %}
 {% load static %}
 
-{% block title %}Editar Perfil{% endblock %}
+{% block title %}Editar Perfil | {{ APP_NAME }}{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/components/form-file.css' %}">
+{% endblock %}
 
 {% block page_content %}
-<div class="container-fluid py-4">
-
-    <!-- Header -->
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h1 class="h3 mb-1">Editar Perfil</h1>
-            <p class="text-muted mb-0">Atualize suas informações pessoais e foto de perfil</p>
-        </div>
-        <a href="{% url 'personal:profile' %}" class="btn btn-outline-secondary d-inline-flex align-items-center">
-            <i data-lucide="arrow-left" class="me-2 lucide-sm"></i>
-            Voltar
-        </a>
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'personal:profile' %}" class="lia-btn lia-btn--icon lia-btn--ghost">
+        <i data-lucide="arrow-left" class="lucide"></i>
+    </a>
+    <div>
+        <h2 class="fw-bold fs-4 m-0">Editar Perfil</h2>
+        <p class="text-muted small mt-1">
+            Atualize suas informações pessoais e foto de perfil.
+        </p>
     </div>
-
-    <form method="post" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
-
-        <div class="row g-4">
-
-            <!-- ==========================================
-                 COLUNA FOTO DE PERFIL
-                 ========================================== -->
-            <div class="col-lg-4">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-white pt-4 pb-0 border-0">
-                        <h5 class="card-title mb-1">Sua Foto</h5>
-                        <p class="text-muted small mb-0">Imagem pública do perfil</p>
-                    </div>
-
-                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-center">
-                        <!-- Wrapper da imagem com botão flutuante (Sem CSS inline!) -->
-                        <div class="position-relative mb-4 d-inline-block">
-                            {% if user_obj.photo %}
-                                <img id="photo-preview"
-                                     src="{{ user_obj.photo.url }}"
-                                     alt="Foto atual"
-                                     class="lia-avatar lia-avatar--xl shadow-sm">
-                            {% else %}
-                                <div id="photo-preview-placeholder"
-                                     class="lia-avatar lia-avatar--xl lia-avatar--placeholder-light shadow-sm">
-                                    {{ user_obj.get_short_name|first|upper }}
-                                </div>
-                                <img id="photo-preview"
-                                     src=""
-                                     alt=""
-                                     class="lia-avatar lia-avatar--xl shadow-sm d-none">
-                            {% endif %}
-
-                            <!-- Gatilho para o input file (botão de câmera) -->
-                            <label for="{{ form.photo.id_for_label }}" class="btn btn-primary position-absolute rounded-circle shadow lia-avatar__upload-btn">
-                                <i data-lucide="camera" class="lucide-sm"></i>
-                            </label>
-                        </div>
-
-                        <!-- Esconde o input original para ficar mais limpo -->
-                        <div class="d-none">
-                            {{ form.photo }}
-                        </div>
-
-                        {% if form.photo.errors %}
-                            <div class="text-danger small mb-2">
-                                {{ form.photo.errors|join:", " }}
-                            </div>
-                        {% endif %}
-                        <span class="text-muted small">
-                            Formatos aceitos: JPG, PNG ou WEBP.<br>Tamanho máximo: 5MB.
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ==========================================
-                 COLUNA DADOS PESSOAIS
-                 ========================================== -->
-            <div class="col-lg-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white pt-4 pb-0 border-0">
-                        <h5 class="card-title mb-1">Informações Pessoais</h5>
-                        <p class="text-muted small mb-0">Dados básicos de cadastro</p>
-                    </div>
-
-                    <div class="card-body pt-4">
-
-                        <!-- Campos somente-leitura com ícones -->
-                        <div class="row g-4 mb-4 pb-4 border-bottom">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase">Email</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i data-lucide="mail" class="lucide-sm"></i></span>
-                                    <input type="email" class="form-control bg-light" value="{{ user_obj.email }}" readonly disabled>
-                                </div>
-                                <div class="form-text">Para alterar o email, contate o suporte.</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-uppercase">CPF</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i data-lucide="credit-card" class="lucide-sm"></i></span>
-                                    <input type="text" class="form-control bg-light" value="{{ user_obj.cpf|default:'—' }}" readonly disabled>
-                                </div>
-                                <div class="form-text">Documento não editável.</div>
-                            </div>
-                        </div>
-
-                        <!-- Campos editáveis do Django -->
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <label for="{{ form.fullname.id_for_label }}" class="form-label">
-                                    {{ form.fullname.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.fullname }}
-                                {% if form.fullname.errors %}
-                                    <div class="text-danger small mt-1">{{ form.fullname.errors|join:", " }}</div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="{{ form.phone.id_for_label }}" class="form-label">
-                                    {{ form.phone.label }}
-                                </label>
-                                {{ form.phone }}
-                                {% if form.phone.errors %}
-                                    <div class="text-danger small mt-1">{{ form.phone.errors|join:", " }}</div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="{{ form.birth_date.id_for_label }}" class="form-label">
-                                    {{ form.birth_date.label }}
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i data-lucide="calendar" class="lucide-sm"></i></span>
-                                    {{ form.birth_date }}
-                                </div>
-                                {% if form.birth_date.errors %}
-                                    <div class="text-danger small mt-1">{{ form.birth_date.errors|join:", " }}</div>
-                                {% endif %}
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="{{ form.gender.id_for_label }}" class="form-label">
-                                    {{ form.gender.label }}
-                                </label>
-                                {{ form.gender }}
-                                {% if form.gender.errors %}
-                                    <div class="text-danger small mt-1">{{ form.gender.errors|join:", " }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Tratamento de erros gerais do formulário -->
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger d-flex align-items-center mt-4 mb-0" role="alert">
-                                <i data-lucide="alert-circle" class="me-3"></i>
-                                <div>
-                                    <strong>Atenção:</strong> {{ form.non_field_errors }}
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-footer bg-white border-top py-3 d-flex justify-content-end gap-2">
-                        <a href="{% url 'personal:profile' %}" class="btn btn-light">
-                            Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-primary d-inline-flex align-items-center">
-                            <i data-lucide="save" class="me-2 lucide-sm"></i>
-                            Salvar alterações
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const input = document.getElementById('{{ form.photo.id_for_label }}');
-        const preview = document.getElementById('photo-preview');
-        const placeholder = document.getElementById('photo-preview-placeholder');
+<form method="post" enctype="multipart/form-data" novalidate class="lia-card">
+    {% csrf_token %}
 
-        if (input && preview) {
-            input.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (!file) return;
+    {% if form.non_field_errors %}
+    <div class="lia-card__body pb-0">
+        <div class="lia-alert lia-alert--danger lia-alert--inline">
+            <i data-lucide="alert-circle" class="lia-alert__icon"></i>
+            <div class="lia-alert__content">
+                <div class="lia-alert__message">{{ form.non_field_errors }}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-                const reader = new FileReader();
-                reader.onload = function (ev) {
-                    preview.src = ev.target.result;
-                    preview.classList.remove('d-none');
-                    if (placeholder) placeholder.classList.add('d-none');
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-    });
-</script>
+    {# ─── Seção: Foto ───────────────────────────────────────── #}
+    <div class="lia-card__header border-bottom-0 pb-0">
+        <div>
+            <h3 class="lia-card__title">Sua Foto</h3>
+            <p class="lia-card__subtitle">Imagem pública do seu perfil.</p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+            <div class="position-relative d-inline-block">
+                {% if user_obj.photo %}
+                    <img id="photo-preview"
+                         src="{{ user_obj.photo.url }}"
+                         alt="Foto atual"
+                         class="lia-avatar lia-avatar--xl shadow-sm">
+                {% else %}
+                    <div id="photo-preview-placeholder"
+                         class="lia-avatar lia-avatar--xl lia-avatar--placeholder-light shadow-sm">
+                        {{ user_obj.get_short_name|first|upper }}
+                    </div>
+                    <img id="photo-preview" src="" alt=""
+                         class="lia-avatar lia-avatar--xl shadow-sm d-none">
+                {% endif %}
+
+                <label for="{{ form.photo.id_for_label }}"
+                       class="btn btn-primary position-absolute rounded-circle shadow lia-avatar__upload-btn">
+                    <i data-lucide="camera" class="lucide-sm"></i>
+                </label>
+            </div>
+
+            <div class="flex-grow-1">
+                <div class="d-none">{{ form.photo }}</div>
+                {% if form.photo.errors %}
+                    <div class="text-danger small mb-2">{{ form.photo.errors|join:", " }}</div>
+                {% endif %}
+                <p class="text-muted small mb-0">
+                    Formatos aceitos: JPG, PNG ou WEBP.<br>
+                    Tamanho máximo: 5MB.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {# ─── Seção: Dados Pessoais ─────────────────────────────── #}
+    <div class="lia-card__header border-bottom-0 pb-0 pt-3">
+        <div>
+            <h3 class="lia-card__title">Dados Pessoais</h3>
+            <p class="lia-card__subtitle">Suas informações básicas de cadastro.</p>
+        </div>
+    </div>
+
+    <div class="lia-card__body">
+        <div class="row">
+            {% include "components/form_field.html" with field=form.fullname col="col-md-6" %}
+
+            {# E-mail somente leitura (não editável) #}
+            <div class="col-md-6">
+                <label class="form-label">E-mail</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i data-lucide="mail" class="lucide-sm"></i>
+                    </span>
+                    <input type="email"
+                           class="lia-form-control bg-light"
+                           value="{{ user_obj.email }}"
+                           readonly disabled>
+                </div>
+                <div class="form-text">Para alterar o e-mail, contate o suporte.</div>
+            </div>
+
+            {% include "components/form_field.html"  with field=form.cpf        col="col-md-3" icon="contact" %}
+            {% include "components/form_field.html"  with field=form.phone      col="col-md-3" icon="phone" %}
+            {% include "components/form_date.html"   with field=form.birth_date col="col-md-3" icon="cake" %}
+            {% include "components/form_select.html" with field=form.gender     col="col-md-3" icon="venus-and-mars" %}
+        </div>
+    </div>
+
+    <div class="lia-card__footer">
+        <a href="{% url 'personal:profile' %}" class="lia-btn lia-btn--outline">
+            Cancelar
+        </a>
+        <button type="submit" class="lia-btn lia-btn--primary">
+            <i data-lucide="save" class="lucide-sm"></i>
+            <span>Salvar Alterações</span>
+        </button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/modules/image-upload.js' %}"></script>
 {% endblock %}

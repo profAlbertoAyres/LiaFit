@@ -1,0 +1,59 @@
+/* =============================================================================
+   LIAFIT — UTILITIES
+   Classes utilitárias de propósito único que o Bootstrap 5 não oferece.
+
+   Princípio: complementar o Bootstrap, não duplicar.
+   Se o Bootstrap tem a classe → usar a do Bootstrap.
+   ============================================================================= */
+
+/* -------------------------------------------------------------------------
+   DIMENSÕES EM REM (Bootstrap só oferece em %)
+   ------------------------------------------------------------------------- */
+
+.lia-w-8  { width: 2rem; }   /* 32px */
+.lia-w-12 { width: 3rem; }   /* 48px */
+.lia-w-16 { width: 4rem; }   /* 64px */
+.lia-w-20 { width: 5rem; }   /* 80px */
+.lia-w-24 { width: 6rem; }   /* 96px */
+
+.lia-h-8  { height: 2rem; }
+.lia-h-12 { height: 3rem; }
+.lia-h-16 { height: 4rem; }
+.lia-h-20 { height: 5rem; }
+.lia-h-24 { height: 6rem; }
+
+/* -------------------------------------------------------------------------
+   GRID HELPERS (não cobertos pelo grid do Bootstrap)
+   ------------------------------------------------------------------------- */
+
+.lia-grid-auto-fit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-6);
+}
+
+.lia-col-span-full {
+    grid-column: 1 / -1;
+}
+
+/* -------------------------------------------------------------------------
+   CURSOR
+   ------------------------------------------------------------------------- */
+
+.lia-cursor-pointer {
+    cursor: pointer;
+}
+
+/* -------------------------------------------------------------------------
+   EMPTY ICON — círculo decorativo para estados vazios
+   ------------------------------------------------------------------------- */
+
+.lia-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg);
+    color: var(--color-text-muted);
+}
+

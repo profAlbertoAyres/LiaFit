@@ -8,11 +8,11 @@
                class="lucide-sm {% if is_assigned %}text-success{% else %}text-muted{% endif %}"></i>
             <strong>{{ role.name }}</strong>
         </div>
-        <span class="lia-badge lia-badge--outline lia-text-xs">Nível {{ role.level }}</span>
+        <span class="lia-badge lia-badge--outline fs-6">Nível {{ role.level }}</span>
     </div>
 
     {% if role.description %}
-        <p class="lia-text-xs text-muted mt-2">{{ role.description }}</p>
+        <p class="fs-6 text-muted mt-2">{{ role.description }}</p>
     {% endif %}
 
     <div class="mt-3">
@@ -28,7 +28,7 @@
                 <span>Desfazer</span>
                 <span class="lia-undo-counter" data-log-created="{{ last_log.created_at|date:'U' }}">(10s)</span>
             </button>
-            <span class="lia-text-xs text-muted ms-2">{{ last_log.get_action_display }} agora</span>
+            <span class="fs-6 text-muted ms-2">{{ last_log.get_action_display }} agora</span>
 
         {% else %}
             {% if is_assigned %}
@@ -78,7 +78,7 @@
                                         Tem certeza que deseja revogar o papel
                                         <strong>{{ role.name }}</strong> deste membro?
                                     </p>
-                                    <p class="lia-text-xs text-muted mt-2" style="margin-bottom: 0;">
+                                    <p class="fs-6 text-muted mt-2" style="margin-bottom: 0;">
                                         <i data-lucide="info" class="lucide-xs"></i>
                                         Você poderá <strong>desfazer</strong> esta ação por 10 segundos.
                                     </p>
