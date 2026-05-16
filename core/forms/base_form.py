@@ -79,20 +79,12 @@ class LiaLindaStyleMixin:
             self._apply_default_icon(field)
 
     def _apply_default_icon(self, field):
-        """
-        Define lia_icon no widget baseado no input_type, se ainda não foi definido.
-        O template form_field.html lê esse lia_icon como fallback.
-        """
         if 'lia_icon' in field.widget.attrs:
             return
 
         input_type = getattr(field.widget, 'input_type', None)
-        if not input_type:
-            return
-
-        default_icon = self.ICON_DEFAULTS.get(input_type)
-        if default_icon:
-            field.widget.attrs['lia_icon'] = default_icon
+        default_icon = self.ICON_DEFAULTS.get(input_type, '') if input_type else ''
+        field.widget.attrs['lia_icon'] = default_icon
 
 
 class TenantKwargsMixin:

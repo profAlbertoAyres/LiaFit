@@ -73,12 +73,8 @@ class LiaLindaStyleMixin:
             return
 
         input_type = getattr(field.widget, 'input_type', None)
-        if not input_type:
-            return
-
-        default_icon = self.ICON_DEFAULTS.get(input_type)
-        if default_icon:
-            field.widget.attrs['lia_icon'] = default_icon
+        default_icon = self.ICON_DEFAULTS.get(input_type, '') if input_type else ''
+        field.widget.attrs['lia_icon'] = default_icon
 
 
 class SaaSBaseForm(LiaLindaStyleMixin, forms.Form):

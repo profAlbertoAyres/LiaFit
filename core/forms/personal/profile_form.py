@@ -16,32 +16,38 @@ class ProfileForm(BaseModelForm):
 
     class Meta:
         model = User
-        fields = ['fullname', 'cpf', 'phone', 'birth_date', 'gender', 'photo']
+        fields = ['fullname', 'email', 'cpf', 'phone', 'birth_date', 'gender', 'photo']
         widgets = {
             'fullname': forms.TextInput(attrs={
                 'autocomplete': 'name',
                 'maxlength': 150,
             }),
+            'email': forms.EmailInput(attrs={
+                'autocomplete': 'email',
+                'readonly': True,
+            }),
             'cpf': forms.TextInput(attrs={
                 'data-mask': 'cpf',
-                'maxlength': 14,
-                'autocomplete': 'off',
-                'inputmode': 'numeric',
             }),
             'phone': forms.TextInput(attrs={
                 'data-mask': 'phone',
-                'autocomplete': 'tel',
-                'inputmode': 'tel',
                 'placeholder': '(11) 99999-9999',
             }),
             'birth_date': forms.DateInput(attrs={
-                'type': 'date',
+                'data-datepicker': '',
+                'type': 'text',
+                'placeholder': 'DD/MM/AAAA'
             }),
             'photo': forms.ClearableFileInput(attrs={
                 'accept': 'image/*',
                 'data-iu-input': '',
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].disabled = True
+        self.fields['email'].help_text = _('Para alterar o e-mail, entre em contato com o suporte.')
 
     def clean_fullname(self):
         fullname = (self.cleaned_data.get('fullname') or '').strip()
