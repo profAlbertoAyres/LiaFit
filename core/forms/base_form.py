@@ -3,6 +3,21 @@ from django.db.models import QuerySet
 
 
 class LiaLindaStyleMixin:
+    # 🆕 Mapa de ícones default por tipo de input
+    # Pode ser sobrescrito via widget.attrs['data-icon'] = 'outro-icone'
+    # Ou desligado via widget.attrs['data-icon'] = 'none'
+    ICON_DEFAULTS = {
+        'email': 'mail',
+        'password': 'lock',
+        'tel': 'phone',
+        'url': 'link',
+        'search': 'search',
+        'date': 'calendar',
+        'datetime-local': 'calendar',
+        'time': 'clock',
+        'number': 'hash',
+    }
+
     def _apply_lialinda_styles(self):
         for field_name, field in self.fields.items():
 
@@ -59,6 +74,27 @@ class LiaLindaStyleMixin:
 
             if field_name == 'email':
                 field.widget.attrs['autocomplete'] = 'email'
+
+            # 🆕 Aplica ícone default se o dev não definiu manualmente
+            self._apply_default_icon(field)
+
+    def _apply_default_icon(self, field):
+        """
+        Define data-icon no widget baseado no input_type, se ainda não foi definido.
+        O template form_field.html lê esse data-icon como fallback.
+        """
+        # Se já tem data-icon definido manualmente, respeita
+        if 'data-icon' in field.widget.attrs:
+            return
+
+        # Pega o input_type do widget (ex: 'email', 'password', 'date', etc)
+        input_type = getattr(field.widget, 'input_type', None)
+        if not input_type:
+            return
+
+        default_icon = self.ICON_DEFAULTS.get(input_type)
+        if default_icon:
+            field.widget.attrs['data-icon'] = default_icon
 
 
 class TenantKwargsMixin:
