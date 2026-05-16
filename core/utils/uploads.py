@@ -1,61 +1,51 @@
-"""
-Define onde os arquivos enviados (fotos, vídeos, documentos) são salvos.
-Usado como `upload_to=smart_upload_to` em ImageField/FileField.
-"""
 import os
 import uuid
+from datetime import datetime
+from pathlib import Path
 
 from django.core.exceptions import ValidationError
 
 
-# Extensões aceitas como imagem.
-IMAGE_EXTENSIONS = ('jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif', 'tif', 'tiff')
+FILE_CATEGORIES = {
+    'img':   {'jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tif', 'tiff'},
+    'video': {'mp4', 'mov', 'avi', 'mkv', 'webm'},
+    'audio': {'mp3', 'wav', 'ogg', 'm4a', 'aac'},
+    'doc':   {'pdf', 'docx', 'xlsx', 'txt', 'csv'},
+}
 
-# Extensões aceitas como vídeo.
-VIDEO_EXTENSIONS = ('mp4', 'mov', 'avi', 'mkv', 'webm')
-
-# Extensões PROIBIDAS por segurança (executáveis e scripts).
-BLOCKED_EXTENSIONS = (
+BLOCKED_EXTENSIONS = {
     'exe', 'sh', 'bat', 'cmd', 'com', 'msi',
-    'php', 'asp', 'aspx', 'jsp',
-    'js', 'html', 'htm', 'svg',
-    'dll', 'so',
-)
+    'php', 'js', 'html', 'htm', 'svg',
+    'dll', 'so', 'py', 'rb', 'jar',
+}
 
+FALLBACK_CATEGORY = 'files'
+
+def get_file_category(extension: str) -> str:
+    ext = extension.lower().lstrip('.')
+    for category, extensions in FILE_CATEGORIES.items():
+        if ext in extensions:
+            return category
+    return FALLBACK_CATEGORY
+
+def is_extension_blocked(extension: str) -> bool:
+    ext = extension.lower().lstrip('.')
+    return ext in BLOCKED_EXTENSIONS
 
 def smart_upload_to(instance, filename: str) -> str:
-    """
-    Monta o caminho onde o arquivo será salvo.
+    ext = Path(filename).suffix.lower().lstrip('.')
 
-    Estrutura final:
-        {app}/{model}/{tipo}/{pk}/{uuid}.{ext}
+    if is_extension_blocked(ext):
+        raise ValueError(f"Extensão '.{ext}' não permitida por segurança")
 
-    Exemplo:
-        account/user/img/42/a1b2c3d4....jpg
-    """
+    category = get_file_category(ext)
+
     app_label = instance._meta.app_label
     model_name = instance._meta.model_name
+    pk = instance.pk or 'temp'
+    year = datetime.now().year
 
-    # 1) Pega a extensão de forma segura (lida com arquivos sem extensão).
-    parts = filename.rsplit('.', 1)
-    ext = parts[1].lower() if len(parts) == 2 else ''
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    
+    return f"{app_label}/{model_name}/{category}/{pk}/{year}/{unique_name}"
 
-    # 2) Bloqueia extensões perigosas.
-    if ext in BLOCKED_EXTENSIONS:
-        raise ValidationError(f'Tipo de arquivo não permitido: .{ext}')
-
-    # 3) Define a pasta pelo tipo do arquivo.
-    if ext in IMAGE_EXTENSIONS:
-        folder = 'img'
-    elif ext in VIDEO_EXTENSIONS:
-        folder = 'video'
-    else:
-        folder = 'files'
-
-    # 4) Gera nome único (UUID sem hífens) preservando a extensão.
-    new_filename = f'{uuid.uuid4().hex}.{ext}' if ext else uuid.uuid4().hex
-
-    # 5) Se o objeto ainda não foi salvo, usa 'temp' como pasta.
-    pk = instance.pk if instance.pk is not None else 'temp'
-
-    return os.path.join(app_label, model_name, folder, str(pk), new_filename)

@@ -1,70 +1,39 @@
-/**
- * LiaImageUpload
- * ==============
- * Componente declarativo de upload de imagem com preview e validação.
- *
- * Procura no DOM todos os elementos com [data-image-upload] e os inicializa.
- * A configuração de cada componente vem dos seus próprios data-attributes,
- * então o mesmo JS funciona pra qualquer campo de imagem do sistema.
- */
 const LiaImageUpload = {
-
-    /* ---------------------------------------------------------------
-       Seletores — todos baseados em data-attributes (zero acoplamento
-       com classes CSS). Trocar visual não quebra a lógica.
-       --------------------------------------------------------------- */
     SELECTORS: {
-        root:    '[data-image-upload]',
-        trigger: '[data-iu-trigger]',
-        input:   '[data-iu-input]',
-        image:   '[data-iu-image]',
-        clear:   '[data-iu-clear]',
-        remove:  '[data-iu-remove]',
-        error:   '[data-iu-error]',
+        root:    '[data-file-upload]',
+        trigger: '[data-fu-trigger]',
+        input:   '[data-fu-input]',
+        image:   '[data-fu-image]',
+        clear:   '[data-fu-clear]',
+        remove:  '[data-fu-remove]',
+        error:   '[data-fu-error]',
     },
-
-    /* ---------------------------------------------------------------
-       Classes de estado — coincidem com as definidas no CSS.
-       --------------------------------------------------------------- */
     STATE: {
-        hasImage:  'lia-image-upload--has-image',
-        willClear: 'lia-image-upload--will-clear',
-        hasError:  'lia-image-upload--has-error',
+        hasImage:  'lia-form-file--has-image',
+        willClear: 'lia-form-file--will-clear',
+        hasError:  'lia-form-file--has-error',
     },
 
-    /* ---------------------------------------------------------------
-       Valores padrão caso o HTML não defina data-max-size/data-accept.
-       --------------------------------------------------------------- */
     DEFAULTS: {
         maxSizeMB: 5,
         accept: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
     },
 
-    /* ===============================================================
-       INICIALIZAÇÃO
-       =============================================================== */
-
-    /**
-     * Encontra todos os componentes na página e configura cada um.
-     */
-    init() {
-        document.querySelectorAll(this.SELECTORS.root).forEach((root) => {
-            this.setup(root);
+    init(root = document) {
+        LiaApp.findIn(root, this.SELECTORS.root).forEach((elem) => {
+            this.setup(elem);
         });
     },
 
-    /**
-     * Configura um único componente: liga listeners e define estado inicial.
-     */
     setup(root) {
-        // Evita inicialização duplicada (caso init() seja chamado 2x).
-        if (root.dataset.iuReady === '1') return;
-        root.dataset.iuReady = '1';
+        if (root.dataset.liaImageUploadInit) return;
+        root.dataset.liaImageUploadInit = '1';
 
         const refs = this.getRefs(root);
         if (!refs.input || !refs.image) return;  // HTML incompleto.
 
-        // Se a imagem já tem src salvo (edição), marca como "tem imagem".
+        root._liaIURefs = refs;
+
         const originalSrc = refs.image.dataset.originalSrc || '';
         if (originalSrc) {
             refs.image.src = originalSrc;
@@ -86,6 +55,9 @@ const LiaImageUpload = {
        =============================================================== */
 
     getRefs(root) {
+        // Usa cache se já existir (preenchido no setup).
+        if (root._liaIURefs) return root._liaIURefs;
+
         return {
             trigger: root.querySelector(this.SELECTORS.trigger),
             input:   root.querySelector(this.SELECTORS.input),
@@ -201,10 +173,6 @@ const LiaImageUpload = {
         return null;
     },
 
-    /* ===============================================================
-       MENSAGENS DE ERRO
-       =============================================================== */
-
     showError(root, message) {
         const refs = this.getRefs(root);
         if (refs.error) refs.error.textContent = message;
@@ -217,5 +185,5 @@ const LiaImageUpload = {
         root.classList.remove(this.STATE.hasError);
     },
 };
-document.addEventListener('DOMContentLoaded', () => LiaImageUpload.init());
-window.LiaImageUpload = LiaImageUpload;
+
+LiaApp.register(LiaImageUpload);

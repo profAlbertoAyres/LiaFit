@@ -3,7 +3,6 @@
 {# Auto-detecta se é campo de senha #}
 {% with auto_is_password=field.field.widget.input_type|stringformat:"s" %}
 {% with is_pwd=is_password|default:False %}
-{# Fallback: se template não recebeu 'icon', usa o lia_icon setado pelo mixin #}
 {% with icon=icon|default:field.field.widget.attrs.lia_icon %}
 
 <div class="{{ col|default:'col-md-12' }} {{ extra_class|default:'' }} mb-3">

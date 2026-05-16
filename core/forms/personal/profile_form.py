@@ -32,6 +32,7 @@ class ProfileForm(BaseModelForm):
             'phone': forms.TextInput(attrs={
                 'data-mask': 'phone',
                 'placeholder': '(11) 99999-9999',
+                'type': 'tel',
             }),
             'birth_date': forms.DateInput(attrs={
                 'data-datepicker': '',
@@ -40,7 +41,7 @@ class ProfileForm(BaseModelForm):
             }),
             'photo': forms.ClearableFileInput(attrs={
                 'accept': 'image/*',
-                'data-iu-input': '',
+                'data-fu-input': '',
             }),
         }
 

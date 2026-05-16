@@ -33,33 +33,28 @@
     <link rel="stylesheet" href="{% static 'css/components/space-selection.css' %}">
 
 
-
-    <!-- CSS Específico da página (se houver) -->
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
-    <!-- Alertas Globais -->
-    {% include 'partials/_alerts.html' %}
+{% include 'partials/_alerts.html' %}
 
-    <!-- Conteúdo Principal -->
-    {% block content %}
+{% block content %}
 
-    {% endblock %}
+{% endblock %}
 
-    <!-- JS Vendor -->
-    <script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/vendor/lucide/lucide.min.js' %}"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+<script src="{% static 'js/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/vendor/lucide/lucide.min.js' %}"></script>
+<script>
+    lucide.createIcons();
+</script>
 
-    <!-- JS Customizado Lia Linda -->
-    <script src="{% static 'js/modules/forms.js' %}"></script>
-    <script src="{% static 'js/modules/utils.js' %}"></script>
-    <script src="{% static 'js/modules/alerts.js' %}"></script>
+<script src="{% static 'js/modules/utils.js' %}"></script>
+<script src="{% static 'js/modules/app.js' %}"></script>
+<script src="{% static 'js/modules/forms.js' %}"></script>
+<script src="{% static 'js/modules/alerts.js' %}"></script>
 
-    <!-- JS Específico da página (se houver) -->
-    {% block extra_js %}{% endblock %}
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>

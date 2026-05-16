@@ -3,7 +3,6 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/components/avatar.css' %}">
-    <!-- Flatpickr (Calendário) específico do sistema logado -->
     <link rel="stylesheet" href="{% static 'css/vendor/flatpickr/flatpickr.min.css' %}">
 
     {% block page_css %}{% endblock %}
@@ -17,7 +16,6 @@
 
         <div class="lia-app__main">
 
-            <!-- HEADER DA APLICAÇÃO -->
             <header class="lia-header">
                 <div class="d-flex align-items-center gap-4">
                     <button class="lia-btn--ghost lia-btn--icon" id="sidebar-toggle" aria-label="Menu">
@@ -28,7 +26,6 @@
 
             </header>
 
-            <!-- CONTEÚDO DA PÁGINA (Tabelas, Dashboards, Formulários) -->
             <main class="lia-content">
                 {% block page_content %}{% endblock %}
             </main>
@@ -39,14 +36,18 @@
 {% endblock %}
 
 {% block extra_js %}
-    <!-- JS específico do sistema logado -->
     <script src="{% static 'js/vendor/htmx/htmx.min.js' %}"></script>
-    <!-- HTMX: CSRF automático em todos os requests -->
     <script>
         document.body.addEventListener('htmx:configRequest', (e) => {
             e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         });
+
+        // NOVO — re-inicializa módulos no conteúdo trocado pelo HTMX
+        document.body.addEventListener('htmx:afterSettle', (e) => {
+            LiaApp.initAll(e.detail.elt);
+        });
     </script>
+
     <script src="{% static 'js/vendor/flatpickr/flatpickr.min.js' %}"></script>
     <script src="{% static 'js/vendor/flatpickr/flatpickr-pt.js' %}"></script>
 

@@ -3,9 +3,12 @@
 const LiaAlerts = {
     DISMISS_DELAY: 5000,
 
-    init() {
-        const alerts = document.querySelectorAll('.lia-alert');
-        alerts.forEach(alert => {
+    init(root = document) {
+        LiaApp.findIn(root, '.lia-alert').forEach(alert => {
+            // Guarda: evita re-inicializar o mesmo alerta
+            if (alert.dataset.liaAlertInit) return;
+            alert.dataset.liaAlertInit = '1';
+
             this.bindClose(alert);
             this.autoDismiss(alert);
         });
@@ -26,7 +29,7 @@ const LiaAlerts = {
         if (alert.classList.contains('lia-alert--dismissing')) return;
         alert.classList.add('lia-alert--dismissing');
         alert.addEventListener('animationend', () => alert.remove());
-    }
+    },
 };
 
-document.addEventListener('DOMContentLoaded', () => LiaAlerts.init());
+LiaApp.register(LiaAlerts);

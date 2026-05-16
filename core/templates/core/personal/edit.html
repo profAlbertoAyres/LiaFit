@@ -9,9 +9,6 @@
 
 {% block page_content %}
     <div class="d-flex align-items-center gap-3 mb-4">
-        <a href="{% url 'personal:profile' %}" class="lia-btn lia-btn--icon lia-btn--ghost">
-            <i data-lucide="arrow-left" class="lucide"></i>
-        </a>
         <div>
             <h2 class="fw-bold fs-4 m-0">Editar Perfil</h2>
             <p class="text-muted small mt-1">
@@ -43,39 +40,7 @@
         </div>
 
         <div class="lia-card__body">
-            <div class="d-flex align-items-center gap-4 flex-wrap">
-                <div class="position-relative d-inline-block">
-                    {% if user_obj.photo %}
-                        <img id="photo-preview"
-                             src="{{ user_obj.photo.url }}"
-                             alt="Foto atual"
-                             class="lia-avatar lia-avatar--xl shadow-sm">
-                    {% else %}
-                        <div id="photo-preview-placeholder"
-                             class="lia-avatar lia-avatar--xl lia-avatar--placeholder-light shadow-sm">
-                            {{ user_obj.get_short_name|first|upper }}
-                        </div>
-                        <img id="photo-preview" src="" alt=""
-                             class="lia-avatar lia-avatar--xl shadow-sm d-none">
-                    {% endif %}
-
-                    <label for="{{ form.photo.id_for_label }}"
-                           class="btn btn-primary position-absolute rounded-circle shadow lia-avatar__upload-btn">
-                        <i data-lucide="camera" class="lucide-sm"></i>
-                    </label>
-                </div>
-
-                <div class="flex-grow-1">
-                    <div class="d-none">{{ form.photo }}</div>
-                    {% if form.photo.errors %}
-                        <div class="text-danger small mb-2">{{ form.photo.errors|join:", " }}</div>
-                    {% endif %}
-                    <p class="text-muted small mb-0">
-                        Formatos aceitos: JPG, PNG ou WEBP.<br>
-                        Tamanho máximo: 5MB.
-                    </p>
-                </div>
-            </div>
+            {% include "components/form_file.html" with field=form.photo col="col-12" variant="avatar" %}
         </div>
 
         {# ─── Seção: Dados Pessoais ─────────────────────────────── #}
@@ -88,9 +53,8 @@
 
         <div class="lia-card__body">
             <div class="row">
-                {% include "components/form_field.html" with field=form.fullname col="col-md-6" %}
-
-                {% include "components/form_field.html" with field=form.email col="col-md-6" icon="mail" %}
+                {% include "components/form_field.html"  with field=form.fullname   col="col-md-6" %}
+                {% include "components/form_field.html"  with field=form.email      col="col-md-6" icon="mail" %}
                 {% include "components/form_field.html"  with field=form.cpf        col="col-md-3" icon="contact" %}
                 {% include "components/form_field.html"  with field=form.phone      col="col-md-3" %}
                 {% include "components/form_date.html"   with field=form.birth_date col="col-md-3" icon="cake" %}
@@ -111,5 +75,6 @@
 {% endblock %}
 
 {% block extra_js %}
-    <script src="{% static 'js/modules/image-upload.js' %}"></script>
+    {{ block.super }}
+    <script src="{% static 'js/modules/file-upload.js' %}"></script>
 {% endblock %}

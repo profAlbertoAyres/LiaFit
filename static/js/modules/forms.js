@@ -1,29 +1,19 @@
-/* =============================================================================
-   LIA LINDA — FORMS
-   Inicialização automática de Flatpickr, máscaras e validação visual.
-   ============================================================================= */
-
 const LiaForms = {
 
-    init() {
-        this.initFlatpickr();
-        this.initMasks();
-        this.initConfirmDelete();
-        this.initPasswordToggles();
+    init(root = document) {
+        this.initFlatpickr(root);
+        this.initMasks(root);
+        this.initConfirmDelete(root);
+        this.initPasswordToggles(root);
     },
 
-    /* -----------------------------------------------------------------
-       FLATPICKR — Inicializa campos com data-datepicker
-       <input type="text" data-datepicker>
-       <input type="text" data-datepicker="datetime">
-       <input type="text" data-datepicker="time">
-       ----------------------------------------------------------------- */
-    initFlatpickr() {
+    initFlatpickr(root) {
         if (typeof flatpickr === 'undefined') return;
 
-        document.querySelectorAll('[data-datepicker]').forEach(input => {
-            const mode = input.dataset.datepicker;
+        LiaApp.findIn(root, '[data-datepicker]').forEach(input => {
+            if (input._flatpickr) return;
 
+            const mode = input.dataset.datepicker;
             const config = {
                 locale: 'pt',
                 dateFormat: 'd/m/Y',
@@ -47,70 +37,54 @@ const LiaForms = {
         });
     },
 
-    /* -----------------------------------------------------------------
-       MÁSCARAS — Inicializa campos com data-mask
-       <input type="text" data-mask="cpf">
-       <input type="text" data-mask="phone">
-       <input type="text" data-mask="cep">
-       ----------------------------------------------------------------- */
-    initMasks() {
+    initMasks(root) {
         const maskMap = {
             cpf: LiaUtils.maskCPF,
             phone: LiaUtils.maskPhone,
             cep: LiaUtils.maskCEP,
         };
 
-        document.querySelectorAll('[data-mask]').forEach(input => {
+        LiaApp.findIn(root, '[data-mask]').forEach(input => {
+            if (input.dataset.liaMaskInit) return;
+            input.dataset.liaMaskInit = '1';
+
             const maskFn = maskMap[input.dataset.mask];
             if (maskFn) {
                 input.addEventListener('input', () => maskFn(input));
             }
-        });
 
-        // Auto-busca CEP no blur
-        document.querySelectorAll('[data-mask="cep"]').forEach(input => {
-            input.addEventListener('blur', () => LiaUtils.fetchCEP(input));
-        });
-    },
-
-    /* -----------------------------------------------------------------
-       CONFIRMAÇÃO DE EXCLUSÃO
-       <form data-confirm-delete>
-       <a href="..." data-confirm-delete>
-       ----------------------------------------------------------------- */
-    initConfirmDelete() {
-        document.querySelectorAll('[data-confirm-delete]').forEach(el => {
-            if (el.tagName === 'FORM') {
-                el.addEventListener('submit', (e) => {
-                    if (!confirm('Tem certeza que deseja excluir? Esta ação não pode ser desfeita.')) {
-                        e.preventDefault();
-                    }
-                });
-            }
-
-            if (el.tagName === 'A') {
-                el.addEventListener('click', (e) => {
-                    if (!confirm('Tem certeza que deseja excluir? Esta ação não pode ser desfeita.')) {
-                        e.preventDefault();
-                    }
-                });
+            if (input.dataset.mask === 'cep') {
+                input.addEventListener('blur', () => LiaUtils.fetchCEP(input));
             }
         });
     },
-    /* -----------------------------------------------------------------
-       TOGGLE DE SENHA — Inicializa botões com data-toggle-password
-       <button type="button" data-toggle-password="id_da_senha">
-       ----------------------------------------------------------------- */
-    initPasswordToggles() {
-        document.querySelectorAll('[data-toggle-password]').forEach(btn => {
+
+    initConfirmDelete(root) {
+        const message = 'Tem certeza que deseja excluir? Esta ação não pode ser desfeita.';
+
+        LiaApp.findIn(root, '[data-confirm-delete]').forEach(el => {
+            // Guarda
+            if (el.dataset.liaConfirmInit) return;
+            el.dataset.liaConfirmInit = '1';
+
+            const eventName = el.tagName === 'FORM' ? 'submit' : 'click';
+
+            el.addEventListener(eventName, (e) => {
+                if (!confirm(message)) e.preventDefault();
+            });
+        });
+    },
+
+    initPasswordToggles(root) {
+        LiaApp.findIn(root, '[data-toggle-password]').forEach(btn => {
+            if (btn.dataset.liaToggleInit) return;
+            btn.dataset.liaToggleInit = '1';
+
             btn.addEventListener('click', () => {
-                // Pega o ID do input alvo através do data-attribute
                 const targetId = btn.dataset.togglePassword;
                 const input = document.getElementById(targetId);
-
                 if (!input) return;
 
-                // Alterna o tipo do input e reinjeta a tag <i> para o Lucide
                 if (input.type === 'password') {
                     input.type = 'text';
                     btn.innerHTML = '<i data-lucide="eye"></i>';
@@ -119,13 +93,12 @@ const LiaForms = {
                     btn.innerHTML = '<i data-lucide="eye-off"></i>';
                 }
 
-                // Renderiza o novo ícone apenas dentro deste botão
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons({ root: btn });
                 }
             });
         });
-    }
+    },
 };
 
-document.addEventListener('DOMContentLoaded', () => LiaForms.init());
+LiaApp.register(LiaForms);

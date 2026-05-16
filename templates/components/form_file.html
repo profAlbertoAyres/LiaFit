@@ -1,65 +1,66 @@
 {% load static %}
 
-<div class="{{ col|default:'col-12' }} {{ extra_class|default:'' }} mb-3">
-    <label class="lia-form-label">
-        {{ field.label }}
-        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+<div class="lia-form-file lia-form-file--{{ variant|default:'default' }}"
+     data-field="{{ field.name }}"
+     data-accept="{{ field.field.widget.attrs.accept|default:'' }}">
+
+  {# ─── LABEL ─── #}
+  {% if label or field.label %}
+    <label for="{{ field.id_for_label }}" class="lia-form-file__label">
+      {{ label|default:field.label }}
+      {% if field.field.required %}<span class="lia-form-file__required">*</span>{% endif %}
     </label>
+  {% endif %}
 
-    <div class="lia-card">
-        <div class="lia-card__body lia-form-file {% if field.value %}lia-form-file--has-image{% endif %}"
-             data-image-upload
-             data-max-size="5"
-             data-accept="image/jpeg,image/png,image/webp,image/gif">
+  <div class="lia-form-file__dropzone" data-role="dropzone">
 
-            {# Área de preview clicável (abre o seletor de arquivo) #}
-            <div class="lia-form-file__preview" data-iu-trigger>
-
-                {# Placeholder visível quando NÃO há imagem #}
-                <div class="lia-form-file__placeholder">
-                    <i data-lucide="image-plus" class="lucide-xl"></i>
-                    <span>Clique para escolher uma foto</span>
-                </div>
-
-                {# Imagem do preview — JS atualiza o src via FileReader #}
-                <img class="lia-form-file__image"
-                     data-iu-image
-                     {% if field.value %}
-                         src="{{ field.value.url }}"
-                         data-original-src="{{ field.value.url }}"
-                     {% endif %}
-                     alt="">
-
-                {# Overlay com ícone de câmera no hover #}
-                <div class="lia-form-file__overlay">
-                    <i data-lucide="camera" class="lucide-lg"></i>
-                </div>
-            </div>
-
-            {# Botões de ação #}
-            <div class="lia-form-file__actions">
-                <label for="{{ field.id_for_label }}"
-                       class="lia-btn lia-btn--primary lia-btn--sm lia-cursor-pointer m-0">
-                    <i data-lucide="camera" class="lucide-sm"></i>
-                    <span>Escolher foto</span>
-                </label>
-
-                <button type="button"
-                        class="lia-btn lia-btn--danger lia-btn--sm lia-form-file__remove"
-                        data-iu-remove
-                        title="Remover foto">
-                    <i data-lucide="trash-2" class="lucide-sm"></i>
-                    <span>Remover</span>
-                </button>
-            </div>
-
-            {# Mensagem de erro de validação #}
-            <small class="lia-form-file__error" data-iu-error></small>
-
-            {# Input nativo do Django (escondido) — o JS escuta o change dele #}
-            <div class="lia-form-file__input">
-                {{ field }}
-            </div>
-        </div>
+    <div class="lia-form-file__preview-image" data-role="preview-image" hidden>
+      {% if field.value %}
+        <img src="{{ field.value.url }}" alt="Preview" data-role="preview-img">
+      {% else %}
+        <img src="" alt="Preview" data-role="preview-img">
+      {% endif %}
     </div>
+
+    <div class="lia-form-file__preview-file" data-role="preview-file" hidden>
+      <span class="lia-form-file__icon" data-role="file-icon">📄</span>
+      <div class="lia-form-file__info">
+        <span class="lia-form-file__name" data-role="file-name">arquivo.pdf</span>
+        <span class="lia-form-file__size" data-role="file-size">0 KB</span>
+      </div>
+      <a href="#" class="lia-form-file__open" data-role="file-link" target="_blank" hidden>
+        Abrir
+      </a>
+    </div>
+
+    <div class="lia-form-file__placeholder" data-role="placeholder">
+      <span class="lia-form-file__placeholder-icon">⬆️</span>
+      <span class="lia-form-file__placeholder-text">
+        Clique ou arraste um arquivo aqui
+      </span>
+    </div>
+
+    {{ field }}
+
+    <button type="button"
+            class="lia-form-file__remove"
+            data-role="remove"
+            hidden
+            aria-label="Remover arquivo">
+      ✕
+    </button>
+  </div>
+
+  {% if field.errors %}
+    <ul class="lia-form-file__errors">
+      {% for error in field.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if field.help_text %}
+    <small class="lia-form-file__help">{{ field.help_text }}</small>
+  {% endif %}
+
 </div>

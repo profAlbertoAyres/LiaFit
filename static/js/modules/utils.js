@@ -1,14 +1,6 @@
-/* =============================================================================
-   LIA LINDA — UTILS
-   Funções utilitárias reutilizáveis em todo o projeto.
-   ============================================================================= */
+
 
 const LiaUtils = {
-
-    /**
-     * Formata valor para moeda brasileira (R$)
-     * LiaUtils.formatCurrency(1500.5) → "R$ 1.500,50"
-     */
     formatCurrency(value) {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
@@ -16,20 +8,12 @@ const LiaUtils = {
         }).format(value);
     },
 
-    /**
-     * Formata data ISO para dd/mm/aaaa
-     * LiaUtils.formatDate('2026-04-15') → "15/04/2026"
-     */
     formatDate(isoString) {
         if (!isoString) return '';
         const [year, month, day] = isoString.split('-');
         return `${day}/${month}/${year}`;
     },
 
-    /**
-     * Aplica máscara de CPF enquanto digita
-     * Uso: <input oninput="LiaUtils.maskCPF(this)">
-     */
     maskCPF(input) {
         let v = input.value.replace(/\D/g, '').slice(0, 11);
         v = v.replace(/(\d{3})(\d)/, '$1.$2');
@@ -37,11 +21,6 @@ const LiaUtils = {
         v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
         input.value = v;
     },
-
-    /**
-     * Aplica máscara de telefone (fixo ou celular)
-     * Uso: <input oninput="LiaUtils.maskPhone(this)">
-     */
     maskPhone(input) {
         let v = input.value.replace(/\D/g, '').slice(0, 11);
         if (v.length > 10) {
