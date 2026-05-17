@@ -59,6 +59,11 @@ class MenuRegistry:
 
         modules = base_qs.filter(scope_filter).distinct()
 
+        current_space = getattr(request, "current_space", None)
+        if current_space:
+            modules = modules.filter(
+                Q(scope=current_space) | Q(is_universal=True)
+            )
         groups_to_check = list(self._groups)
 
         for module in modules:

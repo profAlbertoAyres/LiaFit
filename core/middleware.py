@@ -8,6 +8,7 @@ from core.models import OrganizationModule, Permission
 from core.services.context_service import ContextService, MemberContext
 from core.services.permission_service import is_saas_staff
 from account.models import Organization, OrganizationMember
+from core.services.space_constants_service import detect_current_space
 
 ORG_SLUG_PATTERN = re.compile(r'^/org/(?P<org_slug>[\w-]+)/')
 
@@ -20,6 +21,7 @@ class SaaSContextMiddleware:
         request.tenant = None
         request.user_role = None
         request.context = None
+        request.current_space = detect_current_space(request.path)  # 👈 NOVA LINHA
 
         org_slug = self._get_org_slug(request)
         if not org_slug:
