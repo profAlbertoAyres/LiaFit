@@ -40,7 +40,7 @@ class ProfileForm(BaseModelForm):
                 'placeholder': 'DD/MM/AAAA'
             }),
             'photo': forms.ClearableFileInput(attrs={
-                'accept': 'image/*',
+                'accept': 'image/jpeg,image/png,image/webp,image/gif',
                 'data-fu-input': '',
             }),
         }
@@ -49,6 +49,8 @@ class ProfileForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         self.fields['email'].disabled = True
         self.fields['email'].help_text = _('Para alterar o e-mail, entre em contato com o suporte.')
+        self.fields['photo'].help_text = _('JPG, PNG ou WEBP. Tamanho máximo: 5MB.')
+
 
     def clean_fullname(self):
         fullname = (self.cleaned_data.get('fullname') or '').strip()

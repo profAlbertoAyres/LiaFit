@@ -17,7 +17,6 @@ class AdminOrganizationCreateForm(SaaSBaseForm):
         help_text="Será usado para login. Se já existir no sistema, a empresa será vinculada a ele."
     )
 
-    # ─── DADOS DA EMPRESA (ORGANIZAÇÃO) ───
     company_name = forms.CharField(
         label="Nome da Empresa / Razão Social",
         max_length=255,
@@ -37,7 +36,7 @@ class AdminOrganizationCreateForm(SaaSBaseForm):
         label="Telefone da Empresa",
         max_length=50,
         required=False,
-        widget=forms.TextInput(attrs={'data-mask': 'phone'}),
+        widget=forms.TextInput(attrs={'data-mask': 'phone', 'type': 'tel'}),
 
     )
 

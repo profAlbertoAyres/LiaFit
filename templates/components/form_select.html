@@ -1,16 +1,31 @@
+{% with icon=icon|default:field.field.widget.attrs.lia_icon %}
 <div class="{{ col|default:'col-md-12' }} {{ extra_class|default:'' }} mb-3">
-    <label for="{{ field.id_for_label }}" class="lia-form-label">
+
+    <label for="{{ field.id_for_label }}" class="lia-form-label {% if field.field.required %}lia-form-label--required{% endif %}">
         {{ field.label }}
-        {% if field.field.required %}
-            <span class="text-danger">*</span>
-        {% endif %}
     </label>
 
-    {{ field }}
+    {% if icon and icon != 'none' %}
+        <div class="lia-input-group">
+            <span class="lia-input-group__text">
+                <i data-lucide="{{ icon }}" class="lucide-sm"></i>
+            </span>
+            {{ field }}
+        </div>
+    {% else %}
+        {{ field }}
+    {% endif %}
+
+    {% if field.help_text %}
+        <div class="lia-form-help mt-1">
+            {{ field.help_text }}
+        </div>
+    {% endif %}
 
     {% if field.errors %}
-        <div class="text-danger small mt-1">
+        <div class="lia-form-error mt-1">
             {{ field.errors|striptags }}
         </div>
     {% endif %}
 </div>
+{% endwith %}

@@ -2,70 +2,64 @@
 
 {# Auto-detecta se é campo de senha #}
 {% with auto_is_password=field.field.widget.input_type|stringformat:"s" %}
-{% with is_pwd=is_password|default:False %}
-{% with icon=icon|default:field.field.widget.attrs.lia_icon %}
+    {% with is_pwd=is_password|default:False %}
+        {% with icon=icon|default:field.field.widget.attrs.lia_icon %}
 
-<div class="{{ col|default:'col-md-12' }} {{ extra_class|default:'' }} mb-3">
+            <div class="{{ col|default:'col-md-12' }} {{ extra_class|default:'' }} mb-3">
 
-    <label for="{{ field.id_for_label }}" class="lia-form-label">
-        {{ field.label }}
-        {% if field.field.required %}
-            <span class="text-danger">*</span>
-        {% endif %}
-    </label>
+                <label for="{{ field.id_for_label }}"
+                       class="lia-form-label {% if field.field.required %}lia-form-label--required{% endif %}">
+                    {{ field.label }}
+                </label>
 
-    {% if icon or is_pwd or auto_is_password == 'password' %}
-        <div class="position-relative
-                    {% if icon and icon != 'none' %}lia-input-has-icon{% endif %}
-                    {% if is_pwd or auto_is_password == 'password' %}lia-input-has-password{% endif %}">
+                {% if icon and icon != 'none' or is_pwd or auto_is_password == 'password' %}
+                    <div class="lia-input-group {% if is_pwd or auto_is_password == 'password' %}position-relative lia-input-has-password{% endif %}">
 
-            {% if icon and icon != 'none' %}
-                <div class="position-absolute d-flex align-items-center justify-content-center text-muted"
-                     style="left: 12px; top: 0; bottom: 0; pointer-events: none;">
-                    <i data-lucide="{{ icon }}" style="width: 18px; height: 18px;"></i>
-                </div>
-            {% endif %}
+                        {% if icon and icon != 'none' %}
+                            <span class="lia-input-group__text">
+                    <i data-lucide="{{ icon }}" class="lucide-sm"></i>
+                </span>
+                        {% endif %}
 
-            {{ field }}
+                        {{ field }}
 
-            {% if is_pwd or auto_is_password == 'password' %}
-                <button type="button"
-                        data-toggle-password="{{ field.id_for_label }}"
-                        class="position-absolute border-0 bg-transparent text-muted p-0 d-flex align-items-center justify-content-center"
-                        style="right: 12px; top: 0; bottom: 0; cursor: pointer; z-index: 10;"
-                        tabindex="-1"
-                        aria-label="Mostrar/ocultar senha">
-                    <i data-lucide="eye-off" style="width: 18px; height: 18px;"></i>
-                </button>
-            {% endif %}
-        </div>
+                        {% if is_pwd or auto_is_password == 'password' %}
+                            <button type="button"
+                                    data-toggle-password="{{ field.id_for_label }}"
+                                    class="position-absolute border-0 bg-transparent text-muted p-0 d-flex align-items-center justify-content-center"
+                                    style="right: 12px; top: 0; bottom: 0; cursor: pointer; z-index: 10;"
+                                    tabindex="-1"
+                                    aria-label="Mostrar/ocultar senha">
+                                <i data-lucide="eye-off" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        {% endif %}
+                    </div>
 
-        <style>
-            {% if icon and icon != 'none' %}
-            .lia-input-has-icon .lia-form-control { padding-left: 2.5rem !important; }
-            {% endif %}
-            {% if is_pwd or auto_is_password == 'password' %}
-            .lia-input-has-password .lia-form-control { padding-right: 2.5rem !important; }
-            {% endif %}
-        </style>
+                    {% if is_pwd or auto_is_password == 'password' %}
+                        <style>
+                            .lia-input-has-password .lia-form-control {
+                                padding-right: 2.5rem !important;
+                            }
+                        </style>
+                    {% endif %}
 
-    {% else %}
-        {{ field }}
-    {% endif %}
+                {% else %}
+                    {{ field }}
+                {% endif %}
 
-    {% if field.help_text %}
-        <div class="lia-form-help mt-1">
-            {{ field.help_text }}
-        </div>
-    {% endif %}
+                {% if field.help_text %}
+                    <div class="lia-form-help mt-1">
+                        {{ field.help_text }}
+                    </div>
+                {% endif %}
 
-    {% if field.errors %}
-        <div class="text-danger small mt-1">
-            {{ field.errors|striptags }}
-        </div>
-    {% endif %}
-</div>
+                {% if field.errors %}
+                    <div class="lia-form-error mt-1">
+                        {{ field.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
 
-{% endwith %}
-{% endwith %}
+        {% endwith %}
+    {% endwith %}
 {% endwith %}

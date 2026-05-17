@@ -31,34 +31,31 @@
             </div>
         {% endif %}
 
-        {# ─── Seção: Foto ───────────────────────────────────────── #}
-        <div class="lia-card__header border-bottom-0 pb-0">
-            <div>
-                <h3 class="lia-card__title">Sua Foto</h3>
-                <p class="lia-card__subtitle">Imagem pública do seu perfil.</p>
-            </div>
-        </div>
-
-        <div class="lia-card__body">
-            {% include "components/form_file.html" with field=form.photo col="col-12" variant="avatar" %}
-        </div>
-
-        {# ─── Seção: Dados Pessoais ─────────────────────────────── #}
-        <div class="lia-card__header border-bottom-0 pb-0 pt-3">
-            <div>
-                <h3 class="lia-card__title">Dados Pessoais</h3>
-                <p class="lia-card__subtitle">Suas informações básicas de cadastro.</p>
-            </div>
-        </div>
-
         <div class="lia-card__body">
             <div class="row">
-                {% include "components/form_field.html"  with field=form.fullname   col="col-md-6" %}
-                {% include "components/form_field.html"  with field=form.email      col="col-md-6" icon="mail" %}
-                {% include "components/form_field.html"  with field=form.cpf        col="col-md-3" icon="contact" %}
-                {% include "components/form_field.html"  with field=form.phone      col="col-md-3" %}
-                {% include "components/form_date.html"   with field=form.birth_date col="col-md-3" icon="cake" %}
-                {% include "components/form_select.html" with field=form.gender     col="col-md-3" icon="venus-and-mars" %}
+                {# ─── COLUNA ESQUERDA: FOTO (25%) ──────────────────────── #}
+                <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+                    {% include "components/form_file.html" with field=form.photo variant="avatar" %}
+                </div>
+
+                {# ─── COLUNA DIREITA: DADOS PESSOAIS (75%) ─────────────── #}
+                <div class="col-12 col-lg-9">
+                    <!-- Título da seção (movido para dentro da coluna direita) -->
+                    <div class="mb-4">
+                        <h3 class="lia-card__title mb-1">Dados Pessoais</h3>
+                        <p class="lia-card__subtitle text-muted mb-0">Suas informações básicas de cadastro.</p>
+                    </div>
+
+                    <!-- Campos do formulário -->
+                    <div class="row">
+                        {% include "components/form_field.html"  with field=form.fullname   col="col-md-6" icon="id-card" %}
+                        {% include "components/form_field.html"  with field=form.email      col="col-md-6" icon="mail" %}
+                        {% include "components/form_field.html"  with field=form.cpf        col="col-md-3" icon="contact" %}
+                        {% include "components/form_field.html"  with field=form.phone      col="col-md-3" %}
+                        {% include "components/form_date.html"   with field=form.birth_date col="col-md-3" icon="cake" %}
+                        {% include "components/form_select.html" with field=form.gender     col="col-md-3" icon="venus-and-mars" %}
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -6,10 +6,6 @@
 
 {% block page_content %}
 <div class="d-flex align-items-center gap-3 mb-4">
-    <a href="{% url 'saas_admin:specialty_list' %}" class="lia-btn lia-btn--icon lia-btn--ghost"
-       title="Voltar para a lista">
-        <i data-lucide="arrow-left" class="lucide"></i>
-    </a>
     <div>
         <h2 class="fw-bold fs-4 m-00">
             {% if object %}Editar Especialidade{% else %}Nova Especialidade{% endif %}
@@ -18,7 +14,7 @@
             {% if object %}
                 Atualize as informações de {{ object.name }}.
             {% else %}
-                Cadastre uma nova especialidade médica na plataforma.
+                Cadastre uma nova especialidade na plataforma.
             {% endif %}
         </p>
     </div>
