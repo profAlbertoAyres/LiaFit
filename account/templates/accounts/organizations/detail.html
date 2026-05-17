@@ -1,170 +1,128 @@
-{% extends 'base_app.html' %}
+{% extends "base_app.html" %}
+{% load static %}
 
-{% block title %}Detalhes da Organização | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+{% block title %}Detalhes da Organização{% endblock %}
+{% block header_title %}Detalhes da Organização{% endblock %}
 
 {% block page_content %}
-    <!-- HEADER DA PÁGINA -->
-    <div class="lia-page-header">
-        <div class="d-flex align-items-center gap-4">
-            <!-- Botão Voltar (você pode ajustar a URL para o seu dashboard ou área de configurações) -->
-            <a href="javascript:history.back()"
-               class="lia-btn lia-btn--icon lia-btn--ghost">
-                <i data-lucide="arrow-left" class="lucide"></i>
-            </a>
+<div class="container py-4">
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
 
-            <div>
-                <h2 class="lia-page-header__title d-flex align-items-center gap-3">
-                    {{ object.company_name }}
+      {# ─── Cabeçalho com Logo da Empresa ──────────────── #}
+      <div class="d-flex align-items-center mb-4">
+        {% if organization.logo %}
+          <img src="{{ organization.logo.url }}"
+               alt="{{ organization.company_name }}"
+               class="lia-avatar lia-avatar--md shadow-sm" style="object-fit: contain; background-color: #fff;">
+        {% else %}
+          <div class="lia-avatar lia-avatar--md lia-avatar--placeholder-primary shadow-sm">
+            {{ organization.company_name|first|upper }}
+          </div>
+        {% endif %}
 
-                    {% if object.is_active %}
-                        <span class="lia-badge lia-badge--success">Empresa Ativa</span>
-                    {% else %}
-                        <span class="lia-badge lia-badge--danger">Empresa Inativa</span>
-                    {% endif %}
-                </h2>
-                <p class="lia-page-header__subtitle">Visualize as informações cadastrais e dados da organização.</p>
-            </div>
-        </div>
-
-        <div class="lia-page-header__actions">
-            <!-- Trava de segurança: apenas o dono ou o superuser podem editar os dados globais da Organização -->
-            {% if request.user.is_superuser or request.user == object.owner %}
-                <a href="{% url 'tenant:organization_update' org_slug=object.slug %}"
-                   class="lia-btn lia-btn--outline">
-                    <i data-lucide="edit-2" class="lucide-sm"></i>
-                    <span>Editar Organização</span>
-                </a>
+        <div class="ms-3">
+          <h2 class="mb-0 h4 d-flex align-items-center">
+            {{ organization.company_name }}
+            {% if organization.is_active %}
+              <span class="badge bg-success ms-3" style="font-size: 0.75rem;">Ativa</span>
             {% else %}
-                <button class="lia-btn lia-btn--outline lia-btn--disabled" disabled
-                        title="Apenas o proprietário da conta pode editar a organização.">
-                    <i data-lucide="lock" class="lucide-sm"></i>
-                    <span>Edição Bloqueada</span>
-                </button>
+              <span class="badge bg-danger ms-3" style="font-size: 0.75rem;">Inativa</span>
             {% endif %}
+          </h2>
+          <small class="text-muted">{{ organization.document|default:"Documento não informado" }}</small>
         </div>
+      </div>
+
+      {# ─── Card: Informações da Organização ──────────────────────────── #}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i data-lucide="building" class="me-2 lucide-sm"></i>Dados da Empresa
+          </h5>
+           <!-- Ajuste a URL abaixo conforme as rotas do seu app -->
+           <a href="#" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+             <i data-lucide="pencil" class="lucide-sm" style="width: 14px; height: 14px;"></i> Editar
+           </a>
+        </div>
+        <div class="card-body p-4">
+          <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted fw-normal">Razão Social / Nome</dt>
+            <dd class="col-sm-8">{{ organization.company_name }}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">CNPJ/CPF</dt>
+            <dd class="col-sm-8">{{ organization.document|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">E-mail</dt>
+            <dd class="col-sm-8">{{ organization.email|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Telefone</dt>
+            <dd class="col-sm-8">{{ organization.phone|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Proprietário</dt>
+            <dd class="col-sm-8">
+              {% if organization.owner %}
+                {{ organization.owner.get_full_name|default:organization.owner.email }}
+              {% else %}
+                —
+              {% endif %}
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      {# ─── Card: Endereço ────────────────────────────── #}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i data-lucide="map-pin" class="me-2 lucide-sm"></i>Endereço
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted fw-normal">CEP</dt>
+            <dd class="col-sm-8">{{ organization.zip_code|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Endereço</dt>
+            <dd class="col-sm-8">{{ organization.address|default:"—" }} {% if organization.number %}, {{ organization.number }}{% endif %}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Bairro</dt>
+            <dd class="col-sm-8">{{ organization.neighborhood|default:"—" }}</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Cidade / Estado</dt>
+            <dd class="col-sm-8">
+              {% if organization.city or organization.state %}
+                {{ organization.city|default:"-" }} / {{ organization.get_state_display|default:"-" }}
+              {% else %}
+                —
+              {% endif %}
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      {# ─── Card: Sistema ────────────────────────────── #}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i data-lucide="settings" class="me-2 lucide-sm"></i>Sistema
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted fw-normal">Slug de acesso</dt>
+            <dd class="col-sm-8"><code class="bg-light px-2 py-1 rounded text-dark">{{ organization.slug }}</code></dd>
+
+            <!-- Se você tiver os campos criados no BaseModel (como created_at), você pode usar aqui: -->
+            <!--
+            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Criada em</dt>
+            <dd class="col-sm-8">{{ organization.created_at|date:"d/m/Y" }}</dd>
+            -->
+          </dl>
+        </div>
+      </div>
+
     </div>
-
-    <!-- CARD 1: DADOS PRINCIPAIS -->
-    <div class="lia-card mb-4">
-        <div class="lia-card__header">
-            <h3 class="lia-card__title">Dados Cadastrais</h3>
-        </div>
-        <div class="lia-card__body lia-grid-auto-fit">
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Nome / Razão Social</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="building" class="lucide-sm text-primary"></i>
-                    {{ object.company_name }}
-                </p>
-            </div>
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">CNPJ / CPF</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="file-text" class="lucide-sm text-primary"></i>
-                    {{ object.document|default:"Não informado" }}
-                </p>
-            </div>
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Proprietário (Owner)</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="crown" class="lucide-sm text-warning"></i>
-                    {% if object.owner %}
-                        {{ object.owner.fullname|default:object.owner.email }}
-                    {% else %}
-                        Sem proprietário definido
-                    {% endif %}
-                </p>
-            </div>
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Data de Cadastro</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="calendar" class="lucide-sm text-primary"></i>
-                    {{ object.created_at|date:"d/m/Y"|default:"-" }}
-                </p>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- CARD 2: CONTATO E LOCALIZAÇÃO -->
-    <div class="lia-card mb-4">
-        <div class="lia-card__header">
-            <h3 class="lia-card__title">Contato e Localização</h3>
-        </div>
-        <div class="lia-card__body lia-grid-auto-fit">
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">E-mail Corporativo</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="mail" class="lucide-sm text-primary"></i>
-                    {{ object.email|default:"Não informado" }}
-                </p>
-            </div>
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Telefone</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="phone" class="lucide-sm text-primary"></i>
-                    {{ object.phone|default:"Não informado" }}
-                </p>
-            </div>
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Cidade</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="map-pin" class="lucide-sm text-primary"></i>
-                    {{ object.city|default:"Não informada" }}
-                </p>
-            </div>
-
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Estado (UF)</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="map" class="lucide-sm text-primary"></i>
-                    {{ object.state|default:"-" }}
-                </p>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- CARD 3: IDENTIDADE VISUAL E SISTEMA -->
-    <div class="lia-card">
-        <div class="lia-card__header">
-            <h3 class="lia-card__title">Identidade Visual e Sistema</h3>
-        </div>
-        <div class="lia-card__body lia-grid-auto-fit">
-
-            <!-- Slug do Workspace -->
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Identificador (Slug / Workspace)</span>
-                <p class="lia-font-medium fs-5 mt-1 d-flex align-items-center gap-2">
-                    <i data-lucide="link" class="lucide-sm text-muted"></i>
-                    {{ object.slug }}
-                </p>
-            </div>
-
-            <!-- Logo -->
-            <div>
-                <span class="fs-6 text-muted fw-semibold lia-text-overline">Logo da Empresa</span>
-                <div class="mt-2">
-                    {% if object.logo %}
-                        <!-- Classe genérica do framework base que você usa, limitando a altura da logo para não quebrar o layout -->
-                        <img src="{{ object.logo.url }}" alt="Logo da Empresa" class="lia-h-12 lia-object-contain" style="max-width: 150px;">
-                    {% else %}
-                        <div class="d-flex align-items-center gap-2 text-muted p-2 bg-light rounded" style="width: fit-content;">
-                            <i data-lucide="image-off" class="lucide-sm"></i>
-                            <span class="small">Sem logo cadastrada</span>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-        </div>
-    </div>
-
+  </div>
+</div>
 {% endblock %}

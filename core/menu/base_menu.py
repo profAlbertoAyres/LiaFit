@@ -39,7 +39,7 @@ class MenuNode:
         ctx = getattr(request, "context", None)
         if ctx and self.permission in ctx.permissions:
             return True
-        return request.user.has_perm(self.permission)
+        return False
 
 
 class MenuItem(MenuNode):
