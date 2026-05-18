@@ -2,6 +2,8 @@
 """
 Catálogo declarativo. Fonte única da estrutura de menu + permissions.
 """
+from django.utils.translation import gettext_lazy as _
+
 from core.constants.permissions_constant import ModuleSlug, ItemSlug, ActionSlug
 
 # Presets
@@ -13,42 +15,42 @@ A    = [ActionSlug.ADD]
 
 CATALOG = [
     # ─────────────── MY AREA ───────────────
-    {
-        "slug": ModuleSlug.MY_AREA,
-        "name": "Minha Área",
-        "icon": "home",
-        "order": 1,
-        "scope": "personal",
-        "is_core": True,
-        "is_universal": True,
-        "show_in_menu": True,
-        "items": [
-            {
-                "slug": ItemSlug.DASHBOARD,
-                "name": "Dashboard",
-                "icon": "layout-dashboard",
-                "order": 10,
-                "route": "dashboard",
-                "show_in_menu": True,
-                "actions": RO,
-            },
-            {
-                "slug": ItemSlug.PROFILE,
-                "name": "Meu Perfil",
-                "icon": "user-circle",
-                "order": 20,
-                "route": "personal:profile",
-                "show_in_menu": True,
-                "actions": RW,
-            },
-        ],
-    },
+    # {
+    #     "slug": ModuleSlug.MY_AREA,
+    #     "name": _("Minha Área"),
+    #     "icon": "home",
+    #     "order": 1,
+    #     "scope": "personal",
+    #     "is_core": True,
+    #     "is_universal": True,
+    #     "show_in_menu": True,
+    #     "items": [
+    #         {
+    #             "slug": ItemSlug.DASHBOARD,
+    #             "name": _("Dashboard"),
+    #             "icon": "layout-dashboard",
+    #             "order": 10,
+    #             "route": "dashboard",
+    #             "show_in_menu": True,
+    #             "actions": RO,
+    #         },
+    #         {
+    #             "slug": ItemSlug.PROFILE,
+    #             "name": _("Meu Perfil"),
+    #             "icon": "user-circle",
+    #             "order": 20,
+    #             "route": "personal:profile",
+    #             "show_in_menu": True,
+    #             "actions": RW,
+    #         },
+    #     ],
+    # },
 
     # ─────────────── ACCOUNT (Cadastros) ───────────────
     {
         "slug": ModuleSlug.ACCOUNT,
-        "name": "Cadastros",
-        "icon": "database",
+        "name": _("Cadastros"),
+        "icon": "contact-round",
         "order": 10,
         "scope": "tenant",
         "is_core": True,
@@ -56,8 +58,7 @@ CATALOG = [
         "items": [
             {
                 "slug": ItemSlug.CLIENT,
-                "name": "Clientes",
-                "icon": "user",
+                "name": _("Clientes"),
                 "order": 10,
                 "route": "tenant:client_list",
                 "show_in_menu": True,
@@ -69,7 +70,7 @@ CATALOG = [
     # ─────────────── SETTINGS (Configurações) ───────────────
     {
         "slug": ModuleSlug.SETTINGS,
-        "name": "Configurações",
+        "name": _("Configurações"),
         "icon": "settings",
         "order": 90,
         "scope": "tenant",
@@ -78,8 +79,7 @@ CATALOG = [
         "items": [
             {
                 "slug": ItemSlug.ROLE,
-                "name": "Papéis",
-                "icon": "shield",
+                "name": _("Papéis"),
                 "order": 10,
                 "route": "tenant:role_list",
                 "show_in_menu": True,
@@ -87,8 +87,7 @@ CATALOG = [
             },
             {
                 "slug": ItemSlug.MEMBER,
-                "name": "Membros",
-                "icon": "users",
+                "name": _("Membros"),
                 "order": 20,
                 "route": "tenant:member_list",
                 "show_in_menu": True,
@@ -96,8 +95,7 @@ CATALOG = [
             },
             {
                 "slug": ItemSlug.ORGANIZATION,
-                "name": "Organização",
-                "icon": "building",
+                "name": _("Organização"),
                 "order": 30,
                 "route": "tenant:organization_detail",
                 "show_in_menu": True,
@@ -109,8 +107,8 @@ CATALOG = [
     # ─────────────── SAAS ADMIN ───────────────
     {
         "slug": ModuleSlug.SAAS_ADMIN,
-        "name": "Admin SaaS",
-        "icon": "server",
+        "name": _("Admin SaaS"),
+        "icon": "shield-check",
         "order": 100,
         "scope": "saas_admin",
         "is_core": True,
@@ -118,8 +116,7 @@ CATALOG = [
         "items": [
             {
                 "slug": ItemSlug.ORGANIZATIONS,
-                "name": "Organizações",
-                "icon": "building-2",
+                "name": _("Organizações"),
                 "order": 10,
                 "route": "saas_admin:organization_list",
                 "show_in_menu": True,
@@ -127,8 +124,7 @@ CATALOG = [
             },
             {
                 "slug": ItemSlug.SPECIALTY,
-                "name": "Especialidades",
-                "icon": "graduation-cap",
+                "name": _("Especialidades"),
                 "order": 20,
                 "route": "saas_admin:specialty_list",
                 "show_in_menu": True,
@@ -137,8 +133,7 @@ CATALOG = [
 
             {
                 "slug": ItemSlug.USERS_ADMIN,
-                "name": "Usuários",
-                "icon": "users",
+                "name": _("Usuários"),
                 "order": 30,
                 "route": "saas_admin:user_list",
                 "show_in_menu": True,

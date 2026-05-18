@@ -7,7 +7,7 @@
 {% block page_content %}
 <!-- HEADER DA PÁGINA -->
 <div class="d-flex align-items-center gap-3 mb-4">
-    <a href="{% url 'master:organization_list' %}" class="lia-btn lia-btn--icon lia-btn--ghost">
+    <a href="{% url 'tenant:organization_detail' org_slug=request.context.organization.slug %}" class="lia-btn lia-btn--icon lia-btn--ghost">
         <i data-lucide="arrow-left" class="lucide"></i>
     </a>
     <div>
@@ -107,7 +107,7 @@
 
         <!-- AÇÕES NO FOOTER NATIVO DO CARD -->
         <div class="lia-card__footer">
-            <a href="{% url 'master:organization_list' %}" class="lia-btn lia-btn--outline">
+            <a href="{% url 'tenant:organization_detail' org_slug=request.context.organization.slug %}" class="lia-btn lia-btn--outline">
                 Cancelar
             </a>
             <button type="submit" class="lia-btn lia-btn--primary">
@@ -117,31 +117,4 @@
         </div>
     </form>
 </div>
-
-{% block extra_js %}
-<script>
-    // Se certifique de que no seu Form.py (Django), os inputs estão recebendo o widget com a classe 'lia-form-control'
-    document.addEventListener('DOMContentLoaded', function() {
-        {% if not object %}
-        const nameInput = document.getElementById('{{ form.company_name.id_for_label }}');
-        const slugInput = document.getElementById('{{ form.slug.id_for_label }}');
-
-        if (nameInput && slugInput) {
-            nameInput.addEventListener('keyup', function() {
-                if (!slugInput.dataset.manualModified) {
-                    let val = this.value.toLowerCase()
-                        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                        .replace(/[^a-z0-9\s-]/g, '')
-                        .trim().replace(/\s+/g, '-');
-                    slugInput.value = val;
-                }
-            });
-            slugInput.addEventListener('input', function() {
-                this.dataset.manualModified = 'true';
-            });
-        }
-        {% endif %}
-    });
-</script>
-{% endblock %}
 {% endblock %}

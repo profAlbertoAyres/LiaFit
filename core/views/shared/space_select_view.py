@@ -17,6 +17,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 
 from core.services.space_constants_service import SESSION_LAST_SPACE_KEY
@@ -54,7 +55,7 @@ class SpaceSelectView(LoginRequiredMixin, View):
 
         # User não tem acesso a esse espaço → 403.
         if match is None:
-            raise PermissionDenied("Você não tem acesso a este espaço.")
+            raise PermissionDenied(_("Você não tem acesso a este espaço."))
 
         request.session[SESSION_LAST_SPACE_KEY] = space_key
 
@@ -74,4 +75,4 @@ class SpaceSelectView(LoginRequiredMixin, View):
             return f"{KIND_ORG}:{org_slug}"
         if kind in (KIND_PERSONAL, KIND_SAAS):
             return kind
-        raise PermissionDenied("Tipo de espaço inválido.")
+        raise PermissionDenied(_("Tipo de espaço inválido."))

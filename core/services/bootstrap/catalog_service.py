@@ -40,6 +40,7 @@ def sync_system_catalog(*, verbose: bool = False) -> dict:
             slug=mod_def["slug"],
             defaults={
                 "name": mod_def["name"],
+                "icon": mod_def.get("icon", ""),
                 "description": mod_def.get("description", ""),
                 "order": mod_def.get("order", 0),
                 "scope": mod_def.get("scope", Module.Scope.TENANT),

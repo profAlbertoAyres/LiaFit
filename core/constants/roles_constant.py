@@ -45,7 +45,7 @@ ROLES = [
         "scope": "tenant",
         "level": 50,
         "permissions": [
-            {"module": ModuleSlug.MY_AREA},
+            # {"module": ModuleSlug.MY_AREA},
             {"module": ModuleSlug.ACCOUNT,  "actions": CRUD},
             {"module": ModuleSlug.SETTINGS, "actions": RO},
             {
@@ -54,16 +54,16 @@ ROLES = [
             },
         ],
     },
-    {
-        "slug": "member",
-        "name": "Membro",
-        "description": "Acesso básico ao tenant (apenas Minha Área).",
-        "scope": "tenant",
-        "level": 10,
-        "permissions": [
-            {"module": ModuleSlug.MY_AREA, "actions": RO},
-        ],
-    },
+    # {
+    #     "slug": "member",
+    #     "name": "Membro",
+    #     "description": "Acesso básico ao tenant (apenas Minha Área).",
+    #     "scope": "tenant",
+    #     "level": 10,
+    #     "permissions": [
+    #         {"module": ModuleSlug.MY_AREA, "actions": RO},
+    #     ],
+    # },
 
     # ─────────────── SUPERUSER ───────────────
     {

@@ -3,7 +3,7 @@ from django.urls import path
 
 from account.views.client_view import ClientListView, ClientCreateView, ClientDetailView, ClientUpdateView, \
     ClientArchiveView
-from account.views.organization_view import OrganizationDetailView
+from account.views.organization_view import OrganizationDetailView, OrganizationUpdateView
 from core.views.shared.space_select_view import SpaceSelectView
 from core.views.tenant.dashboard_view import DashboardView
 from account.views.member_view import (
@@ -40,8 +40,8 @@ urlpatterns = [
 
     #
     # # ── ORGANIZAÇÃO (detalhe único - a própria org do contexto) ──
-    path('organization/detail', OrganizationDetailView.as_view(), name='organization_detail'),
-    path('organization/update/', OrganizationDetailView.as_view(), name='organization_update'),
+    path('organization/detail/', OrganizationDetailView.as_view(), name='organization_detail'),
+    path('organization/<int:pk>/update/', OrganizationUpdateView.as_view(), name='organization_update'),
 
     # ── ROLES ──
     path('roles/', RoleListView.as_view(), name='role_list'),

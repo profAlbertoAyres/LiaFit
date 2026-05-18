@@ -29,7 +29,7 @@ class MenuNode:
         if self.is_core or not self.module:
             return True
         ctx = getattr(request, "context", None)
-        return bool(ctx and self.module in ctx.modules)
+        return bool(ctx and self.module in getattr(ctx, "modules", ()))
 
     def _check_permission(self, request):
         if not self.permission:
@@ -47,7 +47,7 @@ class MenuItem(MenuNode):
         self,
         label,
         url_name,
-        icon="circle",
+        icon=None,
         permission=None,
         module=None,
         is_core=False,
@@ -89,7 +89,7 @@ class MenuGroup(MenuNode):
         self,
         label,
         items,
-        icon="folder",
+        icon=None,
         permission=None,
         module=None,
         is_core=False,

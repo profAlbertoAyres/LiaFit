@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -38,17 +39,17 @@ class BaseAuthMixin(LoginRequiredMixin):
 
         if request.user.is_superuser:
             if not getattr(ctx, 'organization', None):
-                return self._deny("Organização não encontrada na URL.")
+                return self._deny(_("Organização não encontrada na URL."))
             return None
 
         if not ctx or not getattr(ctx, 'membership', None):
             return self._deny(
-                "Contexto de organização não encontrado. Faça login novamente."
+                _("Contexto de organização não encontrado. Faça login novamente.")
             )
 
         if not self._has_required_permission(ctx):
             return self._deny(
-                "Você não tem permissão para acessar esta funcionalidade."
+                _("Você não tem permissão para acessar esta funcionalidade.")
             )
 
         return None
@@ -81,7 +82,7 @@ class TenantContextMixin:
         ctx = getattr(self.request, 'context', None)
         tenant = getattr(ctx, 'organization', None)
         if not tenant:
-            raise PermissionDenied("Organização não encontrada.")
+            raise PermissionDenied(_("Organização não encontrada."))
         return tenant
 
     def get_membership(self):

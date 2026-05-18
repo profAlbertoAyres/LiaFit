@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Optional
 
 from django.http import HttpRequest
+from django.urls import reverse
 
 from core.services.space_service import get_user_spaces
 from core.services.space_constants_service import SESSION_LAST_SPACE_KEY
@@ -56,3 +57,17 @@ class SpaceHubService:
 
         # 0 ou 2+ → renderiza a tela hub
         return None
+
+    @staticmethod
+    def get_safe_redirect_url(request: HttpRequest) -> str:
+        """
+        Versão "segura" do get_redirect_url para uso em fluxos de erro
+        (ex: middleware quando org inválida ou sem acesso).
+
+        Diferença: nunca retorna None. Se não houver espaço resolvível
+        pela sessão/usuário, cai no hub (/dashboard/) que decide o que fazer.
+
+        Returns:
+            URL string sempre válida pra redirecionar.
+        """
+        return SpaceHubService.get_redirect_url(request) or reverse('dashboard')

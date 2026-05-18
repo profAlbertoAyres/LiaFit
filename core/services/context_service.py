@@ -214,6 +214,7 @@ class ContextService:
     def load_permissions(user, organization, roles, modules, universal_modules, system_roles) -> Set[str]:
         role_perms = set(
             RolePermission.objects.filter(
+                organization=organization,
                 role__slug__in=roles,
                 permission__item__module__slug__in=modules,
             ).values_list('permission__codename', flat=True)

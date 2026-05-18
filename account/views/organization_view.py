@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.cache import never_cache
@@ -9,10 +9,11 @@ from django.views.generic import FormView, TemplateView
 from account.exceptions import TokenError, TokenExpiredError, TokenAlreadyUsedError, TokenInvalidError
 from account.forms.onboarding_form import OrganizationRegistrationForm, SetupPasswordForm, AcceptInviteForm, \
     PasswordResetConfirmForm, PasswordResetRequestForm
+from account.forms.organization_form import OrganizationUpdateForm
 from account.models import OnboardingToken, Organization
 from account.services.onboarding_service import OnboardingService
 from account.services.token_service import TokenService
-from core.views import BaseDetailView
+from core.views import BaseDetailView, BaseUpdateView
 
 
 class OrganizationRegisterView(FormView):
@@ -322,3 +323,28 @@ class PasswordResetRequestView(View):
             'Se o e-mail estiver cadastrado, enviamos um link para redefinir sua senha.',
         )
         return redirect('auth:login')
+
+
+class OrganizationUpdateView(BaseUpdateView):
+    model = Organization
+    form_class = OrganizationUpdateForm
+    template_name = "accounts/organizations/create.html"
+    context_object_name = "organization"
+
+    require_tenant = True
+    permission_required = "settings.change_organization"
+
+    def get_object(self, queryset=None):
+        # 🔒 Sempre a org do contexto — impossível editar outra via URL
+        return self.request.context.organization
+
+    def get_success_url(self):
+        return reverse("tenant:organization_detail")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            f'Organização "{form.instance.company_name}" atualizada com sucesso! 🎉'
+        )
+        return response

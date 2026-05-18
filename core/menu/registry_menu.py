@@ -71,7 +71,7 @@ class MenuRegistry:
                 MenuItem(
                     label=item.name,
                     url_name=item.menu_url_name,
-                    icon=item.icon or "circle",
+                    icon=item.icon or None,
                     permission=item.permission_codename(),
                     module=module.slug,
                     is_core=module.is_core,
@@ -86,7 +86,7 @@ class MenuRegistry:
             groups_to_check.append(
                 MenuGroup(
                     label=module.name,
-                    icon=module.icon or "folder",
+                    icon=module.icon or None,
                     order=module.order,
                     scope=module.scope,
                     is_core=module.is_core,

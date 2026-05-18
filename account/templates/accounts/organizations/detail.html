@@ -40,8 +40,7 @@
           <h5 class="mb-0 d-flex align-items-center">
             <i data-lucide="building" class="me-2 lucide-sm"></i>Dados da Empresa
           </h5>
-           <!-- Ajuste a URL abaixo conforme as rotas do seu app -->
-           <a href="#" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+           <a href="{% url 'tenant:organization_update' org_slug=request.context.organization.slug pk=organization.pk %}" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
              <i data-lucide="pencil" class="lucide-sm" style="width: 14px; height: 14px;"></i> Editar
            </a>
         </div>

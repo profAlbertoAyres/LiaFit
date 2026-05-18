@@ -1,6 +1,7 @@
 # core/views/personal/profile_view.py
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView, UpdateView
 
 from core.forms.personal.profile_form import ProfileForm
@@ -30,12 +31,12 @@ class ProfileEditView(BaseAuthMixin, UpdateView):
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, 'Perfil atualizado com sucesso!')
+        messages.success(self.request, _('Perfil atualizado com sucesso!'))
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(
             self.request,
-            'Não foi possível salvar. Verifique os campos destacados.'
+            _('Não foi possível salvar. Verifique os campos destacados.')
         )
         return super().form_invalid(form)

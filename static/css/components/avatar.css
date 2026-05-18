@@ -11,12 +11,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     object-fit: cover;
     flex-shrink: 0;
     font-weight: var(--font-weight-bold);
     overflow: hidden;
-    background-color: var(--color-bg, #f1f3f5);
+    background-color: var(--color-bg);
     color: var(--color-text-muted);
 }
 
@@ -29,12 +29,12 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
 }
 
 /* Iniciais (texto centralizado quando não há foto) */
 .lia-avatar__initials {
-    line-height: 1;
+    line-height: var(--line-height-tight);
     text-transform: uppercase;
     user-select: none;
 }
@@ -43,9 +43,9 @@
 .lia-avatar__upload-btn {
     position: absolute;
     bottom: 0;
-    right: 5px;
-    width: 36px;
-    height: 36px;
+    right: var(--space-1); /* Aprox 4px */
+    width: 2.25rem; /* 36px - Convertido para rem */
+    height: 2.25rem;
     padding: 0;
     display: flex;
     align-items: center;
@@ -59,28 +59,28 @@
    ------------------------------------------------------------------------- */
 
 .lia-avatar--sm {
-    width: 32px;
-    height: 32px;
+    width: var(--space-8);  /* 32px */
+    height: var(--space-8); /* 32px */
     font-size: var(--font-size-xs);
 }
 
 .lia-avatar--md {
-    width: 64px;
-    height: 64px;
+    width: 4rem; /* 64px (Além da escala de space, usamos rem direto) */
+    height: 4rem;
     font-size: var(--font-size-2xl);
 }
 
 .lia-avatar--lg {
-    width: 96px;
-    height: 96px;
+    width: 6rem; /* 96px */
+    height: 6rem;
     font-size: var(--font-size-3xl);
 }
 
 .lia-avatar--xl {
-    width: 150px;
-    height: 150px;
+    width: 9.375rem; /* 150px */
+    height: 9.375rem;
     font-size: 3.5rem;
-    border: 4px solid var(--color-surface);
+    border: var(--space-1) solid var(--color-surface); /* 4px de borda usando variável */
 }
 
 /* -------------------------------------------------------------------------
@@ -98,6 +98,37 @@
 }
 
 .lia-avatar--placeholder-secondary {
-    background-color: var(--color-bg-secondary, #e9ecef);
+    /* CORRIGIDO: --color-bg-secondary não existia. Usando --color-border como fundo neutro */
+    background-color: var(--color-border);
     color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   MODIFICAÇÃO: AVATAR COM TARJA (EFEITO SOBREPOSIÇÃO PARA SIDEBAR)
+   ------------------------------------------------------------------------- */
+
+/* O Avatar fica maior e por cima da tarja */
+.lia-sidebar__avatar-destaque {
+    width: var(--space-12);  /* 48px */
+    height: var(--space-12); /* 48px */
+    z-index: 2;
+    border: 3px solid var(--color-secondary); /* Borda da mesma cor da sidebar para o recorte invisível */
+    box-shadow: var(--shadow-sm); /* CORRIGIDO: Removido rgba puro, usando token */
+}
+
+/* A div user-info se transforma na tarja */
+.lia-sidebar__user-tarja {
+    background-color: var(--color-secondary-hover); /* CORRIGIDO: Removido rgba puro, usando token */
+    height: var(--space-8); /* 32px */
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-3) 0 var(--space-5); /* 0 12px 0 20px */
+    margin-left: calc(var(--space-3) * -1); /* -12px (Usando Calc para manter a variável) */
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    z-index: 1;
+}
+
+/* Ajuste no padding do container principal para acomodar o novo formato */
+.lia-sidebar__user {
+    padding: var(--space-3);
 }

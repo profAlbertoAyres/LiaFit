@@ -1,91 +1,139 @@
 {% extends "base_app.html" %}
 {% load static %}
 
-{% block title %}Meu Perfil{% endblock %}
-{% block header_title %}Meu Perfil{% endblock %}
+{% block title %}Minha Conta{% endblock %}
+{% block header_title %}Minha Conta: {{ user.fullname|default:user.email }}{% endblock %}
 
 {% block page_content %}
     <div class="container py-4">
         <div class="row">
-            <div class="col-lg-10 mx-auto">
+            <div class="col-lg-12">
 
-                <div class="d-flex align-items-center mb-4">
-                    {% if user.photo %}
-                        <img src="{{ user.photo.url }}"
-                             alt="{{ user.get_full_name }}"
-                             class="lia-avatar lia-avatar--md shadow-sm">
-                    {% else %}
-                        <div class="lia-avatar lia-avatar--md lia-avatar--placeholder-primary shadow-sm">
-                            {{ user.fullname|first|default:user.email|first|upper }}
+                {# ─── 1. CARD PRINCIPAL: Inspiração no modelo de "Painel/Dashboard" ─── #}
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                        <h5 class="mb-0 text-muted fw-normal fs-6">Perfil do Usuário</h5>
+
+                        <!-- Botões no topo (estilo pílula/pequenos) -->
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'personal:profile_edit' %}" class="btn btn-sm btn-primary d-flex align-items-center gap-1">
+                                <i data-lucide="pencil" class="lucide-sm" style="width: 14px; height: 14px;"></i>
+                                Editar dados
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                                <i data-lucide="mail" class="lucide-sm" style="width: 14px; height: 14px;"></i>
+                                Alterar e-mail
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
+                                <i data-lucide="lock" class="lucide-sm" style="width: 14px; height: 14px;"></i>
+                                Alterar senha
+                            </a>
                         </div>
-                    {% endif %}
-
-                    <div class="ms-3">
-                        <h2 class="mb-0 h4">{{ user.get_full_name|default:user.email }}</h2>
-                        <small class="text-muted">{{ user.email }}</small>
                     </div>
-                </div>
 
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i data-lucide="user" class="me-2 lucide-sm"></i>Informações da conta
-                        </h5>
-                        <a href="{% url 'personal:profile_edit' %}"
-                           class="btn btn-primary btn-sm d-flex align-items-center gap-1">
-                            <i data-lucide="pencil" class="lucide-sm" style="width: 14px; height: 14px;"></i>
-                            Editar
-                        </a></div>
-                    <div class="card-body p-4">
-                        <dl class="row mb-0">
-                            <dt class="col-sm-4 text-muted fw-normal">Nome</dt>
-                            <dd class="col-sm-8">{{ user.fullname|default:"—" }}</dd>
+                    <div class="card-body px-4 pb-4 pt-2">
+                        <div class="row align-items-center">
 
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">E-mail</dt>
-                            <dd class="col-sm-8">{{ user.email }}</dd>
-
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">CPF</dt>
-                            <dd class="col-sm-8">{{ user.cpf|default:"—" }}</dd>
-
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Telefone</dt>
-                            <dd class="col-sm-8">{{ user.phone|default:"—" }}</dd>
-
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Data de nascimento</dt>
-                            <dd class="col-sm-8">{{ user.birth_date|date:"d/m/Y"|default:"—" }}</dd>
-
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Gênero</dt>
-                            <dd class="col-sm-8">{{ user.get_gender_display|default:"—" }}</dd>
-                        </dl>
-                    </div>
-                </div>
-
-                {# ─── Card: Atividade da conta ────────────────────────────── #}
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0 d-flex align-items-center">
-                            <i data-lucide="activity" class="me-2 lucide-sm"></i>Atividade
-                        </h5>
-                    </div>
-                    <div class="card-body p-4">
-                        <dl class="row mb-0">
-                            <dt class="col-sm-4 text-muted fw-normal">Último acesso</dt>
-                            <dd class="col-sm-8">{{ user.last_login|date:"d/m/Y H:i"|default:"—" }}</dd>
-
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">Conta criada em</dt>
-                            <dd class="col-sm-8">{{ user.date_joined|date:"d/m/Y" }}</dd>
-
-                            <dt class="col-sm-4 text-muted fw-normal mt-3 mt-sm-0">E-mail verificado</dt>
-                            <dd class="col-sm-8">
-                                {% if user.is_email_verified %}
-                                    <span class="badge bg-success">Sim</span>
-                                    <small class="text-muted ms-2">em {{ user.email_verified_at|date:"d/m/Y" }}</small>
+                            <!-- Coluna 1: Foto Maior (Esquerda) -->
+                            <div class="col-12 col-md-auto text-center mb-4 mb-md-0 pe-md-4">
+                                {% if user.photo %}
+                                    <img src="{{ user.photo.url }}"
+                                         alt="Foto de perfil"
+                                         class="rounded-circle shadow-sm"
+                                         style="width: 130px; height: 130px; object-fit: cover; border: 4px solid #fff; outline: 1px solid #dee2e6;">
                                 {% else %}
-                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                    <div class="rounded-circle shadow-sm d-flex align-items-center justify-content-center bg-primary text-white fw-bold mx-auto"
+                                         style="width: 130px; height: 130px; font-size: 40px; border: 4px solid #fff; outline: 1px solid #dee2e6;">
+                                        {{ user.fullname|first|default:user.email|first|upper }}
+                                    </div>
                                 {% endif %}
-                            </dd>
-                        </dl>
+                            </div>
+
+                            <!-- Coluna 2: Dados Principais em Grade (Ao lado da foto) -->
+                            <div class="col-12 col-md">
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block mb-1">Nome:</small>
+                                        <div class="fw-medium text-dark">{{ user.fullname|default:"Não informado" }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block mb-1">E-mail (Usuário):</small>
+                                        <div class="text-dark">{{ user.email }}</div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block mb-1">Data de registro:</small>
+                                        <div class="text-dark">{{ user.date_joined|date:"d/m/Y H:i" }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block mb-1">Último login:</small>
+                                        <div class="text-dark">{{ user.last_login|date:"d/m/Y H:i"|default:"—" }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+
+                {# ─── 2. DADOS DETALHADOS (Parte inferior) ─── #}
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="mb-0 fw-bold">Informações Complementares</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-sm-4">
+                                <small class="text-muted d-block mb-1">CPF</small>
+                                <div>{{ user.cpf|default:"—" }}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <small class="text-muted d-block mb-1">Telefone</small>
+                                <div>{{ user.phone|default:"—" }}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <small class="text-muted d-block mb-1">Data de nascimento</small>
+                                <div>{{ user.birth_date|date:"d/m/Y"|default:"—" }}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <small class="text-muted d-block mb-1">Gênero</small>
+                                <div>{{ user.get_gender_display|default:"—" }}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                <small class="text-muted d-block mb-1">Status do E-mail</small>
+                                <div>
+                                    {% if user.is_email_verified %}
+                                        <span class="text-success"><i data-lucide="check-circle" class="lucide-sm me-1"></i>Verificado</span>
+                                    {% else %}
+                                        <span class="text-warning text-dark"><i data-lucide="alert-circle" class="lucide-sm me-1"></i>Pendente</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# ─── 3. OPCIONAL: ATALHOS RÁPIDOS (Inspirado nos botões grandes do SUAP) ─── #}
+                <!-- Descomente isso se você tiver páginas para linkar
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="card text-center h-100 border-0 shadow-sm" style="cursor: pointer;" onclick="window.location.href='#'">
+                            <div class="card-body p-4">
+                                <i data-lucide="folder" class="text-info mb-3" style="width: 48px; height: 48px;"></i>
+                                <h5 class="fw-bold mb-0">Meus Documentos</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100 border-0 shadow-sm" style="cursor: pointer;" onclick="window.location.href='#'">
+                            <div class="card-body p-4">
+                                <i data-lucide="settings" class="text-success mb-3" style="width: 48px; height: 48px;"></i>
+                                <h5 class="fw-bold mb-0">Configurações</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
 
             </div>
         </div>

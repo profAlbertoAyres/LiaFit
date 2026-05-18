@@ -4,11 +4,10 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from core.models import OrganizationModule, Permission
-from core.services.context_service import ContextService, MemberContext
-from core.services.permission_service import is_saas_staff
+from core.services.context_service import ContextService
 from account.models import Organization, OrganizationMember
 from core.services.space_constants_service import detect_current_space
+from core.services.space_hub_service import SpaceHubService
 
 ORG_SLUG_PATTERN = re.compile(r'^/org/(?P<org_slug>[\w-]+)/')
 
@@ -21,7 +20,7 @@ class SaaSContextMiddleware:
         request.tenant = None
         request.user_role = None
         request.context = None
-        request.current_space = detect_current_space(request.path)  # 👈 NOVA LINHA
+        request.current_space = detect_current_space(request.path)
 
         org_slug = self._get_org_slug(request)
         if not org_slug:
@@ -35,12 +34,12 @@ class SaaSContextMiddleware:
         org = Organization.objects.filter(slug=org_slug, is_active=True).first()
         if not org:
             messages.error(request, 'Organização não encontrada ou inativa.')
-            return redirect('dashboard')
+            return redirect(SpaceHubService.get_safe_redirect_url(request))
 
         ctx = self._build_context(request.user, org)
         if not ctx:
             messages.error(request, 'Você não tem acesso a esta organização.')
-            return redirect('dashboard')
+            return redirect(SpaceHubService.get_safe_redirect_url(request))
 
         request.tenant = org
         request.context = ctx
@@ -56,26 +55,6 @@ class SaaSContextMiddleware:
         return match.group('org_slug') if match else None
 
     def _build_context(self, user, org):
-
-        if is_saas_staff(user):
-            return MemberContext(
-                user=user,
-                organization=org,
-                membership=None,
-                modules=set(
-                    OrganizationModule.objects
-                    .filter(organization=org, is_active=True)
-                    .values_list('module__slug', flat=True)
-                ),
-                permissions=set(
-                    Permission.objects.values_list('codename', flat=True)
-                ),
-                system_roles=set(
-                    user.system_roles
-                    .filter(is_active=True, system_role__is_active=True)
-                    .values_list('system_role__slug', flat=True)
-                ),
-            )
 
         membership = OrganizationMember.objects.filter(
             user=user, organization=org, is_active=True,

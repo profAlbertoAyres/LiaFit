@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from django.urls import reverse, NoReverseMatch
+from django.utils.translation import gettext_lazy as _
 
 from account.models import OrganizationMember
 from core.services.permission_service import is_saas_staff
@@ -63,7 +64,7 @@ def _build_personal_space() -> dict:
     return {
         "kind": KIND_PERSONAL,
         "key": KIND_PERSONAL,
-        "name": "Minha Área",
+        "name": _("Minha Área"),
         "icon": "home",
         "url": reverse("personal:dashboard"),
         "select_url": reverse("personal:space_select_personal"),
@@ -109,7 +110,7 @@ def _build_saas_space() -> dict:
     return {
         "kind": KIND_SAAS,
         "key": KIND_SAAS,
-        "name": "Admin SaaS",
+        "name": _("Admin SaaS"),
         "icon": "server",
         "url": _safe_reverse("saas_admin:dashboard", fallback="/painel/"),
         "select_url": reverse("saas_admin:space_select_saas"),
