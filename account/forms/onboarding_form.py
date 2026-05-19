@@ -144,3 +144,30 @@ class PasswordResetRequestForm(BaseForm):
 
     def get_normalized_email(self):
         return self.cleaned_data["email"].strip().lower()
+
+
+class ClientSelfRegisterForm(BaseForm):
+
+    fullname = forms.CharField(
+        label=_('Nome completo'),
+        max_length=150,
+    )
+    email = forms.EmailField(
+        label=_('E-mail'),
+        max_length=150,
+    )
+
+    def clean_email(self):
+        return self.cleaned_data['email'].strip().lower()
+
+    def clean_fullname(self):
+        return self.cleaned_data['fullname'].strip()
+
+    def save(self, request=None):
+        from account.services.client_service import ClientService
+        return ClientService.self_register(
+            fullname=self.cleaned_data['fullname'],
+            email=self.cleaned_data['email'],
+            request=request,
+        )
+

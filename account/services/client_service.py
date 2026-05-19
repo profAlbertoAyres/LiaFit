@@ -15,8 +15,6 @@ class ClientService:
     USER_FIELDS = ('fullname', 'phone', 'cpf', 'gender', 'birth_date')
     ORG_CLIENT_FIELDS = ('objective', 'notes')
 
-    # ──────────────── CREATE ────────────────
-
     @staticmethod
     @transaction.atomic
     def create_client(organization, data, request=None, created_by=None):
@@ -86,8 +84,6 @@ class ClientService:
         )
         return org_client
 
-    # ──────────────── ARCHIVE (soft delete) ────────────────
-
     @staticmethod
     @transaction.atomic
     def archive_client(org_client):
@@ -103,8 +99,6 @@ class ClientService:
         )
         return org_client
 
-    # ──────────────── RESEND ACTIVATION ────────────────
-
     @staticmethod
     def resend_activation(org_client, request=None):
         user = org_client.user.user
@@ -116,4 +110,44 @@ class ClientService:
             return None
         return OnboardingService.send_client_activation(
             org_client, request=request,
+        )
+
+
+    @staticmethod
+    @transaction.atomic
+    def self_register(fullname, email, request=None):
+
+        email_normalized = UserService.normalize_email(email)
+        if not email_normalized:
+            logger.warning("self_register: e-mail vazio")
+            return
+
+        from account.models import User  # import local para evitar ciclo
+        existing_user = User.objects.filter(email=email_normalized).first()
+
+        if existing_user and existing_user.has_usable_password():
+            logger.info(
+                "self_register: e-mail %s já possui conta ativa — "
+                "ignorando (anti-enumeração)",
+                email_normalized,
+            )
+            return
+
+        extra_fields = {}
+        if fullname:
+            extra_fields['fullname'] = fullname.strip()
+
+        user = UserService.get_or_create_user(
+            email=email_normalized,
+            extra_fields=extra_fields,
+        )
+
+        Client.objects.get_or_create(user=user)
+
+        OnboardingService.send_client_activation_for_user(user, request=request)
+
+        logger.info(
+            "self_register: cliente auto-cadastrado user=%s (cenário=%s)",
+            user.email,
+            "A-novo" if not existing_user else "B-pendente",
         )

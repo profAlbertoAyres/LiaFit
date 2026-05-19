@@ -1,31 +1,39 @@
 {% extends 'base_app.html' %}
+{% load static %}
 
 {% block title %}
     {% if object %}Editar {{ object.company_name }}{% else %}Nova Organização{% endif %} | {{ APP_NAME }} Master
 {% endblock %}
 
+{% block page_css %}
+    <link rel="stylesheet" href="{% static 'css/components/form-file.css' %}">
+{% endblock %}
+
 {% block page_content %}
 <!-- HEADER DA PÁGINA -->
 <div class="d-flex align-items-center gap-3 mb-4">
-    <a href="{% url 'tenant:organization_detail' org_slug=request.context.organization.slug %}" class="lia-btn lia-btn--icon lia-btn--ghost">
+    <a href="{% url 'tenant:organization_detail' org_slug=request.context.organization.slug %}"
+       class="lia-btn lia-btn--icon lia-btn--ghost">
         <i data-lucide="arrow-left" class="lucide"></i>
     </a>
     <div>
-        <h2 class="fw-bold" style="font-size: var(--font-size-xl); margin: 0;">
+        <h2 class="fw-bold fs-4 m-0">
             {% if object %}Editar Organização{% else %}Nova Organização{% endif %}
         </h2>
-        <p class="text-muted small" style="margin: var(--space-1) 0 0 0;">
-            {% if object %}Atualize os dados de {{ object.company_name }}{% else %}Cadastre uma nova empresa e configure o tenant.{% endif %}
+        <p class="text-muted small mt-1">
+            {% if object %}
+                Atualize os dados de {{ object.company_name }}.
+            {% else %}
+                Cadastre uma nova empresa.
+            {% endif %}
         </p>
     </div>
 </div>
 
-<div style="max-width: 800px;">
-    <!-- Utilização da estrutura nativa do Lia Linda Form dentro de um Card -->
-    <form method="post" novalidate class="lia-card">
-        {% csrf_token %}
+<form method="post" enctype="multipart/form-data" novalidate class="lia-card">
+    {% csrf_token %}
 
-        {% if form.non_field_errors %}
+    {% if form.non_field_errors %}
         <div class="lia-card__body pb-0">
             <div class="lia-alert lia-alert--danger lia-alert--inline">
                 <i data-lucide="alert-circle" class="lia-alert__icon"></i>
@@ -34,87 +42,72 @@
                 </div>
             </div>
         </div>
-        {% endif %}
+    {% endif %}
 
-        <!-- DADOS DA EMPRESA -->
-        <div class="lia-card__header" style="border-bottom: none; padding-bottom: 0;">
-            <div>
-                <h3 class="lia-card__title">Dados da Empresa</h3>
-                <p class="lia-card__subtitle">Informações fiscais e operacionais.</p>
-            </div>
-        </div>
-
-        <div class="lia-card__body">
-            <div class="lia-form-group">
-                <label class="lia-form-label lia-form-label--required" for="{{ form.company_name.id_for_label }}">Nome Fantasia / Razão Social</label>
-                {{ form.company_name }} <!-- Precisa ter a classe 'lia-form-control' injetada no widget -->
-                {% if form.company_name.errors %}
-                    <span class="lia-form-error">{{ form.company_name.errors }}</span>
-                {% endif %}
+    {# ─── SEÇÃO 1: DADOS DA EMPRESA ─────────────────────────────── #}
+    <div class="lia-card__body">
+        <div class="row">
+            {# ─── COLUNA ESQUERDA: LOGO (25%) ───────────────────── #}
+            <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+                {% include "components/form_file.html" with field=form.logo variant="avatar" %}
             </div>
 
-            <div class="lia-form-row">
-                <div class="lia-form-group">
-                    <label class="lia-form-label" for="{{ form.document.id_for_label }}">CNPJ ou CPF</label>
-                    {{ form.document }}
-                    {% if form.document.errors %}<span class="lia-form-error">{{ form.document.errors }}</span>{% endif %}
+            {# ─── COLUNA DIREITA: DADOS (75%) ───────────────────── #}
+            <div class="col-12 col-lg-9">
+                <div class="mb-4">
+                    <h3 class="lia-card__title mb-1">Dados da Empresa</h3>
+                    <p class="lia-card__subtitle text-muted mb-0">
+                        Informações fiscais e operacionais.
+                    </p>
                 </div>
 
-                <div class="lia-form-group">
-                    <label class="lia-form-label" for="{{ form.phone.id_for_label }}">Telefone de Contato</label>
-                    {{ form.phone }}
-                    {% if form.phone.errors %}<span class="lia-form-error">{{ form.phone.errors }}</span>{% endif %}
+                <div class="row">
+                    {% include "components/form_field.html" with field=form.company_name col="col-md-12" icon="building-2" %}
+                    {% include "components/form_field.html" with field=form.document     col="col-md-6"  icon="file-text" %}
+                    {% include "components/form_field.html" with field=form.phone        col="col-md-6" %}
+                    {% include "components/form_field.html" with field=form.email        col="col-md-12" %}
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="lia-form-group">
-                <label class="lia-form-label" for="{{ form.email.id_for_label }}">E-mail Corporativo</label>
-                {{ form.email }}
-                {% if form.email.errors %}<span class="lia-form-error">{{ form.email.errors }}</span>{% endif %}
-            </div>
+    {# ─── DIVISÓRIA ─────────────────────────────────────────────── #}
+    <div style="height: 1px; background-color: var(--color-border);"></div>
+
+    {# ─── SEÇÃO 2: ENDEREÇO ─────────────────────────────────────── #}
+    <div class="lia-card__body">
+        <div class="mb-4">
+            <h3 class="lia-card__title mb-1">Endereço</h3>
+            <p class="lia-card__subtitle text-muted mb-0">
+                Localização física da empresa.
+            </p>
         </div>
 
-        <!-- DIVISÓRIA -->
-        <div style="height: 1px; background-color: var(--color-border); margin: 0 var(--space-6);"></div>
-
-        <!-- CONFIGURAÇÕES DE ACESSO -->
-        <div class="lia-card__header" style="border-bottom: none; padding-bottom: 0;">
-            <div>
-                <h3 class="lia-card__title">Configurações do Sistema</h3>
-                <p class="lia-card__subtitle">Definição do domínio e permissão de acesso.</p>
-            </div>
+        <div class="row">
+            {% include "components/form_field.html"  with field=form.zip_code     col="col-md-3" icon="map-pin" %}
+            {% include "components/form_field.html"  with field=form.address      col="col-md-7" icon="map" %}
+            {% include "components/form_field.html"  with field=form.number       col="col-md-2" %}
+            {% include "components/form_field.html"  with field=form.neighborhood col="col-md-4" icon="signpost" %}
+            {% include "components/form_field.html"  with field=form.city         col="col-md-5" icon="building" %}
+            {% include "components/form_select.html" with field=form.state        col="col-md-3" icon="flag" %}
         </div>
+    </div>
 
-        <div class="lia-card__body">
-            <div class="lia-form-group">
-                <label class="lia-form-label lia-form-label--required" for="{{ form.slug.id_for_label }}">Subdomínio / Tenant</label>
-                {{ form.slug }}
-                <span class="lia-form-help">Ex: <strong>suaempresa</strong> (O link final ficará: suaempresa.{{ APP_DOMAIN }})</span>
-                {% if form.slug.errors %}<span class="lia-form-error">{{ form.slug.errors }}</span>{% endif %}
-            </div>
+    {# ─── FOOTER ────────────────────────────────────────────────── #}
+    <div class="lia-card__footer">
+        <a href="{% url 'tenant:organization_detail' org_slug=request.context.organization.slug %}"
+           class="lia-btn lia-btn--outline">
+            Cancelar
+        </a>
+        <button type="submit" class="lia-btn lia-btn--primary">
+            <i data-lucide="save" class="lucide-sm"></i>
+            <span>{% if object %}Salvar Alterações{% else %}Finalizar Cadastro{% endif %}</span>
+        </button>
+    </div>
+</form>
+{% endblock %}
 
-            <div class="lia-form-group" style="margin-top: var(--space-6);">
-                <div class="lia-form-check">
-                    {{ form.is_active }}
-                    <label for="{{ form.is_active.id_for_label }}" class="lia-font-medium" style="color: var(--color-text-primary);">
-                        Organização Ativa e Liberada para Acesso
-                    </label>
-                </div>
-                <span class="lia-form-help" style="margin-left: 24px;">Se desmarcado, todos os usuários da empresa ficarão bloqueados.</span>
-                {% if form.is_active.errors %}<span class="lia-form-error">{{ form.is_active.errors }}</span>{% endif %}
-            </div>
-        </div>
-
-        <!-- AÇÕES NO FOOTER NATIVO DO CARD -->
-        <div class="lia-card__footer">
-            <a href="{% url 'tenant:organization_detail' org_slug=request.context.organization.slug %}" class="lia-btn lia-btn--outline">
-                Cancelar
-            </a>
-            <button type="submit" class="lia-btn lia-btn--primary">
-                <i data-lucide="save" class="lucide-sm"></i>
-                <span>{% if object %}Salvar Alterações{% else %}Finalizar Cadastro{% endif %}</span>
-            </button>
-        </div>
-    </form>
-</div>
+{% block extra_js %}
+    {{ block.super }}
+    <script src="{% static 'js/modules/file-upload.js' %}"></script>
 {% endblock %}

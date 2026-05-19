@@ -1,16 +1,17 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.cache import never_cache
+from django.views.generic import FormView, TemplateView
 
 from account.exceptions import (
     TokenError, TokenExpiredError, TokenAlreadyUsedError, TokenInvalidError,
 )
 from account.filters.client_filter import OrganizationClientFilter
 from account.forms.client_form import ClientCreateForm, ClientUpdateForm
-from account.forms.onboarding_form import AcceptInviteForm
+from account.forms.onboarding_form import AcceptInviteForm, ClientSelfRegisterForm
 from account.models import OnboardingToken, OrganizationClient
 from account.services.client_service import ClientService
 from account.services.onboarding_service import OnboardingService
@@ -18,9 +19,6 @@ from account.services.token_service import TokenService
 from core.views.base_view import (
     BaseListView, BaseDetailView, BaseFormView, BaseUpdateView, BaseDeleteView,
 )
-
-
-# ──────────────── CRUD ────────────────
 
 class ClientListView(BaseListView):
     model = OrganizationClient
@@ -142,8 +140,6 @@ class ClientArchiveView(BaseDeleteView):
         )
 
 
-# ──────────────── ACCEPT INVITE (público) ────────────────
-
 @method_decorator(never_cache, name='dispatch')
 class AcceptClientInviteView(View):
     template_name = 'accounts/auth/accept_client_invite.html'
@@ -214,3 +210,23 @@ class AcceptClientInviteView(View):
             f"Bem-vindo(a) à {token_obj.organization.company_name}! 🎉",
         )
         return redirect("personal:dashboard")
+
+
+class ClientSelfRegisterView(FormView):
+
+    template_name = 'accounts/auth/client_register.html'
+    form_class = ClientSelfRegisterForm
+    success_url = reverse_lazy('auth:client_register_success')
+
+    def form_valid(self, form):
+        form.save(request=self.request)
+        messages.success(
+            self.request,
+            'Se o e-mail informado for válido, enviamos um link de ativação '
+            'para sua caixa de entrada. Verifique também a pasta de spam.'
+        )
+        return super().form_valid(form)
+
+
+class ClientRegisterSuccessView(TemplateView):
+    template_name = 'accounts/auth/client_register_success.html'

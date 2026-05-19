@@ -3,7 +3,7 @@ from django.urls import path
 
 from account.forms.auth_form import LoginForm
 from account.views.auth_view import CustomLoginView
-from account.views.client_view import AcceptClientInviteView
+from account.views.client_view import AcceptClientInviteView, ClientSelfRegisterView, ClientRegisterSuccessView
 from account.views.organization_view import (
     AcceptInviteView,
     ActivateOrganizationView,
@@ -20,6 +20,9 @@ urlpatterns = [
     # Registro
     path('register/', OrganizationRegisterView.as_view(), name='register'),
     path('register_success/', RegisterSuccess.as_view(), name='register_success'),
+
+    path('client-register/', ClientSelfRegisterView.as_view(), name='client_register'),
+    path('client-register-success/', ClientRegisterSuccessView.as_view(), name='client_register_success'),
 
     # Login / Logout
     path('login/', CustomLoginView.as_view(), name='login'),

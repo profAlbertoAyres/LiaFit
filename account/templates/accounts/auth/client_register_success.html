@@ -1,0 +1,70 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Verifique seu e-mail — {{ APP_NAME }}{% endblock %}
+
+{% block page_content %}
+<div class="lia-auth">
+    <div class="lia-auth__form-side">
+        <div class="lia-auth__container">
+
+            <div class="lia-auth__brand">
+                <div class="lia-auth__brand-logo">{{ APP_NAME|slice:":1"|upper }}</div>
+                <span class="lia-auth__brand-text">{{ APP_NAME }}</span>
+            </div>
+
+            <div class="text-center mb-4">
+                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success mb-3"
+                      style="width: 72px; height: 72px;">
+                    <i data-lucide="mail-check" style="width: 36px; height: 36px;"></i>
+                </span>
+            </div>
+
+            <div class="lia-auth__header text-center">
+                <h1 class="lia-auth__title">Verifique seu e-mail</h1>
+                <p class="lia-auth__subtitle">
+                    Se o e-mail informado for válido, você receberá em instantes um link para ativar sua conta e definir sua senha.
+                </p>
+            </div>
+
+            <div class="p-3 mb-4 rounded-3 bg-primary bg-opacity-10 border border-primary border-opacity-25">
+                <div class="d-flex align-items-start gap-2">
+                    <i data-lucide="info" class="text-primary flex-shrink-0 mt-1" style="width: 18px; height: 18px;"></i>
+                    <div class="small text-secondary">
+                        <strong class="d-block mb-1 text-primary">Não recebeu o e-mail?</strong>
+                        Verifique sua caixa de spam ou lixo eletrônico. O link de ativação é válido por <strong>24 horas</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'auth:login' %}"
+               class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
+                <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+                Voltar para o login
+            </a>
+
+            <div class="lia-auth__switch mt-4 text-center">
+                <span class="text-secondary">Precisa cadastrar outro e-mail?</span>
+                <a href="{% url 'auth:client_register' %}"
+                   style="color: var(--color-primary); font-weight: 600; text-decoration: none;">
+                    Tentar novamente
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="lia-auth__hero-side">
+        <div class="lia-auth__hero-content">
+            <span class="lia-auth__hero-icon mb-3 d-inline-block p-3 bg-white bg-opacity-10 rounded-circle text-white">
+                <i data-lucide="shield-check" style="width: 32px; height: 32px;"></i>
+            </span>
+            <h2 class="lia-auth__hero-title fw-bold text-white mb-3">Quase lá!</h2>
+            <p class="lia-auth__hero-text text-white text-opacity-75 lead">
+                Por segurança, confirmamos sua identidade por e-mail antes de liberar o acesso ao portal. É rápido e protege sua conta.
+            </p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -18,8 +18,6 @@ User = get_user_model()
 
 class OnboardingService:
 
-    # ──────────────── REGISTRO INICIAL ────────────────
-
     @staticmethod
     @transaction.atomic
     def register_organization(user_data, organization_data, request=None):
@@ -56,7 +54,6 @@ class OnboardingService:
         logger.info("Organização registrada: user=%s org=%s", user.email, organization.company_name)
         return organization
 
-    # ──────────────── SETUP DE SENHA (ONBOARDING) ────────────────
 
     @staticmethod
     @transaction.atomic
@@ -93,10 +90,6 @@ class OnboardingService:
     @staticmethod
     @transaction.atomic
     def resend_password_reset(email, request=None):
-        """
-        Envia link de redefinição de senha.
-        Falha silenciosamente quando o e-mail não existe (anti-enumeration).
-        """
         if not email:
             return
 
@@ -104,8 +97,6 @@ class OnboardingService:
         if not user or not user.is_active:
             return
 
-        # Reset pressupõe senha já definida. Se ainda não tem, o fluxo
-        # correto é a ativação (resend_activation), não reset.
         if OnboardingService._user_needs_password_setup(user):
             logger.info(
                 "Reset ignorado: user=%s ainda não definiu senha (usar ativação)",
@@ -113,7 +104,6 @@ class OnboardingService:
             )
             return
 
-        # Organização é opcional — reset é do usuário, não da org.
         membership = user.memberships.select_related("organization").first()
         organization = membership.organization if membership else None
 
@@ -157,7 +147,6 @@ class OnboardingService:
 
         user = token_obj.user
         user.set_password(password)
-        # Reset implica e-mail confirmado (pois recebeu o link no inbox)
         if not user.email_verified_at:
             user.email_verified_at = timezone.now()
             user.save(update_fields=["password", "email_verified_at"])
@@ -173,7 +162,6 @@ class OnboardingService:
         logger.info("Senha redefinida: user=%s", user.email)
         return user
 
-    # ──────────────── REGISTRO DE ORG ADICIONAL ────────────────
 
     @staticmethod
     def check_email_exists(email):
@@ -270,7 +258,6 @@ class OnboardingService:
         )
         return user, organization
 
-    # ──────────────── CONVITE DE MEMBRO ────────────────
 
     @staticmethod
     @transaction.atomic
@@ -332,29 +319,11 @@ class OnboardingService:
         )
         return user
 
-    # ──────────────── REENVIO DE ATIVAÇÃO ────────────────
 
     @staticmethod
     @transaction.atomic
     def resend_activation(email, request=None, organization=None):
-        """
-        Reenvia o e-mail de ativação adequado para o usuário.
 
-        Decide automaticamente o purpose do token com base no estado do usuário:
-          • Usuário SEM senha + é owner da org    → ONBOARDING
-          • Usuário SEM senha + é membro convidado → MEMBER_ACTIVATION
-          • Usuário COM senha (criando org extra)  → ORG_ACTIVATION
-
-        Comportamento silencioso (anti-enumeration): se o e-mail não existir
-        ou o usuário não tiver vínculo, retorna sem erro — apenas loga.
-
-        Args:
-            email: e-mail do destinatário
-            request: HttpRequest (para montar URL absoluta no e-mail)
-            organization: Organization específica para reativar.
-                Se None, usa a primeira membership encontrada (compatibilidade).
-                ⚠️ Recomendado informar quando o usuário tem múltiplas orgs.
-        """
         if not email:
             logger.warning("resend_activation: e-mail vazio")
             return
@@ -364,8 +333,6 @@ class OnboardingService:
             logger.warning("resend_activation: usuário não encontrado para %s", email)
             return
 
-        # Se a organização foi informada, valida que o usuário pertence a ela.
-        # Caso contrário, pega a primeira membership (comportamento legado).
         if organization is not None:
             membership = user.memberships.filter(
                 organization=organization
@@ -412,8 +379,6 @@ class OnboardingService:
             "resend_activation: e-mail %s reenviado para %s (org=%s)",
             purpose, user.email, organization.id,
         )
-
-    # ──────────────── HELPERS ────────────────
 
     @staticmethod
     def _extract_request_meta(request):
@@ -492,8 +457,6 @@ class OnboardingService:
             purpose, user.email, url,
         )
 
-    # account/services/onboarding_service.py (topo da classe)
-
     @staticmethod
     def _secure_login(request, user):
         if request is None:
@@ -501,7 +464,6 @@ class OnboardingService:
         request.session.cycle_key()
         login(request, user)
 
-    # ──────────────── CONVITE DE CLIENTE ────────────────
 
     @staticmethod
     @transaction.atomic
@@ -539,6 +501,31 @@ class OnboardingService:
 
     @staticmethod
     @transaction.atomic
+    def send_client_activation_for_user(user, request=None):
+        ip, ua = OnboardingService._extract_request_meta(request)
+        token = TokenService.create_token(
+            user=user,
+            organization=None,
+            purpose=OnboardingToken.Purpose.CLIENT_ACTIVATION,
+            created_ip=ip,
+            created_ua=ua,
+        )
+
+        transaction.on_commit(
+            lambda: OnboardingService._send_email(
+                purpose=OnboardingToken.Purpose.CLIENT_ACTIVATION,
+                user=user,
+                organization=None,
+                token=token,
+                request=request,
+            )
+        )
+
+        logger.info("Ativação de cliente (auto-registro) enviada: user=%s", user.email)
+        return token
+
+    @staticmethod
+    @transaction.atomic
     def activate_client(token_str, password=None, request=None):
         if not password:
             raise ValidationError("Senha não informada.")
@@ -560,8 +547,10 @@ class OnboardingService:
         if request:
             OnboardingService._secure_login(request, user)
 
-        logger.info(
-            "Cliente ativado: user=%s org=%s",
-            user.email, token_obj.organization.company_name,
+        org_name = (
+            token_obj.organization.company_name
+            if token_obj.organization
+            else "—"
         )
+        logger.info("Cliente ativado: user=%s org=%s", user.email, org_name)
         return user

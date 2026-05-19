@@ -1,0 +1,76 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block title %}Criar conta de cliente — {{ APP_NAME }}{% endblock %}
+
+{% block page_content %}
+    <div class="lia-auth">
+        <div class="lia-auth__form-side">
+            <div class="lia-auth__container">
+
+                <div class="lia-auth__brand">
+                    <div class="lia-auth__brand-logo">{{ APP_NAME|slice:":1"|upper }}</div>
+                    <span class="lia-auth__brand-text">{{ APP_NAME }}</span>
+                </div>
+
+                <div class="lia-auth__header">
+                    <h1 class="lia-auth__title">Criar acesso</h1>
+                    <p class="lia-auth__subtitle">Cadastre-se para acompanhar seus atendimentos no portal do cliente</p>
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="p-3 mb-4 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger">
+                        <div class="d-flex align-items-center gap-2 mb-2 fw-bold small">
+                            <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+                            <span>Verifique os seguintes itens:</span>
+                        </div>
+                        <ul class="mb-0 ps-4 small">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post" class="lia-auth__form" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row mb-4">
+                        <div class="row mb-4">
+                            {% include 'components/form_field.html' with field=form.fullname col="col-12" icon="user" %}
+                            {% include 'components/form_field.html' with field=form.email col="col-12" %}
+                        </div>
+
+                    </div>
+
+                    <button type="submit"
+                            class="lia-btn lia-btn--primary lia-btn--block lia-btn--lg w-100 d-flex justify-content-center align-items-center gap-2">
+                        Receber link de ativação
+                        <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </form>
+
+                <div class="lia-auth__switch mt-4 text-center">
+                    <span class="text-secondary">Já tem uma conta?</span>
+                    <a href="{% url 'auth:login' %}"
+                       style="color: var(--color-primary); font-weight: 600; text-decoration: none;">Entrar</a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="lia-auth__hero-side">
+            <div class="lia-auth__hero-content">
+            <span class="lia-auth__hero-icon mb-3 d-inline-block p-3 bg-white bg-opacity-10 rounded-circle text-white">
+                <i data-lucide="user-plus" style="width: 32px; height: 32px;"></i>
+            </span>
+                <h2 class="lia-auth__hero-title fw-bold text-white mb-3">Seu portal, sua conexão</h2>
+                <p class="lia-auth__hero-text text-white text-opacity-75 lead">
+                    Tenha acesso rápido aos seus atendimentos, mensagens e documentos — tudo em um só lugar, com
+                    segurança e simplicidade.
+                </p>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
