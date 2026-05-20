@@ -7,7 +7,7 @@
     <div class="lia-page-header">
         <div>
             <h1 class="lia-page-header__title">Especialidades</h1>
-            <p class="lia-page-header__subtitle">Gerencie as especialidades médicas disponíveis na plataforma.</p>
+            <p class="lia-page-header__subtitle">Gerencie as especialidades disponíveis na plataforma.</p>
         </div>
         <div class="lia-page-header__actions">
             <div class="d-flex gap-2">
@@ -46,14 +46,14 @@
 
                     <div class="d-flex justify-content-start gap-2">
                         <button type="submit" class="lia-btn lia-btn--secondary">
-                            <i data-lucide="search" class="lucide-sm"></i>
+                            <i data-lucide="filter-x" class="lucide-sm"></i>
                             <span>Filtrar</span>
                         </button>
 
                         {% if request.GET %}
                             <a href="{% url 'saas_admin:specialty_list' %}" class="lia-btn lia-btn--danger"
                                title="Limpar">
-                                <i data-lucide="search-x" class="lucide-sm"></i>
+                                <i data-lucide="filter-x" class="lucide-sm"></i>
                                 <span>Limpar</span>
                             </a>
                         {% endif %}
@@ -95,14 +95,12 @@
                         </div>
                     </td>
 
-                    <!-- Coluna 2: Descrição -->
                     <td>
                         <div class="small text-muted">
                             {{ specialty.description|default:"—"|truncatechars:80 }}
                         </div>
                     </td>
 
-                    <!-- Coluna 3: Status -->
                     <td>
                         {% if specialty.is_active %}
                             <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativa</span>
@@ -115,14 +113,12 @@
                     <td class="text-center">
                         <div class="lia-table__actions justify-content-center">
 
-                            <!-- Botão: Editar -->
                             <a href="{% url 'saas_admin:specialty_update' specialty.pk %}"
                                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
                                title="Editar especialidade">
                                 <i data-lucide="pencil" class="lucide-sm"></i>
                             </a>
 
-                            <!-- Botão: Toggle Ativar/Desativar -->
                             {% if specialty.is_active %}
                                 <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-danger"
                                    title="Desativar especialidade"
@@ -146,23 +142,16 @@
                 <!-- STATE: TABELA VAZIA -->
                 <tr>
                     <td colspan="4" class="p-0">
-                        <div class="lia-table-empty">
-                            <i data-lucide="stethoscope" class="lia-table-empty__icon"></i>
+                        <div class="lia-table-empty d-flex align-items-center justify-content-center gap-4 flex-column">
+                            <i data-lucide="graduation-cap" class="lucide-xl"></i>
                             <div class="lia-table-empty__text">Nenhuma especialidade encontrada.</div>
-                            <p class="small text-muted mt-2">
-                                Use o botão acima para cadastrar a primeira especialidade do sistema.
-                            </p>
+
 
                             <div class="d-flex justify-content-center gap-3 mt-4">
                                 {% if request.GET %}
                                     <a href="{% url 'saas_admin:specialty_list' %}"
-                                       class="lia-btn lia-btn--secondary">
-                                        <i data-lucide="x" class="lucide-sm"></i> Limpar Busca
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'saas_admin:specialty_create' %}"
-                                       class="lia-btn lia-btn--primary">
-                                        <i data-lucide="plus" class="lucide-sm"></i> Cadastrar
+                                       class="lia-btn lia-btn--danger">
+                                        <i data-lucide="filter-x" class="lucide-sm"></i> Limpar Busca
                                     </a>
                                 {% endif %}
                             </div>

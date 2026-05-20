@@ -67,6 +67,6 @@
 }
 
 .lia-table-empty__text {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-medium);
 }

@@ -49,7 +49,7 @@
 
                     <div class="d-flex gap-2">
                         <button type="submit" class="lia-btn lia-btn--secondary">
-                            <i data-lucide="search" class="lucide-sm"></i>
+                            <i data-lucide="filter" class="lucide-sm"></i>
                             {% if not request.GET %}
                                 <span>Filtrar</span>
                             {% endif %}
@@ -58,7 +58,7 @@
                         {% if request.GET %}
                             <a href="{% url 'tenant:member_list' org_slug=request.context.organization.slug %}"
                                class="lia-btn lia-btn--danger" title="Limpar">
-                                <i data-lucide="search-x" class="lucide-sm"></i>
+                                <i data-lucide="filter-x" class="lucide-sm"></i>
                             </a>
                         {% endif %}
                         <button type="button" class="lia-btn lia-btn--outline-primary"
@@ -70,7 +70,6 @@
                     </div>
                 </div>
 
-                {# ─── FILTROS AVANÇADOS (colapsável) ─── #}
                 <div id="advancedFilters" class="lia-form-row align-items-end mt-3">
                     <div class="lia-form-group">
                         <label class="lia-form-label">Situação</label>
@@ -122,7 +121,6 @@
             <tbody>
             {% for member in members %}
                 <tr>
-                    <!-- Coluna 1: Nome e Email -->
                     <td>
                         <div class="d-flex align-items-center gap-3">
                             <!-- Avatar / Ícone -->
@@ -136,7 +134,6 @@
                         </div>
                     </td>
 
-                    <!-- Coluna 2: Papéis (Roles) -->
                     <td>
                         <div class="d-flex flex-wrap gap-1">
                             {% for role in member.roles.all %}
@@ -147,9 +144,7 @@
                         </div>
                     </td>
 
-                    <!-- Coluna 3: Status / Badge -->
                     <td>
-                        <!-- Verificação fictícia (ajuste conforme seu model de Member/User) -->
                         {% if member.user.is_active %}
                             <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
                         {% elif member.invite_pending %}
@@ -185,7 +180,6 @@
                 </tr>
 
             {% empty %}
-                <!-- STATE: TABELA VAZIA -->
                 <tr>
                     <td colspan="4" class="p-0">
                         <div class="lia-table-empty">

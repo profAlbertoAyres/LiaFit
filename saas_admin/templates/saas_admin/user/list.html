@@ -1,0 +1,211 @@
+{% extends 'base_app.html' %}
+{% load i18n %}
+
+{% block title %}Usuários | Admin SaaS{% endblock %}
+
+{% block page_content %}
+    <!-- CABEÇALHO -->
+    <div class="lia-page-header">
+        <div>
+            <h1 class="lia-page-header__title">Usuários da Plataforma</h1>
+            <p class="lia-page-header__subtitle">
+                Gerencie todos os usuários cadastrados no {{ APP_NAME }}.
+            </p>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="lia-card mb-2">
+        <div class="lia-card__body py-3">
+            <form method="get" class="lia-filter-form">
+                <div class="lia-form-row align-items-center">
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Buscar usuário</label>
+                        {{ filter.form.search }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Status</label>
+                        {{ filter.form.status }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Tipo</label>
+                        {{ filter.form.is_superuser }}
+                    </div>
+
+                    <div class="lia-form-group">
+                        <label class="lia-form-label">Ordenar por</label>
+                        {{ filter.form.order_by }}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="submit" class="lia-btn lia-btn--secondary">
+                            <i data-lucide="filter" class="lucide-sm"></i>
+                            <span>Filtrar</span>
+                        </button>
+
+                        {% if request.GET %}
+                            <a href="{% url 'saas_admin:user_list' %}"
+                               class="lia-btn lia-btn--danger" title="Limpar">
+                                <i data-lucide="filter-x" class="lucide-sm"></i>
+                                <span>Limpar</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABELA -->
+    <div class="lia-table-container">
+        <table class="lia-table">
+            <thead>
+            <tr>
+                <th>Usuário</th>
+                <th>Contato</th>
+                <th>Organizações</th>
+                <th>Último login</th>
+                <th>Status</th>
+                <th class="text-end">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
+                <tr>
+                    <!-- Nome + email -->
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="lia-avatar lia-avatar--sm bg-secondary text-muted">
+                                {% if u.photo %}
+                                    <img src="{{ u.photo.url }}" alt="{{ u.fullname }}" class="lia-avatar__img">
+                                {% else %}
+                                    <i data-lucide="user" class="lucide-sm"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="lia-font-medium d-flex align-items-center gap-2">
+                                    {{ u.get_full_name|default:"---" }}
+                                    {% if u.is_superuser %}
+                                        <span class="lia-badge lia-badge--info fs-6" title="Superusuário">
+                                            <i data-lucide="shield-check" class="lucide-xs"></i> Admin
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="fs-6 text-muted">{{ u.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Contato -->
+                    <td>
+                        <div class="small">{{ u.phone|default:"---" }}</div>
+                        <div class="fs-6 text-muted">{{ u.cpf|default:"Sem CPF" }}</div>
+                    </td>
+
+                    <!-- Orgs -->
+                    <td>
+                        <div class="small">
+                            <strong>{{ u.active_org_count }}</strong> ativas
+                        </div>
+                        <div class="fs-6 text-muted">
+                            {{ u.org_count }} no total
+                        </div>
+                    </td>
+
+                    <!-- Último login -->
+                    <td>
+                        {% if u.last_login %}
+                            <div class="small">{{ u.last_login|date:"d/m/Y" }}</div>
+                            <div class="fs-6 text-muted">{{ u.last_login|date:"H:i" }}</div>
+                        {% else %}
+                            <span class="fs-6 text-muted">Nunca acessou</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Status -->
+                    <td>
+                        {% if not u.has_usable_password %}
+                            <span class="lia-badge lia-badge--warning fs-6 fw-bold">Pendente</span>
+                        {% elif u.is_active %}
+                            <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
+                        {% else %}
+                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativo</span>
+                        {% endif %}
+
+                        {% if u.email_verified_at %}
+                            <div class="fs-6 text-muted mt-1">
+                                <i data-lucide="check-circle" class="lucide-xs"></i> Verificado
+                            </div>
+                        {% else %}
+                            <div class="fs-6 text-muted mt-1">
+                                <i data-lucide="alert-circle" class="lucide-xs"></i> Não verificado
+                            </div>
+                        {% endif %}
+                    </td>
+
+                    <!-- Ações -->
+                    <td>
+                        <div class="lia-table__actions justify-content-end">
+                            <a href="{% url 'saas_admin:user_detail' pk=u.pk %}"
+                               class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm" title="Ver perfil">
+                                <i data-lucide="eye" class="lucide-sm"></i>
+                            </a>
+                            
+                        </div>
+                    </td>
+                </tr>
+
+            {% empty %}
+                <tr>
+                    <td colspan="6" class="p-0">
+                        <div class="lia-table-empty d-flex align-items-center justify-content-center gap-4 flex-column">
+                            <i data-lucide="users" class="lucide-xl"></i>
+                            <div class="lia-table-empty__text">Nenhum usuário encontrado.</div>
+                            <p class="small text-muted mt-2">
+                                {% if request.GET %}
+                                    Tente ajustar os filtros.
+                                {% endif %}
+                            </p>
+
+                            {% if request.GET %}
+                                <div class="d-flex justify-content-center gap-3 mt-4">
+                                    <a href="{% url 'saas_admin:user_list' %}"
+                                       class="lia-btn lia-btn--danger">
+                                        <i data-lucide="filter-x" class="lucide-sm"></i> Limpar Filtros
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINAÇÃO -->
+    {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center mt-5">
+            <div class="small text-muted">
+                Página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong>
+            </div>
+            <div class="d-flex gap-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
+                       class="lia-btn lia-btn--outline lia-btn--sm">Anterior</a>
+                {% else %}
+                    <button class="lia-btn lia-btn--outline lia-btn--sm" disabled>Anterior</button>
+                {% endif %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.urlencode %}&{{ request.GET.urlencode }}{% endif %}"
+                       class="lia-btn lia-btn--outline lia-btn--sm">Próxima</a>
+                {% else %}
+                    <button class="lia-btn lia-btn--outline lia-btn--sm" disabled>Próxima</button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

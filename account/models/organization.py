@@ -1,10 +1,33 @@
 from django.db import models
+from django.utils.text import slugify
+
 from core.models.base import BaseModel
 from core.utils.uploads import smart_upload_to
 from core.constants.locations import BRAZILIAN_STATES
 
 
+class OrganizationType(BaseModel):
+    name = models.CharField('Nome', max_length=100, unique=True)
+    description = models.TextField('Descrição', blank=True, null=True)
+    slug = models.SlugField('Slug', max_length=120, unique=True, blank=True)
+    is_active = models.BooleanField('Ativo', default=True)
+
+    class Meta:
+        verbose_name = 'Tipo de Organização'
+        verbose_name_plural = 'Tipos de Organização'
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
 class Organization(BaseModel):
+    organization_type = models.ManyToManyField(OrganizationType, related_name='organizations', blank=True, verbose_name='Tipos')
     company_name = models.CharField(verbose_name='Nome', max_length=255)
     slug = models.SlugField(verbose_name='Slug', unique=True)
     document = models.CharField(verbose_name='CNPJ/CPF', unique=True, max_length=20, blank=True, null=True)
@@ -32,3 +55,5 @@ class Organization(BaseModel):
 
     def __str__(self):
         return self.company_name
+
+

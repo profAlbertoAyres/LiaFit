@@ -130,9 +130,17 @@ CATALOG = [
                 "show_in_menu": True,
                 "actions": CRUD,
             },
+{
+                "slug": ItemSlug.USERS_ADMIN,
+                "name": _("Tipos de organização"),
+                "order": 30,
+                "route": "saas_admin:organization_type_list",
+                "show_in_menu": True,
+                "actions": CRUD,
+            },
 
             {
-                "slug": ItemSlug.USERS_ADMIN,
+                "slug": ItemSlug.ORGANIZATION_TYPES,
                 "name": _("Usuários"),
                 "order": 30,
                 "route": "saas_admin:user_list",

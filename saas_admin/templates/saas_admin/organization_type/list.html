@@ -1,61 +1,60 @@
 {% extends 'base_app.html' %}
-{% load i18n %}
 
-{% block title %}Papéis e Cargos | {{ request.context.organization.company_name|default:"Seu SaaS" }}{% endblock %}
+{% block title %}Tipos de Organização | Admin SaaS{% endblock %}
 
 {% block page_content %}
+    <!-- CABEÇALHO DA PÁGINA -->
     <div class="lia-page-header">
         <div>
-            <h1 class="lia-page-header__title">Papéis e Cargos</h1>
-            <p class="lia-page-header__subtitle">
-                Gerencie os níveis de acesso e permissões da sua organização.
-            </p>
+            <h1 class="lia-page-header__title">Tipos de Organização</h1>
+            <p class="lia-page-header__subtitle">Gerencie os tipos de organização disponíveis na plataforma.</p>
         </div>
         <div class="lia-page-header__actions">
             <div class="d-flex gap-2">
-                <a href="{% url 'tenant:role_create' org_slug=request.context.organization.slug %}"
-                   class="lia-btn lia-btn--primary" title="Criar novo papel">
+                <a href="{% url 'saas_admin:organization_type_create' %}" class="lia-btn lia-btn--primary"
+                   title="Cadastrar novo tipo de organização">
                     <i data-lucide="plus" class="lucide-sm"></i>
-                    <span>Novo Papel</span>
+                    <span>Nova Especialidade</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- FILTROS -->
+    <!-- ÁREA DE FILTROS -->
     <div class="lia-card mb-2">
         <div class="lia-card__body py-3">
             <form method="get" class="lia-filter-form">
 
-                {# ─── LINHA PRINCIPAL (sempre visível) ─── #}
                 <div class="lia-form-row align-items-center">
+                    <!-- Busca Geral (Nome, Descrição) -->
                     <div class="lia-form-group">
-                        <label class="lia-form-label">Buscar papel</label>
+                        <label class="lia-form-label">Buscar tipo de organização</label>
                         {{ filter.form.search }}
                     </div>
 
+                    <!-- Filtro de Status -->
                     <div class="lia-form-group">
                         <label class="lia-form-label">Status</label>
                         {{ filter.form.is_active }}
                     </div>
 
+                    <!-- Filtro de Data (Período) -->
                     <div class="lia-form-group">
-                        <label class="lia-form-label">Ordenar por</label>
-                        {{ filter.form.order_by }}
+                        <label class="lia-form-label">Data de Cadastro</label>
+                        {{ filter.form.created_at }}
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-start gap-2">
                         <button type="submit" class="lia-btn lia-btn--secondary">
                             <i data-lucide="filter" class="lucide-sm"></i>
                             <span>Filtrar</span>
                         </button>
 
                         {% if request.GET %}
-                            <a href="{% url 'tenant:role_list' org_slug=request.context.organization.slug %}"
-                               class="lia-btn lia-btn--danger" title="Limpar">
+                            <a href="{% url 'saas_admin:organization_type_list' %}" class="lia-btn lia-btn--danger"
+                               title="Limpar">
                                 <i data-lucide="filter-x" class="lucide-sm"></i>
                                 <span>Limpar</span>
-
                             </a>
                         {% endif %}
                     </div>
@@ -70,93 +69,92 @@
         <table class="lia-table">
             <thead>
             <tr>
-                <th>Nome do Papel</th>
-                <th>Nível de Acesso</th>
+                <th>Tipo de Organização</th>
+                <th>Descrição</th>
                 <th>Status</th>
-                <th class="text-end">Ações</th>
+                <th class="text-center">Ações</th>
             </tr>
             </thead>
             <tbody>
-            {% for role in roles %}
+            {% for organization_type in organization_types %}
                 <tr>
                     <!-- Coluna 1: Nome -->
                     <td>
                         <div class="d-flex align-items-center gap-3">
-                            <div class="lia-avatar lia-avatar--sm bg-secondary text-muted">
-                                <i data-lucide="shield" class="lucide-sm"></i>
+                            <!-- Ícone fixo com inicial -->
+                            <div class="lia-avatar lia-avatar--sm bg-secondary text-muted d-flex align-items-center justify-content-center fw-bold">
+                                {{ organization_type.name|slice:":1"|upper }}
                             </div>
+
                             <div>
-                                <div class="lia-font-medium">{{ role.name }}</div>
-                                {% if role.description %}
-                                    <div class="fs-6 text-muted text-truncate">
-                                        {{ role.description|truncatechars:60 }}
-                                    </div>
-                                {% endif %}
+                                <div class="lia-font-medium">{{ organization_type.name }}</div>
+                                <div class="fs-6 text-muted">
+                                    Cadastrada em {{ organization_type.created_at|date:"d/m/Y" }}
+                                </div>
                             </div>
                         </div>
                     </td>
 
-                    <!-- Coluna 2: Nível -->
+                    <!-- Coluna 2: Descrição -->
                     <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <i data-lucide="bar-chart-2" class="lucide-sm text-muted"></i>
-                            <span class="small lia-font-medium">{{ role.level }}</span>
+                        <div class="small text-muted">
+                            {{ organization_type.description|default:"—"|truncatechars:80 }}
                         </div>
                     </td>
 
+                    <!-- Coluna 3: Status -->
                     <td>
-                        {% if role.is_active %}
-                            <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativo</span>
+                        {% if organization_type.is_active %}
+                            <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativa</span>
                         {% else %}
-                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativo</span>
+                            <span class="lia-badge lia-badge--danger fs-6 fw-bold">Inativa</span>
                         {% endif %}
                     </td>
 
-                    <td>
-                        <div class="lia-table__actions justify-content-end">
-                            <a href="{% url 'tenant:role_detail' org_slug=request.context.organization.slug pk=role.pk %}"
+                    <!-- Coluna 4: Ações -->
+                    <td class="text-center">
+                        <div class="lia-table__actions justify-content-center">
+
+                            <!-- Botão: Editar -->
+                            <a href="{% url 'saas_admin:organization_type_update' organization_type.pk %}"
                                class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
-                               title="Ver Detalhes e Permissões">
-                                <i data-lucide="eye" class="lucide-sm"></i>
+                               title="Editar tipo de organização">
+                                <i data-lucide="pencil" class="lucide-sm"></i>
                             </a>
 
-                            {% if request.user.is_superuser or role.level < request.context.membership.highest_role_level %}
-                                <a href="{% url 'tenant:role_update' org_slug=request.context.organization.slug pk=role.pk %}"
-                                   class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
-                                   title="Editar Papel">
-                                    <i data-lucide="edit-2" class="lucide-sm"></i>
+                            <!-- Botão: Toggle Ativar/Desativar -->
+                            {% if organization_type.is_active %}
+                                <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-danger"
+                                   title="Desativar tipo de organização"
+                                   onclick="return confirm('Desativar esta tipo de organização? Ela deixará de aparecer para os usuários.');">
+                                    <i data-lucide="power" class="lucide-sm"></i>
                                 </a>
                             {% else %}
-                                <button class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm lia-opacity-50 lia-cursor-not-allowed"
-                                        disabled
-                                        title="Bloqueado: Nível hierárquico igual ou superior ao seu.">
-                                    <i data-lucide="lock" class="lucide-sm"></i>
-                                </button>
+                                <a href="#" class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm text-success"
+                                   title="Reativar tipo de organização"
+                                   onclick="return confirm('Reativar este tipo de organização?');">
+                                    <i data-lucide="power" class="lucide-sm"></i>
+                                </a>
                             {% endif %}
+
                         </div>
                     </td>
+
                 </tr>
 
             {% empty %}
-                <!-- STATE: TABELA VAZIA -->
                 <tr>
                     <td colspan="4" class="p-0">
                         <div class="lia-table-empty d-flex align-items-center justify-content-center gap-4 flex-column">
-                            <i data-lucide="shield" class="lucide-xl"></i>
-                            <div class="lia-table-empty__text">Nenhum papel encontrado.</div>
-                            <p class="small text-muted mt-2">
-                                {% if request.GET %}
-                                    Tente ajustar os filtros ou crie um novo papel.
-                                {% else %}
-                                    Comece configurando os níveis de acesso para os membros.
-                                {% endif %}
-                            </p>
+                            <i data-lucide="building-2" class="lucide-xl"></i>
+
+                            <div class="lia-table-empty__text">Nenhuma tipo de organização encontrada.</div>
 
                             <div class="d-flex justify-content-center gap-3 mt-4">
                                 {% if request.GET %}
-                                    <a href="{% url 'tenant:role_list' org_slug=request.context.organization.slug %}"
+                                    <a href="{% url 'saas_admin:organization_type_list' %}"
                                        class="lia-btn lia-btn--danger">
-                                        <i data-lucide="filter-x" class="lucide-sm"></i> Limpar Filtros
+                                        <i data-lucide="filter-x" class="lucide-sm"></i> Limpar Busca
                                     </a>
                                 {% endif %}
                             </div>
@@ -193,4 +191,5 @@
             </div>
         </div>
     {% endif %}
+
 {% endblock %}

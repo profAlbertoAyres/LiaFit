@@ -7,10 +7,6 @@ from core.forms.base_form import BaseModelForm
 
 
 class OrganizationUpdateForm(BaseModelForm):
-    """
-    Form de edição da organização do contexto atual.
-    ⚠️ Não expõe campos sensíveis: slug, is_active, owner.
-    """
 
     FIELDSETS = (
         (_('Dados da Empresa'), (
@@ -33,6 +29,10 @@ class OrganizationUpdateForm(BaseModelForm):
             'document': forms.TextInput(attrs={'data-mask': 'cnpj_cpf'}),
             'phone':    forms.TextInput(attrs={'data-mask': 'phone'}),
             'zip_code': forms.TextInput(attrs={'data-mask': 'cep'}),
+            'logo': forms.ClearableFileInput(attrs={
+                'accept': 'image/jpeg,image/png,image/webp,image/gif',
+                'data-fu-input': '',
+            }),
         }
 
     def clean_company_name(self):

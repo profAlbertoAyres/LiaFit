@@ -45,14 +45,14 @@
 
                     <div class="d-flex justify-content-end gap-2">
                         <button type="submit" class="lia-btn lia-btn--secondary">
-                            <i data-lucide="search" class="lucide-sm"></i>
+                            <i data-lucide="filter" class="lucide-sm"></i>
                             <span>Filtrar</span>
                         </button>
 
                         {% if request.GET %}
                             <a href="{% url 'tenant:client_list' org_slug=request.context.organization.slug %}"
                                class="lia-btn lia-btn--danger" title="Limpar">
-                                <i data-lucide="search-x" class="lucide-sm"></i>
+                                <i data-lucide="filter-x" class="lucide-sm"></i>
                                 <span>Limpar</span>
 
                             </a>
@@ -111,7 +111,6 @@
                         </div>
                     </td>
 
-                    <!-- Coluna 4: Status -->
                     <td>
                         {% if org_client.archived_at %}
                             <span class="lia-badge lia-badge--danger fs-6 fw-bold">Arquivado</span>
@@ -124,7 +123,6 @@
                         {% endif %}
                     </td>
 
-                    <!-- Coluna 5: Ações -->
                     <td>
                         <div class="lia-table__actions justify-content-end">
                             <a href="{% url 'tenant:client_detail' org_slug=request.context.organization.slug pk=org_client.pk %}"
@@ -163,31 +161,24 @@
                 </tr>
 
             {% empty %}
-                <!-- STATE: TABELA VAZIA -->
                 <tr>
                     <td colspan="5" class="p-0">
-                        <div class="lia-table-empty">
-                            <i data-lucide="users" class="lia-table-empty__icon"></i>
+                        <div class="lia-table-empty d-flex align-items-center justify-content-center gap-4 flex-column">
+                            <i data-lucide="users" class="lucide-xl"></i>
                             <div class="lia-table-empty__text">Nenhum cliente encontrado.</div>
                             <p class="small text-muted mt-2">
                                 {% if request.GET %}
                                     Tente ajustar os filtros ou cadastre um novo cliente.
-                                {% else %}
-                                    Comece cadastrando o seu primeiro cliente para iniciar o atendimento.
                                 {% endif %}
                             </p>
 
                             <div class="d-flex justify-content-center gap-3 mt-4">
                                 {% if request.GET %}
                                     <a href="{% url 'tenant:client_list' org_slug=request.context.organization.slug %}"
-                                       class="lia-btn lia-btn--secondary">
-                                        <i data-lucide="x" class="lucide-sm"></i> Limpar Filtros
+                                       class="lia-btn lia-btn--danger">
+                                        <i data-lucide="filter-x" class="lucide-sm"></i> Limpar Filtros
                                     </a>
                                 {% endif %}
-                                <a href="{% url 'tenant:client_create' org_slug=request.context.organization.slug %}"
-                                   class="lia-btn lia-btn--primary">
-                                    <i data-lucide="user-plus" class="lucide-sm"></i> Cadastrar Cliente
-                                </a>
                             </div>
                         </div>
                     </td>

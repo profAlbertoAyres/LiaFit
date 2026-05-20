@@ -1,0 +1,285 @@
+{% extends 'base_app.html' %}
+{% load i18n %}
+
+{% block title %}{{ user_obj.get_full_name|default:user_obj.email }} | {% trans "Admin SaaS" %}{% endblock %}
+
+{% block page_content %}
+
+    <!-- Cabeçalho -->
+    <div class="lia-page-header">
+        <div>
+            <nav class="lia-breadcrumb mb-2">
+                <a href="{% url 'saas_admin:user_list' %}" class="lia-breadcrumb__link">
+                    <i data-lucide="arrow-left" class="lucide-xs"></i>
+                    {% trans "Usuários" %}
+                </a>
+            </nav>
+            <h1 class="lia-page-header__title">
+                {{ user_obj.get_full_name|default:user_obj.email }}
+            </h1>
+            <p class="lia-page-header__subtitle">
+                {% trans "Visão global do usuário na plataforma" %}
+            </p>
+        </div>>
+    </div>
+
+    <!-- Cards de estatísticas -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="lia-stat-card">
+                <div class="lia-stat-card__icon bg-info-subtle text-info">
+                    <i data-lucide="building-2" class="lucide-md"></i>
+                </div>
+                <div>
+                    <div class="lia-stat-card__value">{{ stats.total_orgs }}</div>
+                    <div class="lia-stat-card__label">{% trans "Organizações" %}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="lia-stat-card">
+                <div class="lia-stat-card__icon bg-success-subtle text-success">
+                    <i data-lucide="check-circle" class="lucide-md"></i>
+                </div>
+                <div>
+                    <div class="lia-stat-card__value">{{ stats.active_orgs }}</div>
+                    <div class="lia-stat-card__label">{% trans "Vínculos ativos" %}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="lia-stat-card">
+                <div class="lia-stat-card__icon bg-warning-subtle text-warning">
+                    <i data-lucide="clock" class="lucide-md"></i>
+                </div>
+                <div>
+                    <div class="lia-stat-card__value">
+                        {% if user_obj.last_login %}
+                            {{ user_obj.last_login|date:"d/m/Y" }}
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </div>
+                    <div class="lia-stat-card__label">{% trans "Último acesso" %}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="lia-stat-card">
+                <div class="lia-stat-card__icon bg-secondary-subtle text-secondary">
+                    <i data-lucide="calendar" class="lucide-md"></i>
+                </div>
+                <div>
+                    <div class="lia-stat-card__value">{{ user_obj.date_joined|date:"d/m/Y" }}</div>
+                    <div class="lia-stat-card__label">{% trans "Cadastrado em" %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+
+            <div class="lia-card">
+                <div class="lia-card__header d-flex justify-content-between align-items-center">
+                    <h3 class="lia-card__title d-flex align-items-center gap-2">
+                        <i data-lucide="user" class="lucide-sm"></i>
+                        {% trans "Dados Pessoais" %}
+                    </h3>
+                    {% if editable and edit_url %}
+                        <a href="{{ edit_url }}" class="lia-btn lia-btn--ghost lia-btn--sm"
+                           title="{% trans 'Editar' %}">
+                            <i data-lucide="edit-2" class="lucide-sm"></i>
+                            <span>{% trans "Editar" %}</span>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="lia-card__body">
+                    <div class="d-flex align-items-center gap-4 mb-4">
+                        <div class="lia-avatar lia-avatar--lg bg-secondary text-muted">
+                            {% if user.photo %}
+                                <img src="{{ user.photo.url }}" alt="{{ user.get_full_name }}" class="lia-avatar__img">
+                            {% else %}
+                                <i data-lucide="user" class="lucide-md"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="lia-font-medium fs-5 d-flex align-items-center gap-2">
+                                {{ user.get_full_name|default:"---" }}
+                                {% if show_badges|default:True %}
+                                    {% if user.is_superuser %}
+                                        <span class="lia-badge lia-badge--info fs-6" title="{% trans 'Superusuário' %}">
+                                <i data-lucide="shield-check" class="lucide-xs"></i> Admin
+                            </span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="text-muted">{{ user.email }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="lia-field-display">
+                                <label class="lia-field-display__label">{% trans "CPF" %}</label>
+                                <div class="lia-field-display__value">{{ user.cpf|default:"---" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="lia-field-display">
+                                <label class="lia-field-display__label">{% trans "Telefone" %}</label>
+                                <div class="lia-field-display__value">{{ user.phone|default:"---" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="lia-field-display">
+                                <label class="lia-field-display__label">{% trans "Data de nascimento" %}</label>
+                                <div class="lia-field-display__value">
+                                    {{ user.birth_date|date:"d/m/Y"|default:"---" }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="lia-field-display">
+                                <label class="lia-field-display__label">{% trans "Gênero" %}</label>
+                                <div class="lia-field-display__value">{{ user.get_gender_display|default:"---" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Segurança -->
+            <div class="lia-card mt-4">
+                <div class="lia-card__header">
+                    <h3 class="lia-card__title d-flex align-items-center gap-2">
+                        <i data-lucide="shield" class="lucide-sm"></i>
+                        {% trans "Segurança & Acesso" %}
+                    </h3>
+                </div>
+                <div class="lia-card__body">
+                    <div class="lia-field-display mb-3">
+                        <label class="lia-field-display__label">{% trans "Status da conta" %}</label>
+                        <div class="lia-field-display__value">
+                            {% if not user_obj.password %}
+                                <span class="lia-badge lia-badge--warning">{% trans "Pendente (sem senha)" %}</span>
+                            {% elif user_obj.is_active %}
+                                <span class="lia-badge lia-badge--success">{% trans "Ativo" %}</span>
+                            {% else %}
+                                <span class="lia-badge lia-badge--danger">{% trans "Inativo" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="lia-field-display mb-3">
+                        <label class="lia-field-display__label">{% trans "E-mail verificado" %}</label>
+                        <div class="lia-field-display__value">
+                            {% if user_obj.email_verified_at %}
+                                <span class="text-success">
+                                <i data-lucide="check-circle" class="lucide-xs"></i>
+                                {{ user_obj.email_verified_at|date:"d/m/Y H:i" }}
+                            </span>
+                            {% else %}
+                                <span class="text-muted">
+                                <i data-lucide="alert-circle" class="lucide-xs"></i>
+                                {% trans "Não verificado" %}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="lia-field-display mb-3">
+                        <label class="lia-field-display__label">{% trans "Tipo de usuário" %}</label>
+                        <div class="lia-field-display__value">
+                            {% if user_obj.is_superuser %}
+                                <span class="lia-badge lia-badge--info">
+                                <i data-lucide="shield-check" class="lucide-xs"></i> {% trans "Superusuário" %}
+                            </span>
+                            {% else %}
+                                <span class="text-muted">{% trans "Usuário comum" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="lia-field-display">
+                        <label class="lia-field-display__label">{% trans "Último login" %}</label>
+                        <div class="lia-field-display__value">
+                            {% if user_obj.last_login %}
+                                {{ user_obj.last_login|date:"d/m/Y H:i" }}
+                            {% else %}
+                                <span class="text-muted">{% trans "Nunca acessou" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna direita: Organizações -->
+        <div class="col-lg-7">
+            <div class="lia-card">
+                <div class="lia-card__header d-flex justify-content-between align-items-center">
+                    <h3 class="lia-card__title d-flex align-items-center gap-2">
+                        <i data-lucide="building-2" class="lucide-sm"></i>
+                        {% trans "Vínculos com Organizações" %}
+                    </h3>
+                    <span class="lia-badge lia-badge--secondary">
+                    {{ memberships|length }} {% trans "vínculo(s)" %}
+                </span>
+                </div>
+                <div class="lia-card__body p-0">
+                    {% if memberships %}
+                        <table class="lia-table lia-table--borderless mb-0">
+                            <thead>
+                            <tr>
+                                <th>{% trans "Organização" %}</th>
+                                <th>{% trans "Papéis" %}</th>
+                                <th>{% trans "Status" %}</th>
+                                <th class="text-end">{% trans "Ações" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for m in memberships %}
+                                <tr>
+                                    <td>
+                                        <div class="lia-font-medium">{{ m.organization.company_name }}</div>
+                                        <div class="fs-6 text-muted">{{ m.organization.slug }}</div>
+                                    </td>
+                                    <td>
+                                        {% for role in m.roles.all %}
+                                            <span class="lia-badge lia-badge--outline fs-6">{{ role.name }}</span>
+                                        {% empty %}
+                                            <span class="fs-6 text-muted">---</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if m.is_active %}
+                                            <span class="lia-badge lia-badge--success fs-6">{% trans "Ativo" %}</span>
+                                        {% else %}
+                                            <span class="lia-badge lia-badge--danger fs-6">{% trans "Inativo" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'tenant:member_detail' org_slug=m.organization.slug pk=m.pk %}"
+                                           class="lia-btn lia-btn--icon lia-btn--ghost lia-btn--sm"
+                                           title="{% trans 'Ver membro na organização' %}">
+                                            <i data-lucide="external-link" class="lucide-sm"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="lia-table-empty d-flex align-items-center justify-content-center gap-3 flex-column py-5">
+                            <i data-lucide="building-2" class="lucide-xl text-muted"></i>
+                            <div class="text-muted">{% trans "Este usuário não está vinculado a nenhuma organização." %}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

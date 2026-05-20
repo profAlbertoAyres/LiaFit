@@ -28,6 +28,7 @@ class ItemSlug(models.TextChoices):
     USERS_ADMIN     = "users-admin", "Usuários (Admin)"
     DASHBOARD_ADMIN = "dashboard-admin", "Painel Admin"
     SPECIALTY       = "specialty", "Especialidades"
+    ORGANIZATION_TYPES = "organization_types", "Tipos de Organização"
 
 class ActionSlug(models.TextChoices):
     VIEW   = "view",   "Visualizar"
