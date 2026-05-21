@@ -14,26 +14,10 @@
                 Visão geral da plataforma LiaFit.
             </p>
         </div>
-        <div class="lia-page-header__actions">
-            <div class="d-flex gap-2">
-                <a href="{% url 'saas_admin:organization_create' %}" class="lia-btn lia-btn--primary"
-                   title="Cadastrar nova organização">
-                    <i data-lucide="plus" class="lucide-sm"></i>
-                    <span>Nova Organização</span>
-                </a>
-                <a href="{% url 'saas_admin:specialty_create' %}" class="lia-btn lia-btn--secondary"
-                   title="Cadastrar nova especialidade">
-                    <i data-lucide="plus" class="lucide-sm"></i>
-                    <span>Nova Especialidade</span>
-                </a>
-            </div>
-        </div>
     </div>
 
-    <!-- CARDS DE MÉTRICAS -->
     <div class="lia-form-row mb-2">
 
-        <!-- Card 1: Organizações Ativas -->
         <div class="lia-form-group">
             <div class="lia-card">
                 <div class="lia-card__body">
@@ -51,7 +35,6 @@
             </div>
         </div>
 
-        <!-- Card 2: Organizações Inativas -->
         <div class="lia-form-group">
             <div class="lia-card">
                 <div class="lia-card__body">
@@ -69,7 +52,6 @@
             </div>
         </div>
 
-        <!-- Card 3: Usuários Ativos -->
         <div class="lia-form-group">
             <div class="lia-card">
                 <div class="lia-card__body">
@@ -87,7 +69,6 @@
             </div>
         </div>
 
-        <!-- Card 4: Especialidades -->
         <div class="lia-form-group">
             <div class="lia-card">
                 <div class="lia-card__body">
@@ -107,7 +88,6 @@
 
     </div>
 
-    <!-- CARD DESTAQUE: NOVAS ORGS NO PERÍODO -->
     <div class="lia-card mb-2">
         <div class="lia-card__body py-3">
             <div class="d-flex align-items-center justify-content-between">
@@ -127,7 +107,6 @@
         </div>
     </div>
 
-    <!-- TABELA: ÚLTIMAS ORGANIZAÇÕES CADASTRADAS -->
     <div class="lia-page-header mb-2">
         <div>
             <h2 class="lia-page-header__title" style="font-size: 1.25rem;">Últimas Organizações Cadastradas</h2>
@@ -154,7 +133,6 @@
             <tbody>
             {% for org in metrics.recent_organizations %}
                 <tr>
-                    <!-- Coluna 1: Nome (CLICÁVEL) -->
                     <td>
                         <a href="{% url 'saas_admin:organization_detail' org.pk %}"
                            class="d-flex align-items-center gap-3 lia-link-reset"
@@ -177,14 +155,12 @@
                         </a>
                     </td>
 
-                    <!-- Coluna 2: URL / Slug -->
                     <td>
                         <div class="small">
                             <span class="lia-font-medium">{{ org.slug }}</span>.liafit.com.br
                         </div>
                     </td>
 
-                    <!-- Coluna 3: Status -->
                     <td>
                         {% if org.is_active %}
                             <span class="lia-badge lia-badge--success fs-6 fw-bold">Ativa</span>
@@ -193,7 +169,6 @@
                         {% endif %}
                     </td>
 
-                    <!-- Coluna 4: Ações -->
                     <td class="text-center">
                         <div class="lia-table__actions justify-content-center">
                             <a href="{% url 'saas_admin:organization_detail' org.pk %}"

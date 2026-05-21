@@ -139,9 +139,9 @@ CATALOG = [
             },
             {
                 "slug": ItemSlug.SERVICE_TYPES,
-                "name": _("Usuários"),
+                "name": _("Tipos de Serviços"),
                 "order": 35,
-                "route": "saas_admin:service_type_list",
+                "route": "catalog:service_type_list",
                 "show_in_menu": True,
                 "actions": CRUD,
             },

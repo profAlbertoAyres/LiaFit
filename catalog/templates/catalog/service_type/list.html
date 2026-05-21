@@ -11,7 +11,7 @@
         </div>
         <div class="lia-page-header__actions">
             <div class="d-flex gap-2">
-                <a href="{% url 'saas_admin:service_type_create' %}" class="lia-btn lia-btn--primary"
+                <a href="{% url 'catalog:service_type_create' %}" class="lia-btn lia-btn--primary"
                    title="Cadastrar novo tipo de serviço">
                     <i data-lucide="plus" class="lucide-sm"></i>
                     <span>Novo Tipo de Serviço</span>
@@ -51,7 +51,7 @@
                         </button>
 
                         {% if request.GET %}
-                            <a href="{% url 'saas_admin:service_type_list' %}" class="lia-btn lia-btn--danger"
+                            <a href="{% url 'catalog:service_type_list' %}" class="lia-btn lia-btn--danger"
                                title="Limpar">
                                 <i data-lucide="filter-x" class="lucide-sm"></i>
                                 <span>Limpar</span>
@@ -152,7 +152,7 @@
 
                             <div class="d-flex justify-content-center gap-3 mt-4">
                                 {% if request.GET %}
-                                    <a href="{% url 'saas_admin:service_type_list' %}"
+                                    <a href="{% url 'catalog:service_type_list' %}"
                                        class="lia-btn lia-btn--danger">
                                         <i data-lucide="filter-x" class="lucide-sm"></i> Limpar Busca
                                     </a>

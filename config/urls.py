@@ -15,6 +15,7 @@ urlpatterns = [
     path('org/<slug:org_slug>/', include(('core.urls.tenant_url', 'tenant'), namespace='tenant')),
     path('personal/', include(('core.urls.personal_url', 'personal'), namespace='personal')),
     path('painel/', include(('saas_admin.urls', 'saas_admin'), namespace='saas_admin')),
+    path('painel/', include(('catalog.urls', 'catalog'), namespace='catalog')),
 ]
 
 if settings.DEBUG:
