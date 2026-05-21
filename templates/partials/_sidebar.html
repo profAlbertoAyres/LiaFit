@@ -11,14 +11,11 @@
         </span>
     </div>
 
-    <!-- 2. PERFIL DO USUÁRIO (Refatorado com Avatar Destaque e Tarja) -->
     <div class="lia-sidebar__user">
         <div class="d-flex align-items-center justify-content-between w-100 gap-2">
 
-            <!-- Container do Efeito Flexbox -->
             <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
 
-                <!-- Bolinha do Avatar -->
                 <div class="lia-avatar lia-avatar--placeholder-primary lia-sidebar__avatar-destaque">
                     {% if request.user.photo %}
                         <img src="{{ request.user.photo.url }}" class="lia-avatar__img"
@@ -28,7 +25,6 @@
                     {% endif %}
                 </div>
 
-                <!-- Tarja com o Nome -->
                 <div class="lia-sidebar__user-info lia-sidebar__user-tarja w-100"
                      title="{{ request.user.get_short_name|default:request.user.email }}">
                     <div class="lia-sidebar__user-name text-truncate">
@@ -38,7 +34,6 @@
 
             </div>
 
-            <!-- Botão de Ação do Perfil -->
             <a href="{% url 'personal:profile' %}" class="lia-sidebar__action flex-shrink-0"
                data-tooltip="{% trans 'Perfil' %}">
                 <i data-lucide="user" class="lucide-sm"></i>
@@ -47,7 +42,6 @@
         </div>
     </div>
 
-    <!-- 3. BARRA DE PESQUISA DO MENU -->
     <div class="lia-sidebar__search">
         <div class="lia-sidebar__search-wrapper">
             <i data-lucide="search" class="lia-sidebar__search-icon text-muted"></i>
@@ -55,7 +49,6 @@
         </div>
     </div>
 
-    <!-- 4. NAVEGAÇÃO (Dashboard + Acordeão) -->
     <nav class="lia-sidebar__nav pt-2">
         {% if dashboard_link %}
             <a href="{{ dashboard_link.url }}"
@@ -65,12 +58,10 @@
             </a>
         {% endif %}
 
-        <!-- Iteração dos itens do menu (Acordeão Bootstrap) -->
         <div class="accordion" id="sidebarMenuAccordion">
             {% for group in sidebar_menu %}
                 <div class="accordion-item border-0 bg-transparent">
 
-                    <!-- Botão do Grupo -->
                     <a href="#collapse-{{ forloop.counter }}"
                        class="lia-sidebar__link"
                        data-bs-toggle="collapse"
@@ -79,20 +70,14 @@
                        aria-controls="collapse-{{ forloop.counter }}">
 
                         {% if group.icon %}
-    <span class="lia-sidebar__icon">
-        <i data-lucide="{{ group.icon }}"></i>
-    </span>
-{% endif %}
+                            <span class="lia-sidebar__icon"><i data-lucide="{{ group.icon }}"></i></span>
+                        {% endif %}
 
-
-                        <span class="lia-sidebar__text w-100 d-flex justify-content-between align-items-center">
-                            {{ group.label }}
-                            <i data-lucide="chevron-down" class="lia-sidebar__chevron"
-                               style="width: 16px; height: 16px;"></i>
-                        </span>
+                        <span class="lia-sidebar__text">{{ group.label }}</span>
+                        <i data-lucide="chevron-down" class="lia-sidebar__chevron ms-auto"
+                           style="width: 16px; height: 16px;"></i>
                     </a>
 
-                    <!-- Sub-itens (Conteúdo do Acordeão) -->
                     <div class="collapse" id="collapse-{{ forloop.counter }}" data-bs-parent="#sidebarMenuAccordion">
                         <div class="ps-3"> <!-- Recuo lateral para destacar que é sub-item -->
                             {% for item in group.items %}
@@ -103,8 +88,6 @@
                                     {% if item.icon %}
                                         <span class="lia-sidebar__icon"><i data-lucide="{{ item.icon }}"></i></span>
                                     {% endif %}
-
-
                                     <span class="lia-sidebar__text">{{ item.label }}</span>
                                 </a>
                             {% endfor %}
@@ -120,10 +103,8 @@
         </div>
     </nav>
 
-    <!-- 5. OPÇÕES FINAIS (Footer) -->
     <div class="lia-sidebar__footer">
         {% if user_has_multiple_spaces %}
-            <!-- Removido o text-muted e alterado para "Alternar Espaço" -->
             <a href="{% url 'space_switch' %}" class="lia-sidebar__link" data-tooltip="{% trans 'Alternar Espaço' %}">
                 <span class="lia-sidebar__icon"><i data-lucide="arrow-left-right"></i></span>
                 <span class="lia-sidebar__text">{% trans "Alternar Espaço" %}</span>

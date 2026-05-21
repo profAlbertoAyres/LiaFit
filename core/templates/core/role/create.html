@@ -46,7 +46,7 @@
         <div class="lia-card__body">
             {% if form.is_active %}
                 <div class="row">
-                    {% include "components/form_field.html" with field=form.name col="col-md-8" %}
+                    {% include "components/form_field.html" with field=form.name col="col-md-8" icon="book-user" %}
                     {% include "components/form_field.html" with field=form.level col="col-md-4" %}
                     {% include "components/form_textarea.html" with field=form.description %}
                     {% include "components/form_switch.html" with field=form.is_active col="col-md-3" %}

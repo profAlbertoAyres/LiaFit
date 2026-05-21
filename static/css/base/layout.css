@@ -18,7 +18,6 @@
     transition: margin-left var(--transition-base);
 }
 
-/* Quando sidebar está colapsada */
 .lia-sidebar--collapsed ~ .lia-app__main {
     margin-left: var(--sidebar-collapsed-width);
 }
@@ -127,9 +126,6 @@
     cursor: pointer;
 }
 
-/* ==========================================================================
-   BADGES (Etiquetas de Status)
-   ========================================================================== */
 
 .lia-badge {
     display: inline-flex;
@@ -158,9 +154,6 @@
 }
 
 
-/* ========================================
-   Permissões bloqueadas (Filosofia C)
-   ======================================== */
 .lia-perm-locked {
     opacity: 0.55;
     transition: opacity 0.2s ease;
@@ -186,13 +179,12 @@
     height: 14px;
 }
 
-
-/* -------------------------------------------------------------------------
-   RESPONSIVIDADE
-   ------------------------------------------------------------------------- */
-
 @media (max-width: 768px) {
     .lia-app__main {
+        margin-left: 0;
+    }
+
+    .lia-sidebar--collapsed ~ .lia-app__main {
         margin-left: 0;
     }
 

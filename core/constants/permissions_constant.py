@@ -9,7 +9,6 @@ from django.db import models
 class ModuleSlug(models.TextChoices):
     ACCOUNT    = "account",    "Cadastros"
     SETTINGS   = "settings",   "Configurações"
-    # MY_AREA    = "my-area",    "Minha Área"
     SAAS_ADMIN = "saas-admin", "Admin SaaS"
 
 
@@ -20,15 +19,13 @@ class ItemSlug(models.TextChoices):
     ROLE            = "role",          "Papel"
     MEMBER          = "member",        "Membro"
     ORGANIZATION    = "organization",  "Organização"
-    # my-area
-    # DASHBOARD       = "dashboard",     "Dashboard"
-    # PROFILE         = "profile",       "Perfil"
     # saas-admin
     ORGANIZATIONS   = "organizations", "Organizações (Admin)"
     USERS_ADMIN     = "users-admin", "Usuários (Admin)"
     DASHBOARD_ADMIN = "dashboard-admin", "Painel Admin"
     SPECIALTY       = "specialty", "Especialidades"
     ORGANIZATION_TYPES = "organization_types", "Tipos de Organização"
+    SERVICE_TYPES = "service_types", "Tipos de Serviço"
 
 class ActionSlug(models.TextChoices):
     VIEW   = "view",   "Visualizar"

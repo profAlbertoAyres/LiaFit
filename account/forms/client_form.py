@@ -16,7 +16,7 @@ class ClientCreateForm(BaseForm):
         label=_('Telefone'),
         max_length=20,
         required=False,
-        widget=forms.TextInput(attrs={'data-mask': 'phone'}),
+        widget=forms.TextInput(attrs={'data-mask': 'phone', 'type': 'tel'}),
     )
     gender = forms.ChoiceField(label=_('Gênero'), choices=Gender.choices, required=False, )
     cpf = forms.CharField(label=_('CPF'), max_length=14, required=False,

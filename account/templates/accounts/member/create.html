@@ -71,12 +71,12 @@
 
     <div class="lia-card__body">
         <div class="row">
-            {% include "components/form_field.html"  with field=form.fullname    col="col-md-6" %}
+            {% include "components/form_field.html"  with field=form.fullname    col="col-md-6" icon="id-card" %}
             {% include "components/form_field.html"  with field=form.email       col="col-md-6" %}
-            {% include "components/form_field.html"  with field=form.cpf         col="col-md-3" %}
+            {% include "components/form_field.html"  with field=form.cpf         col="col-md-3" icon="contact" %}
             {% include "components/form_field.html"  with field=form.phone       col="col-md-3" %}
             {% include "components/form_date.html"   with field=form.birth_date  col="col-md-3" %}
-            {% include "components/form_select.html" with field=form.gender      col="col-md-3" %}
+            {% include "components/form_select.html" with field=form.gender      col="col-md-3" icon="venus-and-mars" %}
         </div>
     </div>
 
@@ -89,7 +89,7 @@
 
     <div class="lia-card__body">
         <div class="row">
-            {% include "components/form_select.html" with field=form.remuneration_type col="col-md-6" %}
+            {% include "components/form_select.html" with field=form.remuneration_type col="col-md-6" icon="handshake" %}
             {% include "components/form_date.html"   with field=form.joined_at         col="col-md-6" %}
         </div>
     </div>
@@ -111,9 +111,9 @@
              data-toggle-target="id_is_professional"
              {% if not form.is_professional.value %}hidden{% endif %}>
 
-            {% include "components/form_select.html"   with field=form.registration_type   col="col-md-4" %}
-            {% include "components/form_field.html"    with field=form.registration_number col="col-md-4" %}
-            {% include "components/form_select.html"   with field=form.specialties         col="col-md-12" %}
+            {% include "components/form_select.html"   with field=form.registration_type   col="col-md-4" icon="file-badge" %}
+            {% include "components/form_field.html"    with field=form.registration_number col="col-md-4" icon="hash" %}
+            {% include "components/form_select.html"   with field=form.specialties         col="col-md-12" icon="graduation-cap" %}
         </div>
     </div>
 

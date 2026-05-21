@@ -1,20 +1,20 @@
 {% extends 'base_app.html' %}
 
 {% block title %}
-    {% if object %}Editar {{ object.name }}{% else %}Novo Tipo de Organização{% endif %} | {{ APP_NAME }}
+    {% if object %}Editar {{ object.name }}{% else %}Novo Tipo de Serviço{% endif %} | {{ APP_NAME }}
 {% endblock %}
 
 {% block page_content %}
 <div class="d-flex align-items-center gap-3 mb-4">
     <div>
         <h2 class="fw-bold fs-4 m-00">
-            {% if object %}Editar Tipo de Organização{% else %}Novo Tipo de Organização{% endif %}
+            {% if object %}Editar Tipo de Serviço{% else %}Novo Tipo de Serviço{% endif %}
         </h2>
         <p class="text-muted small mt-1">
             {% if object %}
                 Atualize as informações de {{ object.name }}.
             {% else %}
-                Cadastre um novo tipo de organização na plataforma.
+                Cadastre um novo tipo de serviço no catálogo da plataforma.
             {% endif %}
         </p>
     </div>
@@ -36,29 +36,29 @@
 
     <div class="lia-card__header border-bottom-0 pb-0">
         <div>
-            <h3 class="lia-card__title">Dados do Tipo de Organização</h3>
+            <h3 class="lia-card__title">Dados do Tipo de Serviço</h3>
             <p class="lia-card__subtitle">
-                Informações que aparecerão para os profissionais ao escolher um tipo de organização.
+                Informações que aparecerão para as organizações ao escolher um tipo de serviço.
             </p>
         </div>
     </div>
 
     <div class="lia-card__body">
         <div class="row">
-            {% include "components/form_field.html" with field=form.name        col="col-md-12"  icon='building2'%}
+            {% include "components/form_field.html" with field=form.name        col="col-md-12" icon='Briefcase' %}
             {% include "components/form_field.html" with field=form.description col="col-md-12" %}
-            {% include "components/form_switch.html" with field=form.is_active   col="col-md-12" %}
+            {% include "components/form_switch.html" with field=form.is_active  col="col-md-12" %}
         </div>
     </div>
 
 
     <div class="lia-card__footer">
-        <a href="{% url 'saas_admin:organization_type_list' %}" class="lia-btn lia-btn--outline">
+        <a href="{% url 'saas_admin:service_type_list' %}" class="lia-btn lia-btn--outline">
             Cancelar
         </a>
         <button type="submit" class="lia-btn lia-btn--primary">
             <i data-lucide="save" class="lucide-sm"></i>
-            <span>{% if object %}Salvar Alterações{% else %}Criar Tipo de Organização{% endif %}</span>
+            <span>{% if object %}Salvar Alterações{% else %}Criar Tipo de Serviço{% endif %}</span>
         </button>
     </div>
 </form>

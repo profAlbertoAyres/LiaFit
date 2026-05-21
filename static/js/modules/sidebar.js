@@ -1,9 +1,3 @@
-/* =============================================================================
-   LIA LINDA — SIDEBAR & HEADER COMPONENTS
-   Controle de colapso da sidebar (desktop/mobile) e dropdown do header.
-   ============================================================================= */
-
-// ─── 1. CONTROLE DA SIDEBAR ──────────────────────────────────────────────────
 const LiaSidebar = {
     STORAGE_KEY: 'lia-sidebar-collapsed',
     MOBILE_BREAKPOINT: 768,
@@ -28,6 +22,7 @@ const LiaSidebar = {
         }
 
         window.addEventListener('resize', () => this.handleResize());
+        this.bindAccordionTriggers();
     },
 
     isMobile() {
@@ -45,6 +40,9 @@ const LiaSidebar = {
     toggleCollapse() {
         const isCollapsed = this.sidebar.classList.toggle('lia-sidebar--collapsed');
         localStorage.setItem(this.STORAGE_KEY, isCollapsed ? 'true' : 'false');
+        if (isCollapsed) {
+            this.closeAllAccordions();
+        }
     },
 
     toggleMobile() {
@@ -75,11 +73,26 @@ const LiaSidebar = {
         if (!this.isMobile()) {
             this.closeMobile();
         }
+    },
+    closeAllAccordions() {
+        this.sidebar.querySelectorAll('.accordion .collapse.show').forEach(el => {
+            bootstrap.Collapse.getOrCreateInstance(el, { toggle: false }).hide();
+        });
+    },
+
+    bindAccordionTriggers() {
+        this.sidebar.querySelectorAll('.accordion [data-bs-toggle="collapse"]').forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                if (this.sidebar.classList.contains('lia-sidebar--collapsed') && !this.isMobile()) {
+                    this.sidebar.classList.remove('lia-sidebar--collapsed');
+                    localStorage.setItem(this.STORAGE_KEY, 'false');
+                }
+            });
+        });
     }
 };
 
 
-// ─── 2. INICIALIZAÇÃO GLOBAL ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     LiaSidebar.init();
 });

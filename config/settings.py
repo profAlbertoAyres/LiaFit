@@ -72,12 +72,13 @@ INSTALLED_APPS = [
     'django_filters',
 
     # my apps
-    'core',
     'account',
-    'website',
-    'saas_admin',
+    'catalog',
+    'core',
     'financial',
+    'saas_admin',
     'scheduling',
+    'website',
     'workout'
 ]
 

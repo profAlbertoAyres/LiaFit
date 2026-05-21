@@ -1,0 +1,1 @@
+from catalog.models.service_type import ServiceType

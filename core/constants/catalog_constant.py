@@ -8,10 +8,9 @@ from core.constants.permissions_constant import ModuleSlug, ItemSlug, ActionSlug
 
 # Presets
 CRUD = [ActionSlug.VIEW, ActionSlug.ADD, ActionSlug.CHANGE, ActionSlug.DELETE]
-RO   = [ActionSlug.VIEW]
-RW   = [ActionSlug.VIEW, ActionSlug.CHANGE]
-A    = [ActionSlug.ADD]
-
+RO = [ActionSlug.VIEW]
+RW = [ActionSlug.VIEW, ActionSlug.CHANGE]
+A = [ActionSlug.ADD]
 
 CATALOG = [
     # ─────────────── MY AREA ───────────────
@@ -130,19 +129,26 @@ CATALOG = [
                 "show_in_menu": True,
                 "actions": CRUD,
             },
-{
-                "slug": ItemSlug.USERS_ADMIN,
+            {
+                "slug": ItemSlug.ORGANIZATION_TYPES,
                 "name": _("Tipos de organização"),
                 "order": 30,
                 "route": "saas_admin:organization_type_list",
                 "show_in_menu": True,
                 "actions": CRUD,
             },
-
             {
-                "slug": ItemSlug.ORGANIZATION_TYPES,
+                "slug": ItemSlug.SERVICE_TYPES,
                 "name": _("Usuários"),
-                "order": 30,
+                "order": 35,
+                "route": "saas_admin:service_type_list",
+                "show_in_menu": True,
+                "actions": CRUD,
+            },
+            {
+                "slug": ItemSlug.USERS_ADMIN,
+                "name": _("Usuários"),
+                "order": 40,
                 "route": "saas_admin:user_list",
                 "show_in_menu": True,
                 "actions": CRUD,

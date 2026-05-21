@@ -27,7 +27,7 @@ class OrganizationUpdateForm(BaseModelForm):
         ]
         widgets = {
             'document': forms.TextInput(attrs={'data-mask': 'cnpj_cpf'}),
-            'phone':    forms.TextInput(attrs={'data-mask': 'phone'}),
+            'phone':    forms.TextInput(attrs={'data-mask': 'phone', 'type': 'tel'}),
             'zip_code': forms.TextInput(attrs={'data-mask': 'cep'}),
             'logo': forms.ClearableFileInput(attrs={
                 'accept': 'image/jpeg,image/png,image/webp,image/gif',
